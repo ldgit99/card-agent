@@ -1,4 +1,4 @@
-import { orchestrationCards } from "@/data/cards";
+﻿import { orchestrationCards } from "@/data/cards";
 import { riskLabels } from "@/lib/constants";
 import type { LessonDesign } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
@@ -30,9 +30,11 @@ function renderChips(items: string[]) {
     return '<span class="report-chip report-chip-muted">없음</span>';
   }
 
-  return items
-    .map((item) => `<span class="report-chip">${escapeHtml(item)}</span>`)
-    .join("");
+  return items.map((item) => `<span class="report-chip">${escapeHtml(item)}</span>`).join("");
+}
+
+function renderMiniList(items: string[]) {
+  return items.length ? `<ul>${renderList(items)}</ul>` : "<p>없음</p>";
 }
 
 export function buildSimulationReportSnapshot(input: {
@@ -84,6 +86,7 @@ export function buildFallbackReportSnapshot(input: {
 
 export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
   const generatedAt = new Date(report.generatedAt).toLocaleString("ko-KR");
+  const personaMap = new Map((report.scenario?.studentPersonas ?? []).map((persona) => [persona.id, persona]));
 
   const activityRows = report.design.activities
     .map(
@@ -100,10 +103,24 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     )
     .join("");
 
+  const analysisSection = report.analysis
+    ? `
+      <section class="report-section">
+        <h2>설계 분석</h2>
+        <article class="report-block"><p>${escapeHtml(report.analysis.summary)}</p></article>
+        <div class="report-card-grid report-card-grid-3">
+          <article class="report-block"><h3>강점</h3><ul>${renderList(report.analysis.strengths)}</ul></article>
+          <article class="report-block"><h3>보완점</h3><ul>${renderList(report.analysis.gaps)}</ul></article>
+          <article class="report-block"><h3>권장 수정</h3><ul>${renderList(report.analysis.recommendations)}</ul></article>
+        </div>
+      </section>
+    `
+    : "";
+
   const scenarioSection = report.scenario
     ? `
       <section class="report-section">
-        <h2>모의 수업 시나리오</h2>
+        <h2>모의수업 시나리오</h2>
         <div class="report-card-grid report-card-grid-3">
           <article class="report-card"><span>시나리오 제목</span><strong>${escapeHtml(report.scenario.title)}</strong></article>
           <article class="report-card"><span>학습 흐름</span><strong>${escapeHtml(report.scenario.learningArc)}</strong></article>
@@ -115,6 +132,24 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
           <h3>관찰 포인트</h3>
           <p>${escapeHtml(report.scenario.facilitatorBrief)}</p>
         </article>
+        <div class="report-card-grid report-card-grid-2 report-persona-grid">
+          ${report.scenario.studentPersonas
+            .map(
+              (persona) => `
+                <article class="report-block">
+                  <div class="report-block-head"><span>${escapeHtml(persona.name)}</span><strong>${escapeHtml(persona.label)}</strong></div>
+                  <p>${escapeHtml(persona.profile)}</p>
+                  <ul class="report-detail-list">
+                    <li><strong>강점</strong><span>${escapeHtml(persona.strength)}</span></li>
+                    <li><strong>관찰 포인트</strong><span>${escapeHtml(persona.watchPoint)}</span></li>
+                    <li><strong>AI 경향</strong><span>${escapeHtml(persona.aiTendency)}</span></li>
+                    <li><strong>지원 필요</strong><span>${escapeHtml(persona.supportNeed)}</span></li>
+                  </ul>
+                </article>
+              `,
+            )
+            .join("")}
+        </div>
         <div class="report-stack">
           ${report.scenario.episodes
             .map(
@@ -126,16 +161,26 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                   </div>
                   <h3>${escapeHtml(episode.title)}</h3>
                   <p>${escapeHtml(episode.narrative)}</p>
-                  <ul class="report-bullet-grid report-contrast-grid">
-                    <li class="report-contrast-card report-contrast-card-positive"><strong>잘되고 있는 모습</strong><span>${escapeHtml(episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다.")}</span></li>
-                    <li class="report-contrast-card report-contrast-card-negative"><strong>잘 안되는 모습</strong><span>${escapeHtml(episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 여기에 제시됩니다.")}</span></li>
-                  </ul>
+                  <div class="report-bullet-grid report-bullet-grid-3 report-contrast-grid">
+                    <li class="report-contrast-card report-contrast-card-positive"><strong>잘되고 있는 모습</strong><span>${escapeHtml(episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 제시됩니다.")}</span></li>
+                    <li class="report-contrast-card report-contrast-card-neutral"><strong>보통의 실제 모습</strong><span>${escapeHtml(episode.ordinaryScene || "실제 교실에서 흔히 나타나는 평균적 장면이 제시됩니다.")}</span></li>
+                    <li class="report-contrast-card report-contrast-card-negative"><strong>잘 안되는 모습</strong><span>${escapeHtml(episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 제시됩니다.")}</span></li>
+                  </div>
                   <ul class="report-bullet-grid">
                     <li><strong>Human agency</strong><span>${escapeHtml(episode.humanAgencyFocus)}</span></li>
                     <li><strong>AI agency</strong><span>${escapeHtml(episode.aiAgencyFocus)}</span></li>
                     <li><strong>학생 학습 신호</strong><span>${escapeHtml(episode.studentLearningSignal)}</span></li>
                     <li><strong>잠재 긴장</strong><span>${escapeHtml(episode.possibleTension)}</span></li>
                   </ul>
+                  <div class="report-card-grid report-card-grid-2">
+                    <article class="report-card"><h3>주요 학생 페르소나</h3>${renderChips((episode.featuredPersonaIds ?? []).map((personaId) => {
+                      const persona = personaMap.get(personaId);
+                      return persona ? `${persona.name} · ${persona.label}` : personaId;
+                    }))}</article>
+                    <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((episode.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
+                    <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((episode.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
+                    <article class="report-card"><h3>카드-결과 연결</h3>${renderMiniList((episode.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
+                  </div>
                 </article>
               `,
             )
@@ -145,26 +190,10 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     `
     : "";
 
-  const analysisSection = report.analysis
-    ? `
-      <section class="report-section">
-        <h2>설계 분석</h2>
-        <article class="report-block">
-          <p>${escapeHtml(report.analysis.summary)}</p>
-        </article>
-        <div class="report-card-grid report-card-grid-3">
-          <article class="report-block"><h3>강점</h3><ul>${renderList(report.analysis.strengths)}</ul></article>
-          <article class="report-block"><h3>보완점</h3><ul>${renderList(report.analysis.gaps)}</ul></article>
-          <article class="report-block"><h3>권장 수정</h3><ul>${renderList(report.analysis.recommendations)}</ul></article>
-        </div>
-      </section>
-    `
-    : "";
-
   const turnsSection = report.turns.length
     ? `
       <section class="report-section">
-        <h2>모의 수업 실행 결과</h2>
+        <h2>모의수업 실행 결과</h2>
         <div class="report-stack">
           ${report.turns
             .map(
@@ -180,9 +209,16 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                     <li><strong>AI 행동</strong><span>${escapeHtml(turn.aiAction)}</span></li>
                     <li><strong>예상 학생 반응</strong><span>${escapeHtml(turn.expectedStudentResponse)}</span></li>
                     <li><strong>관찰 메모</strong><span>${escapeHtml(turn.observerNote)}</span></li>
-                    <li><strong>놓친 기회</strong><span>${escapeHtml(turn.missedOpportunities.join(" / ") || "없음")}</span></li>
+                    <li><strong>놓칠 수 있는 지점</strong><span>${escapeHtml(turn.missedOpportunities.join(" / ") || "없음")}</span></li>
                     <li><strong>연결 카드</strong><span>${escapeHtml(turn.linkedCardIds.map(cardTitle).join(" / ") || "없음")}</span></li>
+                    <li><strong>활동별 위험 신호</strong><span>${escapeHtml((turn.activityRiskSignals ?? []).join(" / ") || "없음")}</span></li>
                   </ul>
+                  <div class="report-card-grid report-card-grid-2">
+                    <article class="report-card"><h3>학생 페르소나 반응</h3>${renderMiniList((turn.studentPersonaResponses ?? []).map((item) => `${item.personaName}: ${item.response}`))}</article>
+                    <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((turn.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
+                    <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((turn.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
+                    <article class="report-card"><h3>카드-결과 연결</h3>${renderMiniList((turn.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
+                  </div>
                 </article>
               `,
             )
@@ -194,7 +230,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
 
   const risksSection = `
     <section class="report-section">
-      <h2>포착된 문제점</h2>
+      <h2>위험 관찰 결과</h2>
       ${report.risks.length
         ? `<div class="report-stack">${report.risks
             .map(
@@ -205,13 +241,17 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                     <strong>${escapeHtml(risk.severity)}</strong>
                   </div>
                   <p>${escapeHtml(risk.rationale)}</p>
-                  <h3>권장 개입</h3>
-                  <p>${escapeHtml(risk.recommendedIntervention)}</p>
+                  <div class="report-card-grid report-card-grid-2">
+                    <article class="report-card"><h3>활동/초점</h3><p>${escapeHtml(`${risk.activityTitle || "공통 위험"} · ${risk.focusArea}`)}</p></article>
+                    <article class="report-card"><h3>학생 영향</h3><p>${escapeHtml(risk.studentImpact)}</p></article>
+                    <article class="report-card"><h3>관찰 신호</h3><p>${escapeHtml((risk.watchSignals ?? []).join(" / ") || "없음")}</p></article>
+                    <article class="report-card"><h3>권장 개입</h3><p>${escapeHtml(risk.recommendedIntervention)}</p></article>
+                  </div>
                 </article>
               `,
             )
             .join("")}</div>`
-        : '<article class="report-block"><p>포착된 주요 위험이 없습니다.</p></article>'}
+        : '<article class="report-block"><p>주요 위험이 없습니다.</p></article>'}
     </section>
   `;
 
@@ -286,12 +326,14 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       }
       .report-hero h1,
       .report-section h2,
-      .report-block h3 {
+      .report-block h3,
+      .report-card h3 {
         margin: 0;
         letter-spacing: -0.03em;
       }
       .report-hero p,
       .report-block p,
+      .report-card p,
       .report-detail-list span,
       .report-bullet-grid span,
       .report-note {
@@ -314,6 +356,9 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       .report-meta {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         margin-top: 18px;
+      }
+      .report-card-grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
       .report-card-grid-3 {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -355,6 +400,9 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       .report-bullet-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+      .report-bullet-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
       .report-bullet-grid li,
       .report-detail-list li {
         display: grid;
@@ -370,13 +418,13 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
         background: #eff6ff;
         border: 1px solid #bfdbfe;
       }
+      .report-contrast-card-neutral {
+        background: #f8fafc;
+        border: 1px solid #dbeafe;
+      }
       .report-contrast-card-negative {
         background: #fff7ed;
         border: 1px solid #fed7aa;
-      }
-      .report-detail-list strong,
-      .report-bullet-grid strong {
-        font-size: 0.88rem;
       }
       .report-table {
         width: 100%;
@@ -393,11 +441,6 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       .report-table th {
         background: #eff6ff;
         font-size: 0.84rem;
-      }
-      .report-chip-wrap {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
       }
       .report-chip {
         display: inline-flex;
@@ -425,8 +468,10 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       @media (max-width: 860px) {
         .report-page { width: min(100% - 20px, 1160px); }
         .report-meta,
+        .report-card-grid-2,
         .report-card-grid-3,
-        .report-bullet-grid { grid-template-columns: 1fr; }
+        .report-bullet-grid,
+        .report-bullet-grid-3 { grid-template-columns: 1fr; }
       }
       @media print {
         body { background: white; }
@@ -458,8 +503,8 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
           <article class="report-block"><h3>학습 목표</h3><ul>${renderList(report.design.learningGoals)}</ul></article>
           <article class="report-block"><h3>설계 메타</h3><ul>${renderList([
             `버전: ${report.design.version}`,
-            `생성일: ${new Date(report.design.createdAt).toLocaleString("ko-KR")}`,
-            `수정일: ${new Date(report.design.updatedAt).toLocaleString("ko-KR")}`,
+            `생성: ${new Date(report.design.createdAt).toLocaleString("ko-KR")}`,
+            `수정: ${new Date(report.design.updatedAt).toLocaleString("ko-KR")}`,
           ])}</ul></article>
         </div>
         <table class="report-table">

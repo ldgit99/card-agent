@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -58,11 +58,17 @@ function buildJournal(
 }
 
 function formatSyncTime(value: string | null) {
-  if (!value) {
-    return "없음";
-  }
+  return value ? new Date(value).toLocaleString("ko-KR") : "없음";
+}
 
-  return new Date(value).toLocaleString("ko-KR");
+function qualityLabel(value: "strong" | "mixed" | "weak") {
+  if (value === "strong") {
+    return "강점";
+  }
+  if (value === "weak") {
+    return "취약";
+  }
+  return "관찰";
 }
 
 function buildSessionRecord(input: {
@@ -120,12 +126,15 @@ export function SimulationWorkspace() {
     if (!design) {
       return [];
     }
-
     return serverSessions.filter((session) => session.lessonDesignId === design.id);
   }, [design, serverSessions]);
 
-  const episodeTitleById = useMemo(() => {
-    return new Map((scenario?.episodes ?? []).map((episode) => [episode.id, episode.title]));
+  const episodeById = useMemo(() => {
+    return new Map((scenario?.episodes ?? []).map((episode) => [episode.id, episode]));
+  }, [scenario]);
+
+  const personaById = useMemo(() => {
+    return new Map((scenario?.studentPersonas ?? []).map((persona) => [persona.id, persona]));
   }, [scenario]);
 
   function applyStoredSimulationState(state: StoredSimulationState) {
@@ -144,7 +153,7 @@ export function SimulationWorkspace() {
 
     if (state.journal) {
       setSummary(state.journal.summary);
-      setAnswers(Object.fromEntries(state.journal.answers.map((answer) => [answer.questionId, answer.answer])));
+      setAnswers(Object.fromEntries(state.journal.answers.map((item) => [item.questionId, item.answer])));
       setNextRevisionText(state.journal.nextRevisionNotes.join("\n"));
     } else {
       setSummary("");
@@ -163,7 +172,7 @@ export function SimulationWorkspace() {
 
     if (session.journal) {
       setSummary(session.journal.summary);
-      setAnswers(Object.fromEntries(session.journal.answers.map((answer) => [answer.questionId, answer.answer])));
+      setAnswers(Object.fromEntries(session.journal.answers.map((item) => [item.questionId, item.answer])));
       setNextRevisionText(session.journal.nextRevisionNotes.join("\n"));
     } else {
       setSummary("");
@@ -200,10 +209,10 @@ export function SimulationWorkspace() {
         setMessage(
           nextDesign
             ? snapshot.latestSession
-              ? "서버 저장본과 가장 최근 시뮬레이션 세션을 불러왔습니다."
+              ? "서버 저장본과 최근 시뮬레이션 세션을 불러왔습니다."
               : storedReport
-                ? "브라우저에 저장된 리포트와 설계 상태가 있습니다. 필요하면 리포트를 다시 저장해 보세요."
-                : "설계본을 불러왔습니다. 이제 모의수업을 실행해 보세요."
+                ? "저장된 리포트와 설계 상태가 있습니다. 필요하면 리포트를 다시 열어 보세요."
+                : "설계본을 불러왔습니다. 모의 수업을 실행해 보세요."
             : "저장된 설계가 없습니다. 1페이지에서 수업 설계를 먼저 작성해 주세요.",
         );
       } catch {
@@ -224,7 +233,6 @@ export function SimulationWorkspace() {
     }
 
     void hydrateWorkspace();
-
     return () => {
       active = false;
     };
@@ -282,7 +290,7 @@ export function SimulationWorkspace() {
 
       const runId = crypto.randomUUID();
       setSimulationRunId(runId);
-      setMessage("수업 시나리오와 핵심 에피소드를 구성하는 중입니다.");
+      setMessage("수업 시나리오와 학생 페르소나를 생성하고 있습니다.");
 
       const scenarioResponse = await fetch("/api/simulation/scenario", {
         method: "POST",
@@ -302,7 +310,7 @@ export function SimulationWorkspace() {
 
       const generatedTurns: SimulationTurn[] = [];
       for (const activity of nextDesign.activities) {
-        setMessage(`${activity.order}차 활동을 시뮬레이션하는 중입니다.`);
+        setMessage(`${activity.order}차 활동의 실행 장면을 생성하고 있습니다.`);
 
         const response = await fetch("/api/simulation/step", {
           method: "POST",
@@ -325,7 +333,7 @@ export function SimulationWorkspace() {
         setTurns([...generatedTurns]);
       }
 
-      setMessage("위험 요소와 성찰 질문을 생성하는 중입니다.");
+      setMessage("활동별 위험과 성찰 질문을 생성하고 있습니다.");
 
       const riskResponse = await fetch("/api/simulation/risks", {
         method: "POST",
@@ -379,7 +387,7 @@ export function SimulationWorkspace() {
         }
       }
 
-      setMessage("모의수업 시나리오, 에피소드, 실행 로그, 성찰 질문 생성이 완료되었습니다.");
+      setMessage("모의수업 시나리오, 실행 로그, 위험, 성찰 질문 생성이 완료됐습니다.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "모의수업 실행 중 오류가 발생했습니다.");
     } finally {
@@ -411,7 +419,7 @@ export function SimulationWorkspace() {
       const savedSession = await saveSimulationSessionToWorkspace(session);
       setServerSessions(savedSession.sessions);
       setLastServerSyncAt(savedSession.updatedAt);
-      setMessage("성찰 응답을 서버 저장소에 저장했습니다.");
+      setMessage("성찰 응답을 서버에 저장했습니다.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "성찰 응답 저장 중 오류가 발생했습니다.");
     } finally {
@@ -421,7 +429,7 @@ export function SimulationWorkspace() {
 
   function loadSessionFromHistory(session: SimulationSessionRecord) {
     applySessionRecord(session);
-    setMessage(`${formatSessionLabel(session)} 세션을 작업 화면으로 불러왔습니다.`);
+    setMessage(`${formatSessionLabel(session)} 세션을 불러왔습니다.`);
   }
 
   function saveReport() {
@@ -430,7 +438,7 @@ export function SimulationWorkspace() {
     }
 
     if (!scenario && !turns.length && !questions.length) {
-      setMessage("먼저 모의수업 실행 후 리포트를 저장해 주세요.");
+      setMessage("먼저 모의수업을 실행한 뒤 리포트를 저장해 주세요.");
       return;
     }
 
@@ -450,11 +458,11 @@ export function SimulationWorkspace() {
     const opened = window.open("/report", "_blank", "noopener,noreferrer");
 
     if (!opened) {
-      setMessage("팝업이 차단되어 리포트를 새 탭으로 열지 못했습니다. /report 페이지를 직접 열어 주세요.");
+      setMessage("팝업이 차단되어 리포트를 열지 못했습니다. /report 페이지를 직접 열어 주세요.");
       return;
     }
 
-    setMessage("리포트를 새 탭에서 열었습니다. 페이지에서 PDF로 저장하거나 HTML을 다운로드할 수 있습니다.");
+    setMessage("리포트를 새 탭에서 열었습니다. 페이지에서 PDF 저장 또는 HTML 다운로드가 가능합니다.");
   }
 
   const highRiskCount = risks.filter((risk) => risk.severity === "high").length;
@@ -468,9 +476,7 @@ export function SimulationWorkspace() {
           <div>
             <p className="eyebrow">Simulation Workspace</p>
             <h1>저장된 설계가 없습니다.</h1>
-            <p className="heroCopy">
-              먼저 1페이지에서 수업 활동과 카드 배치를 설계해야 모의수업과 성찰 일지를 실행할 수 있습니다.
-            </p>
+            <p className="heroCopy">먼저 1페이지에서 수업 설계를 작성해야 모의수업을 실행할 수 있습니다.</p>
           </div>
           <div className="heroActions">
             <Link href="/" className="secondaryButton">1페이지로 이동</Link>
@@ -485,17 +491,17 @@ export function SimulationWorkspace() {
       <section className="heroPanel">
         <div>
           <p className="eyebrow">Step 2</p>
-          <h1>모의수업 실행과 성찰 일지</h1>
+          <h1>모의수업 실행과 성찰</h1>
           <p className="heroCopy">
-            설계안을 바탕으로 Human-AI agency, 깊이 있는 학습, 책임 구조가 실제 수업에서 어떻게 드러나는지 시뮬레이션합니다.
-            먼저 수업 시나리오와 에피소드를 제시하고, 이어서 실행 로그와 위험, 성찰 질문을 생성합니다.
+            설계안을 바탕으로 학생 페르소나, 잘되는 모습·보통의 실제 모습·잘 안되는 모습, 활동별 위험, 학생 산출물,
+            교사 개입 추천을 함께 제시합니다.
           </p>
           <div className="heroActions">
             <button type="button" className="primaryButton" onClick={runSimulation}>
-              {isRunning ? "실행 중..." : "모의수업 실행"}
+              {isRunning ? "실행 중..." : "모의 수업 실행"}
             </button>
             <button type="button" className="secondaryButton" onClick={persistReflectionToServer}>
-              {isSavingReflection ? "성찰 저장 중..." : "성찰 서버 저장"}
+              {isSavingReflection ? "저장 중..." : "성찰 서버 저장"}
             </button>
             <button type="button" className="secondaryButton" onClick={saveReport}>
               리포트 저장하기
@@ -504,16 +510,16 @@ export function SimulationWorkspace() {
           </div>
         </div>
         <div className="heroStatRack">
-          <article className="heroStatCard"><span>모의 활동</span><strong>{design.activities.length}</strong></article>
+          <article className="heroStatCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
           <article className="heroStatCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
-          <article className="heroStatCard"><span>포착 위험</span><strong>{risks.length}</strong></article>
+          <article className="heroStatCard"><span>위험</span><strong>{risks.length}</strong></article>
         </div>
       </section>
 
       <section className="statusCards">
-        <article className="summaryCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
         <article className="summaryCard"><span>배치 카드</span><strong>{design.placements.length}</strong></article>
-        <article className="summaryCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
+        <article className="summaryCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
+        <article className="summaryCard"><span>활동 로그</span><strong>{turns.length}</strong></article>
         <article className="summaryCard"><span>성찰 질문</span><strong>{questions.length}</strong></article>
       </section>
 
@@ -523,11 +529,10 @@ export function SimulationWorkspace() {
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Lesson Scenario</p>
-                <h2>수업 시나리오와 에피소드</h2>
+                <h2>수업 시나리오와 학생 페르소나</h2>
               </div>
-              <p className="panelHint">모의수업 실행을 누르면 설계를 따른 장면이 먼저 구성되고, 각 에피소드마다 잘되는 모습과 잘 안되는 모습이 함께 제시됩니다.</p>
+              <p className="panelHint">설계를 따르되 잘되는 모습, 보통의 실제 모습, 잘 안되는 모습을 함께 관찰합니다.</p>
             </div>
-
             {scenario ? (
               <div className="scenarioStack">
                 <article className="scenarioHeroCard">
@@ -537,20 +542,29 @@ export function SimulationWorkspace() {
                     <p>{scenario.setting}</p>
                   </div>
                   <div className="scenarioMetaGrid">
-                    <article className="scenarioMetaCard">
-                      <span>학습 흐름</span>
-                      <strong>{scenario.learningArc}</strong>
-                    </article>
-                    <article className="scenarioMetaCard">
-                      <span>관찰 포인트</span>
-                      <strong>{scenario.facilitatorBrief}</strong>
-                    </article>
-                    <article className="scenarioMetaCard">
-                      <span>엔진</span>
-                      <strong>{scenario.engine}</strong>
-                    </article>
+                    <article className="scenarioMetaCard"><span>학습 흐름</span><strong>{scenario.learningArc}</strong></article>
+                    <article className="scenarioMetaCard"><span>관찰 포인트</span><strong>{scenario.facilitatorBrief}</strong></article>
+                    <article className="scenarioMetaCard"><span>엔진</span><strong>{scenario.engine}</strong></article>
                   </div>
                 </article>
+
+                <div className="personaGrid">
+                  {scenario.studentPersonas.map((persona) => (
+                    <article key={persona.id} className="personaCard">
+                      <div className="personaCardHead">
+                        <strong>{persona.name}</strong>
+                        <span>{persona.label}</span>
+                      </div>
+                      <p>{persona.profile}</p>
+                      <ul className="miniBulletList">
+                        <li><strong>강점</strong><span>{persona.strength}</span></li>
+                        <li><strong>관찰 포인트</strong><span>{persona.watchPoint}</span></li>
+                        <li><strong>AI 경향</strong><span>{persona.aiTendency}</span></li>
+                        <li><strong>지원 필요</strong><span>{persona.supportNeed}</span></li>
+                      </ul>
+                    </article>
+                  ))}
+                </div>
 
                 <div className="scenarioEpisodeList">
                   {scenario.episodes.map((episode, index) => (
@@ -561,10 +575,14 @@ export function SimulationWorkspace() {
                       </div>
                       <h3>{episode.title}</h3>
                       <p className="scenarioEpisodeNarrative">{episode.narrative}</p>
-                      <div className="scenarioContrastGrid">
+                      <div className="scenarioContrastGrid scenarioContrastGrid-three">
                         <div className="scenarioContrastCard scenarioContrastCard-positive">
                           <strong>잘되고 있는 모습</strong>
                           <p>{episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다."}</p>
+                        </div>
+                        <div className="scenarioContrastCard scenarioContrastCard-neutral">
+                          <strong>보통의 실제 모습</strong>
+                          <p>{episode.ordinaryScene || "실제 교실에서 흔히 나타나는 평균적 장면이 여기에 제시됩니다."}</p>
                         </div>
                         <div className="scenarioContrastCard scenarioContrastCard-negative">
                           <strong>잘 안되는 모습</strong>
@@ -572,36 +590,69 @@ export function SimulationWorkspace() {
                         </div>
                       </div>
                       <div className="scenarioEpisodeDetails">
-                        <div>
-                          <strong>Human agency</strong>
-                          <p>{episode.humanAgencyFocus}</p>
-                        </div>
-                        <div>
-                          <strong>AI agency</strong>
-                          <p>{episode.aiAgencyFocus}</p>
-                        </div>
-                        <div>
-                          <strong>학생 학습 신호</strong>
-                          <p>{episode.studentLearningSignal}</p>
-                        </div>
-                        <div>
-                          <strong>잠재 긴장</strong>
-                          <p>{episode.possibleTension}</p>
-                        </div>
+                        <div><strong>Human agency</strong><p>{episode.humanAgencyFocus}</p></div>
+                        <div><strong>AI agency</strong><p>{episode.aiAgencyFocus}</p></div>
+                        <div><strong>학생 학습 신호</strong><p>{episode.studentLearningSignal}</p></div>
+                        <div><strong>잠재 긴장</strong><p>{episode.possibleTension}</p></div>
                       </div>
-                      {episode.linkedCardIds.length ? (
-                        <div className="linkedCardList">
-                          {episode.linkedCardIds.map((cardId) => (
-                            <span key={`${episode.id}-${cardId}`} className="linkedCardChip">{cardId}</span>
-                          ))}
-                        </div>
-                      ) : null}
+                      <div className="scenarioSubGrid">
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Featured Students</p><h3>주요 학생 페르소나</h3></div></div>
+                          <div className="linkedCardList">
+                            {(episode.featuredPersonaIds ?? []).map((personaId) => {
+                              const persona = personaById.get(personaId);
+                              return (
+                                <span key={`${episode.id}-${personaId}`} className="linkedCardChip linkedCardChip-persona">
+                                  {persona ? `${persona.name} · ${persona.label}` : personaId}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Artifacts</p><h3>학생 산출물 예시</h3></div></div>
+                          <div className="artifactList">
+                            {(episode.sampleArtifacts ?? []).map((artifact) => (
+                              <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality}`}>
+                                <div className="artifactHead"><strong>{artifact.title}</strong><span>{qualityLabel(artifact.quality)}</span></div>
+                                <p>{artifact.content}</p>
+                                <small>{artifact.insight}</small>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Teacher Moves</p><h3>교사 개입 추천</h3></div></div>
+                          <div className="interventionList">
+                            {(episode.teacherInterventions ?? []).map((item) => (
+                              <article key={item.id} className="interventionCard">
+                                <strong>{item.title}</strong>
+                                <span>{item.timing}</span>
+                                <p>{item.move}</p>
+                                <small>{item.expectedImpact}</small>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>카드 배치와 결과 연결</h3></div></div>
+                          <div className="outcomeLinkList">
+                            {(episode.cardOutcomeLinks ?? []).map((link) => (
+                              <article key={`${episode.id}-${link.cardId}`} className="outcomeLinkCard">
+                                <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 카드" : "AI 카드"}</span></div>
+                                <p>{link.influence}</p>
+                                <small>{link.resultingChange}</small>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                      </div>
                     </article>
                   ))}
                 </div>
               </div>
             ) : (
-              <p className="emptyPanelText">아직 시뮬레이션 시나리오가 없습니다. `모의수업 실행` 버튼으로 시작해 주세요.</p>
+              <p className="emptyPanelText">아직 시나리오가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
             )}
           </section>
 
@@ -628,9 +679,7 @@ export function SimulationWorkspace() {
                       <div className="timelineHeader">
                         <div className="timelineTitleBlock">
                           <h3>{turn.activityTitle}</h3>
-                          {turn.scenarioEpisodeId ? (
-                            <span className="scenarioLinkBadge">{episodeTitleById.get(turn.scenarioEpisodeId) ?? "연결 에피소드"}</span>
-                          ) : null}
+                          {turn.scenarioEpisodeId ? <span className="scenarioLinkBadge">{episodeById.get(turn.scenarioEpisodeId)?.title ?? "연결된 에피소드"}</span> : null}
                         </div>
                         <span className="engineBadge">{turn.engine}</span>
                       </div>
@@ -638,20 +687,75 @@ export function SimulationWorkspace() {
                         <div><dt>교사 행동</dt><dd>{turn.teacherAction}</dd></div>
                         <div><dt>AI 행동</dt><dd>{turn.aiAction}</dd></div>
                         <div><dt>예상 학생 반응</dt><dd>{turn.expectedStudentResponse}</dd></div>
-                        <div><dt>놓친 기회</dt><dd>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "특별한 누락 없음"}</dd></div>
+                        <div><dt>놓칠 수 있는 지점</dt><dd>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "크게 놓치는 지점은 없습니다."}</dd></div>
                       </dl>
                       <div className="evidenceList">
                         {turn.evidenceObserved.map((item) => (
                           <span key={`${turn.id}-${item}`} className="evidenceChip">{item}</span>
                         ))}
                       </div>
-                      {turn.linkedCardIds.length ? (
-                        <div className="linkedCardList">
-                          {turn.linkedCardIds.map((cardId) => (
-                            <span key={`${turn.id}-${cardId}`} className="linkedCardChip">{cardId}</span>
+                      <div className="turnDetailGrid">
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Student Responses</p><h3>학생 페르소나 반응</h3></div></div>
+                          <div className="personaResponseList">
+                            {(turn.studentPersonaResponses ?? []).map((item) => {
+                              const persona = personaById.get(item.personaId);
+                              return (
+                                <article key={`${turn.id}-${item.personaId}`} className="responseCard">
+                                  <div className="artifactHead"><strong>{item.personaName}</strong><span>{persona?.label ?? "학생 반응"}</span></div>
+                                  <p>{item.response}</p>
+                                  <small>{item.learningSignal}</small>
+                                </article>
+                              );
+                            })}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Artifacts</p><h3>학생 산출물 예시</h3></div></div>
+                          <div className="artifactList">
+                            {(turn.sampleArtifacts ?? []).map((artifact) => (
+                              <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality}`}>
+                                <div className="artifactHead"><strong>{artifact.title}</strong><span>{qualityLabel(artifact.quality)}</span></div>
+                                <p>{artifact.content}</p>
+                                <small>{artifact.insight}</small>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Teacher Moves</p><h3>교사 개입 추천</h3></div></div>
+                          <div className="interventionList">
+                            {(turn.teacherInterventions ?? []).map((item) => (
+                              <article key={item.id} className="interventionCard">
+                                <strong>{item.title}</strong>
+                                <span>{item.timing}</span>
+                                <p>{item.move}</p>
+                                <small>{item.expectedImpact}</small>
+                              </article>
+                            ))}
+                          </div>
+                        </section>
+                        <section className="detailSection detailSectionSoft">
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Risk Signals</p><h3>활동별 위험 신호</h3></div></div>
+                          <div className="signalList">
+                            {(turn.activityRiskSignals ?? []).map((signal) => (
+                              <span key={`${turn.id}-${signal}`} className="linkedCardChip linkedCardChip-risk">{signal}</span>
+                            ))}
+                          </div>
+                        </section>
+                      </div>
+                      <section className="detailSection detailSectionSoft">
+                        <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>카드 배치와 결과 연결</h3></div></div>
+                        <div className="outcomeLinkList">
+                          {(turn.cardOutcomeLinks ?? []).map((link) => (
+                            <article key={`${turn.id}-${link.cardId}`} className="outcomeLinkCard">
+                              <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 카드" : "AI 카드"}</span></div>
+                              <p>{link.influence}</p>
+                              <small>{link.resultingChange}</small>
+                            </article>
                           ))}
                         </div>
-                      ) : null}
+                      </section>
                       <div className="timelineObserverNote">
                         <strong>관찰 메모</strong>
                         <p>{turn.observerNote}</p>
@@ -661,24 +765,18 @@ export function SimulationWorkspace() {
                 ))}
               </div>
             ) : (
-              <p className="emptyPanelText">아직 시뮬레이션 결과가 없습니다. `모의수업 실행` 버튼으로 시작해 주세요.</p>
+              <p className="emptyPanelText">아직 실행 결과가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
             )}
           </section>
 
           <section className="panel">
             <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Reflection Journal</p>
-                <h2>성찰 질문과 응답</h2>
-              </div>
-              <p className="panelHint">응답은 브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 남길 수 있습니다.</p>
+              <div><p className="sectionTag">Reflection Journal</p><h2>성찰 질문과 응답</h2></div>
+              <p className="panelHint">응답은 브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 반영할 수 있습니다.</p>
             </div>
             <div className="reflectionSplit">
               <div className="reflectionColumn">
-                <div className="reflectionColumnHeader">
-                  <p className="sectionMicroTag">AI Reflection Questions</p>
-                  <h3>성찰 질문</h3>
-                </div>
+                <div className="reflectionColumnHeader"><p className="sectionMicroTag">AI Reflection Questions</p><h3>성찰 질문</h3></div>
                 <div className="reflectionForm">
                   {questions.length ? (
                     questions.map((question) => (
@@ -689,35 +787,25 @@ export function SimulationWorkspace() {
                           rows={4}
                           value={answers[question.id] ?? ""}
                           onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))}
-                          placeholder="이 장면에서 무엇을 수정할지, 어떤 질문을 더 추가할지 적어 주세요."
+                          placeholder="다음 차시에서 무엇을 바꾸고 어떤 질문을 추가할지 적어 주세요."
                         />
                       </label>
                     ))
                   ) : (
-                    <p className="emptyPanelText">성찰 질문은 시뮬레이션 실행 후 생성됩니다.</p>
+                    <p className="emptyPanelText">성찰 질문은 시뮬레이션 실행 뒤 생성됩니다.</p>
                   )}
                 </div>
               </div>
               <div className="reflectionStack">
                 <label className="reflectionQuestionCard reflectionSummaryCard">
                   <span>종합 메모</span>
-                  <small>이번 설계에서 유지할 강점과 수정이 필요한 지점을 요약합니다.</small>
-                  <textarea
-                    rows={5}
-                    value={summary}
-                    onChange={(event) => setSummary(event.target.value)}
-                    placeholder="예: AI의 초안 생성은 유지하되, 최종 판단과 근거 토론은 교사 질문으로 다시 배치한다."
-                  />
+                  <small>이번 설계에서 유지할 점과 수정이 필요한 지점을 요약합니다.</small>
+                  <textarea rows={5} value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="예: AI는 초안 생성에 유용했지만, 최종 판단과 근거 토론은 교사 질문으로 더 분명히 해야 했다." />
                 </label>
                 <label className="reflectionQuestionCard reflectionSummaryCard">
                   <span>다음 수정 체크리스트</span>
-                  <small>한 줄에 하나씩 적으면 리포트에도 그대로 반영됩니다.</small>
-                  <textarea
-                    rows={5}
-                    value={nextRevisionText}
-                    onChange={(event) => setNextRevisionText(event.target.value)}
-                    placeholder="예: 도입 활동에 AI 신뢰 점검 카드 추가"
-                  />
+                  <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
+                  <textarea rows={5} value={nextRevisionText} onChange={(event) => setNextRevisionText(event.target.value)} placeholder="예: 탐구 활동에 AI 신뢰 묻기 카드 추가" />
                 </label>
               </div>
             </div>
@@ -727,10 +815,7 @@ export function SimulationWorkspace() {
         <aside className="sideColumn">
           <section className="panel">
             <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Design Snapshot</p>
-                <h2>{design.meta.topic || "제목 미입력"}</h2>
-              </div>
+              <div><p className="sectionTag">Design Snapshot</p><h2>{design.meta.topic || "제목 미입력"}</h2></div>
               <span className="engineBadge">v{design.version}</span>
             </div>
             <div className="snapshotMetricGrid">
@@ -739,26 +824,16 @@ export function SimulationWorkspace() {
               <article className="snapshotMetric"><span>세션 수</span><strong>{designSessions.length}</strong></article>
             </div>
             <div className="snapshotList">
-              <div>
-                <strong>학습 목표</strong>
-                <span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span>
-              </div>
+              <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
+              <div><strong>성취기준</strong><span>{design.achievementStandards.length ? design.achievementStandards.join(" / ") : "아직 입력된 성취기준이 없습니다."}</span></div>
             </div>
-            {analysis ? (
-              <div className="compactAnalysis">
-                <h3>설계 분석 요약</h3>
-                <p>{analysis.summary}</p>
-              </div>
-            ) : null}
+            {analysis ? <div className="compactAnalysis"><h3>설계 분석 요약</h3><p>{analysis.summary}</p></div> : null}
           </section>
 
           <section className="panel">
             <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Risk Observer</p>
-                <h2>포착된 문제점</h2>
-              </div>
-              <p className="panelHint">Human-AI agency와 깊이 있는 학습 관점에서 점검합니다.</p>
+              <div><p className="sectionTag">Risk Observer</p><h2>활동별 문제점</h2></div>
+              <p className="panelHint">Human-AI agency, 깊이 있는 학습, 참여, 평가 정합성 관점에서 봅니다.</p>
             </div>
             <div className="riskSummaryGrid">
               <article className="riskSummaryCard riskSummaryCard-high"><span>High</span><strong>{highRiskCount}</strong></article>
@@ -769,27 +844,28 @@ export function SimulationWorkspace() {
               <div className="riskList">
                 {risks.map((risk) => (
                   <article key={risk.id} className={`riskCard risk-${risk.severity}`}>
-                    <div className="riskHeader">
-                      <h3>{riskLabels[risk.riskType]}</h3>
-                      <span>{risk.severity}</span>
-                    </div>
+                    <div className="riskHeader"><h3>{riskLabels[risk.riskType]}</h3><span>{risk.severity}</span></div>
+                    <p className="riskActivityLabel">{`${risk.activityTitle || "공통 위험"} · ${risk.focusArea}`}</p>
                     <p>{risk.rationale}</p>
+                    <div className="riskMetaBlock"><strong>학생 영향</strong><p>{risk.studentImpact}</p></div>
+                    <div className="signalList signalList-compact">
+                      {(risk.watchSignals ?? []).map((signal) => (
+                        <span key={`${risk.id}-${signal}`} className="linkedCardChip linkedCardChip-risk">{signal}</span>
+                      ))}
+                    </div>
                     <strong>권장 개입</strong>
                     <p>{risk.recommendedIntervention}</p>
                   </article>
                 ))}
               </div>
             ) : (
-              <p className="emptyPanelText">아직 포착된 위험은 없습니다.</p>
+              <p className="emptyPanelText">아직 주요 위험이 없습니다.</p>
             )}
           </section>
 
           <section className="panel">
             <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Session History</p>
-                <h2>저장된 실행 기록</h2>
-              </div>
+              <div><p className="sectionTag">Session History</p><h2>저장된 실행 기록</h2></div>
               <p className="panelHint">이전 세션을 불러와 성찰 일지를 이어서 수정할 수 있습니다.</p>
             </div>
             {designSessions.length ? (
@@ -798,12 +874,10 @@ export function SimulationWorkspace() {
                   <article key={session.id} className="historyCard">
                     <div className="historyCardBody">
                       <strong>{formatSessionLabel(session)}</strong>
-                      <p>에피소드 {session.scenario?.episodes.length ?? 0}개 · 턴 {session.turns.length}개 · 위험 {session.risks.length}개</p>
+                      <p>페르소나 {session.scenario?.studentPersonas.length ?? 0}명 · 활동 {session.turns.length}개 · 위험 {session.risks.length}개</p>
                       <span>{formatSyncTime(session.updatedAt)}</span>
                     </div>
-                    <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>
-                      이 세션 불러오기
-                    </button>
+                    <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>세션 불러오기</button>
                   </article>
                 ))}
               </div>
@@ -815,22 +889,10 @@ export function SimulationWorkspace() {
       </section>
 
       <footer className="statusBar statusBarFull">
-        <div>
-          <strong>현재 세션</strong>
-          <span>{simulationRunId ?? "아직 실행 전"}</span>
-        </div>
-        <div>
-          <strong>에피소드 수</strong>
-          <span>{scenario?.episodes.length ?? 0}개</span>
-        </div>
-        <div>
-          <strong>서버 저장 세션</strong>
-          <span>{designSessions.length}개</span>
-        </div>
-        <div>
-          <strong>상태 메시지</strong>
-          <span>{message}</span>
-        </div>
+        <div><strong>현재 세션</strong><span>{simulationRunId ?? "아직 실행 전"}</span></div>
+        <div><strong>에피소드 수</strong><span>{scenario?.episodes.length ?? 0}개</span></div>
+        <div><strong>서버 저장 세션</strong><span>{designSessions.length}개</span></div>
+        <div><strong>상태 메시지</strong><span>{message}</span></div>
       </footer>
     </main>
   );

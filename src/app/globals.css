@@ -2136,3 +2136,144 @@ body {
     grid-template-columns: 1fr;
   }
 }
+.personaGrid,
+.scenarioSubGrid,
+.turnDetailGrid,
+.artifactList,
+.interventionList,
+.outcomeLinkList,
+.personaResponseList,
+.signalList {
+  display: grid;
+  gap: 12px;
+}
+
+.personaGrid,
+.scenarioSubGrid,
+.turnDetailGrid,
+.outcomeLinkList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.personaCard,
+.artifactCard,
+.interventionCard,
+.outcomeLinkCard,
+.responseCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(156, 188, 248, 0.26);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.personaCardHead,
+.artifactHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.personaCardHead span,
+.artifactHead span,
+.interventionCard span,
+.responseCard span,
+.riskActivityLabel {
+  font-size: 0.82rem;
+  color: var(--accent-strong);
+}
+
+.miniBulletList {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.miniBulletList li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(244, 248, 255, 0.92);
+}
+
+.miniBulletList strong,
+.artifactCard strong,
+.interventionCard strong,
+.outcomeLinkCard strong,
+.responseCard strong,
+.riskMetaBlock strong {
+  font-size: 0.9rem;
+}
+
+.scenarioContrastGrid-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.scenarioContrastCard-neutral {
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+}
+
+.artifactCard-strong {
+  background: #eff6ff;
+}
+
+.artifactCard-mixed {
+  background: #f8fbff;
+}
+
+.artifactCard-weak {
+  background: #fff7ed;
+}
+
+.signalList {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.signalList-compact {
+  margin: 10px 0 12px;
+}
+
+.linkedCardChip-persona {
+  background: #eff6ff;
+  color: var(--accent-strong);
+}
+
+.linkedCardChip-risk {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.riskMetaBlock {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.92);
+}
+
+.reportPersonaGrid,
+.reportScenarioDetailGrid {
+  margin-top: 14px;
+}
+
+.reportContrastCard-neutral {
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+}
+
+@media (max-width: 860px) {
+  .personaGrid,
+  .scenarioSubGrid,
+  .turnDetailGrid,
+  .scenarioContrastGrid-three,
+  .outcomeLinkList {
+    grid-template-columns: 1fr;
+  }
+}

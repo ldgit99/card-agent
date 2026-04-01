@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 export const designAnalysisSchema = z.object({
   summary: z.string(),
@@ -7,11 +7,48 @@ export const designAnalysisSchema = z.object({
   recommendations: z.array(z.string()),
 });
 
+export const studentPersonaSchema = z.object({
+  name: z.string(),
+  label: z.string(),
+  profile: z.string(),
+  strength: z.string(),
+  watchPoint: z.string(),
+  aiTendency: z.string(),
+  supportNeed: z.string(),
+  likelyUtterance: z.string(),
+});
+
+export const simulationArtifactSchema = z.object({
+  type: z.enum(["student_note", "discussion_quote", "ai_prompt", "ai_output", "assessment_excerpt"]),
+  title: z.string(),
+  studentPersonaId: z.string().nullable(),
+  content: z.string(),
+  quality: z.enum(["strong", "mixed", "weak"]),
+  insight: z.string(),
+});
+
+export const teacherInterventionSchema = z.object({
+  title: z.string(),
+  timing: z.string(),
+  move: z.string(),
+  expectedImpact: z.string(),
+  linkedCardIds: z.array(z.string()),
+});
+
+export const cardOutcomeLinkSchema = z.object({
+  cardId: z.string(),
+  cardTitle: z.string(),
+  actor: z.enum(["teacher", "ai"]),
+  influence: z.string(),
+  resultingChange: z.string(),
+});
+
 export const simulationEpisodeSchema = z.object({
   title: z.string(),
   lens: z.string(),
   narrative: z.string(),
   successScene: z.string(),
+  ordinaryScene: z.string(),
   challengeScene: z.string(),
   humanAgencyFocus: z.string(),
   aiAgencyFocus: z.string(),
@@ -19,6 +56,10 @@ export const simulationEpisodeSchema = z.object({
   possibleTension: z.string(),
   relatedActivityId: z.string().nullable(),
   linkedCardIds: z.array(z.string()),
+  featuredPersonaIds: z.array(z.string()),
+  sampleArtifacts: z.array(simulationArtifactSchema),
+  teacherInterventions: z.array(teacherInterventionSchema),
+  cardOutcomeLinks: z.array(cardOutcomeLinkSchema),
 });
 
 export const simulationScenarioSchema = z.object({
@@ -26,7 +67,15 @@ export const simulationScenarioSchema = z.object({
   setting: z.string(),
   learningArc: z.string(),
   facilitatorBrief: z.string(),
+  studentPersonas: z.array(studentPersonaSchema),
   episodes: z.array(simulationEpisodeSchema),
+});
+
+export const personaResponseSchema = z.object({
+  personaId: z.string(),
+  personaName: z.string(),
+  response: z.string(),
+  learningSignal: z.string(),
 });
 
 export const simulationTurnSchema = z.object({
@@ -41,6 +90,11 @@ export const simulationTurnSchema = z.object({
   missedOpportunities: z.array(z.string()),
   linkedCardIds: z.array(z.string()),
   observerNote: z.string(),
+  studentPersonaResponses: z.array(personaResponseSchema),
+  sampleArtifacts: z.array(simulationArtifactSchema),
+  teacherInterventions: z.array(teacherInterventionSchema),
+  cardOutcomeLinks: z.array(cardOutcomeLinkSchema),
+  activityRiskSignals: z.array(z.string()),
 });
 
 export const riskSchema = z.object({
@@ -52,12 +106,20 @@ export const riskSchema = z.object({
     "NO_HUMAN_FINAL_DECISION",
     "PSYCHOLOGICAL_SAFETY_RISK",
     "CARD_BEHAVIOR_MISMATCH",
+    "PARTICIPATION_IMBALANCE",
+    "ASSESSMENT_MISMATCH",
   ]),
   severity: z.enum(["low", "medium", "high"]),
   evidenceTurnIds: z.array(z.string()),
   rationale: z.string(),
   recommendedIntervention: z.string(),
   relatedCardIds: z.array(z.string()),
+  activityId: z.string().nullable(),
+  activityTitle: z.string().nullable(),
+  scenarioEpisodeId: z.string().nullable(),
+  focusArea: z.string(),
+  studentImpact: z.string(),
+  watchSignals: z.array(z.string()),
 });
 
 export const risksResponseSchema = z.object({

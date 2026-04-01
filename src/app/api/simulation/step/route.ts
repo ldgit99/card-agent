@@ -1,8 +1,23 @@
-import { simulationTurnSchema } from "@/lib/ai/schemas";
+﻿import { simulationTurnSchema } from "@/lib/ai/schemas";
 import { hasOpenAIKey, parseStructuredResponse } from "@/lib/ai/openai";
 import { createHeuristicTurn } from "@/lib/orchestration";
 import type { LessonActivity, LessonDesign, SimulationScenario, SimulationTurn } from "@/types/lesson";
 import { NextResponse } from "next/server";
+
+function resolvePersonaId(
+  scenario: SimulationScenario | null,
+  rawPersonaId: string,
+) {
+  if (!scenario) {
+    return rawPersonaId;
+  }
+
+  const match = scenario.studentPersonas.find((persona) => {
+    return persona.id === rawPersonaId || persona.name === rawPersonaId || persona.label === rawPersonaId;
+  });
+
+  return match?.id ?? rawPersonaId;
+}
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +53,7 @@ export async function POST(request: Request) {
           schemaName: "simulation_turn",
           model: process.env.OPENAI_MODEL_FAST ?? "gpt-5.4-mini",
           system:
-            "당신은 교사의 모의수업 시뮬레이션 코치다. 주어진 활동, 카드 배치, 시나리오 episode를 바탕으로 교사 행동, AI 행동, 학생 반응, 증거, 놓친 기회를 구체적으로 생성하라. 인간의 최종 판단과 깊이 있는 학습 여부를 계속 추적하라.",
+            "당신은 교사를 위한 한국어 모의수업 코치다. 주어진 활동, 카드 배치, 시나리오 episode를 바탕으로 교사 행동, AI 행동, 학생 페르소나 반응, 학생 산출물 예시, 활동별 위험 신호, 교사 개입 추천을 구체적으로 생성하라. 모든 출력은 한국어로 작성하고, 카드 배치가 실제 결과에 어떤 영향을 주는지 드러내라.",
           payload: {
             designMeta: design.meta,
             scenario,
@@ -53,6 +68,19 @@ export async function POST(request: Request) {
               ...turn,
               id: crypto.randomUUID(),
               simulationRunId,
+              studentPersonaResponses: turn.studentPersonaResponses.map((item) => ({
+                ...item,
+                personaId: resolvePersonaId(scenario, item.personaId),
+              })),
+              sampleArtifacts: turn.sampleArtifacts.map((artifact) => ({
+                id: crypto.randomUUID(),
+                ...artifact,
+                studentPersonaId: artifact.studentPersonaId ? resolvePersonaId(scenario, artifact.studentPersonaId) : null,
+              })),
+              teacherInterventions: turn.teacherInterventions.map((item) => ({
+                id: crypto.randomUUID(),
+                ...item,
+              })),
               engine: "openai" as const,
             },
           });

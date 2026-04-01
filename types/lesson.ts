@@ -1,4 +1,4 @@
-export type CardActor = "teacher" | "ai";
+﻿export type CardActor = "teacher" | "ai";
 
 export type RiskType =
   | "AI_OVER_RELIANCE"
@@ -7,7 +7,9 @@ export type RiskType =
   | "UNCLEAR_ACCOUNTABILITY"
   | "NO_HUMAN_FINAL_DECISION"
   | "PSYCHOLOGICAL_SAFETY_RISK"
-  | "CARD_BEHAVIOR_MISMATCH";
+  | "CARD_BEHAVIOR_MISMATCH"
+  | "PARTICIPATION_IMBALANCE"
+  | "ASSESSMENT_MISMATCH";
 
 export type InferenceEngine = "heuristic" | "openai";
 
@@ -74,12 +76,59 @@ export interface DesignAnalysis {
   engine: InferenceEngine;
 }
 
+export interface StudentPersona {
+  id: string;
+  name: string;
+  label: string;
+  profile: string;
+  strength: string;
+  watchPoint: string;
+  aiTendency: string;
+  supportNeed: string;
+  likelyUtterance: string;
+}
+
+export interface SimulationArtifactExample {
+  id: string;
+  type: "student_note" | "discussion_quote" | "ai_prompt" | "ai_output" | "assessment_excerpt";
+  title: string;
+  studentPersonaId: string | null;
+  content: string;
+  quality: "strong" | "mixed" | "weak";
+  insight: string;
+}
+
+export interface TeacherInterventionOption {
+  id: string;
+  title: string;
+  timing: string;
+  move: string;
+  expectedImpact: string;
+  linkedCardIds: string[];
+}
+
+export interface CardOutcomeLink {
+  cardId: string;
+  cardTitle: string;
+  actor: CardActor;
+  influence: string;
+  resultingChange: string;
+}
+
+export interface PersonaResponse {
+  personaId: string;
+  personaName: string;
+  response: string;
+  learningSignal: string;
+}
+
 export interface SimulationEpisode {
   id: string;
   title: string;
   lens: string;
   narrative: string;
   successScene: string;
+  ordinaryScene: string;
   challengeScene: string;
   humanAgencyFocus: string;
   aiAgencyFocus: string;
@@ -87,6 +136,10 @@ export interface SimulationEpisode {
   possibleTension: string;
   relatedActivityId: string | null;
   linkedCardIds: string[];
+  featuredPersonaIds: string[];
+  sampleArtifacts: SimulationArtifactExample[];
+  teacherInterventions: TeacherInterventionOption[];
+  cardOutcomeLinks: CardOutcomeLink[];
 }
 
 export interface SimulationScenario {
@@ -96,6 +149,7 @@ export interface SimulationScenario {
   setting: string;
   learningArc: string;
   facilitatorBrief: string;
+  studentPersonas: StudentPersona[];
   episodes: SimulationEpisode[];
   engine: InferenceEngine;
 }
@@ -114,6 +168,11 @@ export interface SimulationTurn {
   missedOpportunities: string[];
   linkedCardIds: string[];
   observerNote: string;
+  studentPersonaResponses: PersonaResponse[];
+  sampleArtifacts: SimulationArtifactExample[];
+  teacherInterventions: TeacherInterventionOption[];
+  cardOutcomeLinks: CardOutcomeLink[];
+  activityRiskSignals: string[];
   engine: InferenceEngine;
 }
 
@@ -125,6 +184,12 @@ export interface DetectedRisk {
   rationale: string;
   recommendedIntervention: string;
   relatedCardIds: string[];
+  activityId: string | null;
+  activityTitle: string | null;
+  scenarioEpisodeId: string | null;
+  focusArea: string;
+  studentImpact: string;
+  watchSignals: string[];
 }
 
 export interface SimulationRun {
