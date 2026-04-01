@@ -3,6 +3,7 @@ import type { RiskType } from "@/types/lesson";
 export const STORAGE_KEYS = {
   design: "teacher-orchestration-agent:design",
   simulation: "teacher-orchestration-agent:simulation",
+  report: "teacher-orchestration-agent:report",
 } as const;
 
 export const riskLabels: Record<RiskType, string> = {

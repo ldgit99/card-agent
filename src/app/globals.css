@@ -1883,3 +1883,208 @@ body {
     grid-template-columns: 1fr;
   }
 }
+.reportShell {
+  width: min(1220px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 56px;
+}
+
+.reportToolbar,
+.reportSection,
+.reportCard,
+.reportMiniBlock,
+.reportMetricCard,
+.reportEmptyState {
+  background: #ffffff;
+  border: 1px solid rgba(219, 234, 254, 0.96);
+  box-shadow: var(--shadow-sm);
+}
+
+.reportToolbar,
+.reportSection,
+.reportEmptyState {
+  padding: 22px;
+  border-radius: 24px;
+  margin-bottom: 18px;
+}
+
+.reportToolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.reportToolbarActions {
+  justify-content: flex-end;
+}
+
+.reportHeroSection h2,
+.reportCard h3,
+.reportEmptyState h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
+}
+
+.reportMetaGrid,
+.reportGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.reportMetaGrid,
+.reportGridThree {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reportGridTwo {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reportMetricCard,
+.reportCard,
+.reportMiniBlock {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
+}
+
+.reportMetricCard span,
+.reportChip {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reportMetricCard strong {
+  font-size: 1rem;
+}
+
+.reportTableWrap {
+  overflow-x: auto;
+  margin-top: 14px;
+}
+
+.reportTable {
+  min-width: 960px;
+}
+
+.reportChipWrap,
+.reportEpisodeHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.reportChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: var(--accent-strong);
+}
+
+.reportChipMuted {
+  background: #f4f4f5;
+  color: #71717a;
+}
+
+.reportStack {
+  display: grid;
+  gap: 14px;
+}
+
+.reportSummaryCard p,
+.reportCard p,
+.reportMiniBlock p,
+.reportDetailList span,
+.reportAnswerBlock {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.reportDetailList {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.reportDetailList li {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid rgba(219, 234, 254, 0.88);
+}
+
+.reportMiniBlock {
+  background: #f8fbff;
+}
+
+.reportAnswerBlock {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid rgba(219, 234, 254, 0.88);
+  white-space: pre-wrap;
+}
+
+.reportRiskCard-high {
+  border-color: rgba(220, 38, 38, 0.24);
+}
+
+.reportRiskCard-medium {
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.reportRiskCard-low {
+  border-color: rgba(37, 99, 235, 0.24);
+}
+
+.printHidden {
+  display: flex;
+}
+
+@media (max-width: 980px) {
+  .reportToolbar,
+  .reportToolbarActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reportMetaGrid,
+  .reportGridThree,
+  .reportGridTwo {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .printHidden {
+    display: none !important;
+  }
+
+  .reportShell {
+    width: 100%;
+    padding: 0;
+  }
+
+  .reportSection,
+  .reportCard,
+  .reportMiniBlock,
+  .reportMetricCard,
+  .reportEmptyState {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

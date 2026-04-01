@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { normalizeLessonDesignDraft, parseMultilineField } from "@/lib/design";
 import { riskLabels } from "@/lib/constants";
-import { buildReflectionMarkdown } from "@/lib/orchestration";
+import { buildSimulationReportSnapshot } from "@/lib/report";
 import {
   loadStoredDesign,
+  loadStoredReport,
   loadStoredSimulation,
   saveStoredDesign,
+  saveStoredReport,
   saveStoredSimulation,
 } from "@/lib/storage";
 import {
@@ -176,6 +178,7 @@ export function SimulationWorkspace() {
     async function hydrateWorkspace() {
       const storedDesign = loadStoredDesign();
       const storedSimulation = loadStoredSimulation();
+      const storedReport = loadStoredReport();
 
       try {
         const snapshot = await fetchWorkspaceSnapshot();
@@ -198,7 +201,9 @@ export function SimulationWorkspace() {
           nextDesign
             ? snapshot.latestSession
               ? "서버 저장본과 가장 최근 시뮬레이션 세션을 불러왔습니다."
-              : "설계본을 불러왔습니다. 이제 모의수업을 실행해 보세요."
+              : storedReport
+                ? "브라우저에 저장된 리포트와 설계 상태가 있습니다. 필요하면 리포트를 다시 저장해 보세요."
+                : "설계본을 불러왔습니다. 이제 모의수업을 실행해 보세요."
             : "저장된 설계가 없습니다. 1페이지에서 수업 설계를 먼저 작성해 주세요.",
         );
       } catch {
@@ -206,7 +211,7 @@ export function SimulationWorkspace() {
           return;
         }
 
-        setDesign(storedDesign);
+        setDesign(storedDesign ? normalizeLessonDesignDraft(storedDesign) : null);
         if (storedSimulation) {
           applyStoredSimulationState(storedSimulation);
         }
@@ -277,7 +282,6 @@ export function SimulationWorkspace() {
 
       const runId = crypto.randomUUID();
       setSimulationRunId(runId);
-
       setMessage("수업 시나리오와 핵심 에피소드를 구성하는 중입니다.");
 
       const scenarioResponse = await fetch("/api/simulation/scenario", {
@@ -420,12 +424,17 @@ export function SimulationWorkspace() {
     setMessage(`${formatSessionLabel(session)} 세션을 작업 화면으로 불러왔습니다.`);
   }
 
-  function exportReflection() {
+  function saveReport() {
     if (!design) {
       return;
     }
 
-    const markdown = buildReflectionMarkdown({
+    if (!scenario && !turns.length && !questions.length) {
+      setMessage("먼저 모의수업 실행 후 리포트를 저장해 주세요.");
+      return;
+    }
+
+    const report = buildSimulationReportSnapshot({
       design,
       analysis,
       scenario,
@@ -437,20 +446,20 @@ export function SimulationWorkspace() {
       nextRevisionNotes: parseMultilineField(nextRevisionText),
     });
 
-    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${design.meta.topic || "수업-성찰"}-reflection.md`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setMessage("성찰 일지를 markdown 파일로 저장했습니다.");
+    saveStoredReport(report);
+    const opened = window.open("/report", "_blank", "noopener,noreferrer");
+
+    if (!opened) {
+      setMessage("팝업이 차단되어 리포트를 새 탭으로 열지 못했습니다. /report 페이지를 직접 열어 주세요.");
+      return;
+    }
+
+    setMessage("리포트를 새 탭에서 열었습니다. 페이지에서 PDF로 저장하거나 HTML을 다운로드할 수 있습니다.");
   }
 
   const highRiskCount = risks.filter((risk) => risk.severity === "high").length;
   const mediumRiskCount = risks.filter((risk) => risk.severity === "medium").length;
   const lowRiskCount = risks.filter((risk) => risk.severity === "low").length;
-  const linkedCardCount = new Set(turns.flatMap((turn) => turn.linkedCardIds)).size;
 
   if (!design) {
     return (
@@ -478,8 +487,8 @@ export function SimulationWorkspace() {
           <p className="eyebrow">Step 2</p>
           <h1>모의수업 실행과 성찰 일지</h1>
           <p className="heroCopy">
-            설계안을 바탕으로 Human-AI agency, 깊이 있는 학습, 책임 구조가 실제 수업에서 어떻게 드러나는지
-            시뮬레이션합니다. 먼저 수업 시나리오와 에피소드를 제시하고, 이어서 실행 로그와 위험, 성찰 질문을 생성합니다.
+            설계안을 바탕으로 Human-AI agency, 깊이 있는 학습, 책임 구조가 실제 수업에서 어떻게 드러나는지 시뮬레이션합니다.
+            먼저 수업 시나리오와 에피소드를 제시하고, 이어서 실행 로그와 위험, 성찰 질문을 생성합니다.
           </p>
           <div className="heroActions">
             <button type="button" className="primaryButton" onClick={runSimulation}>
@@ -488,14 +497,16 @@ export function SimulationWorkspace() {
             <button type="button" className="secondaryButton" onClick={persistReflectionToServer}>
               {isSavingReflection ? "성찰 저장 중..." : "성찰 서버 저장"}
             </button>
-            <button type="button" className="secondaryButton" onClick={exportReflection}>성찰 일지 내보내기</button>
+            <button type="button" className="secondaryButton" onClick={saveReport}>
+              리포트 저장하기
+            </button>
             <Link href="/" className="ghostButton">1페이지로 돌아가기</Link>
           </div>
         </div>
         <div className="heroStatRack">
           <article className="heroStatCard"><span>모의 활동</span><strong>{design.activities.length}</strong></article>
           <article className="heroStatCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
-          <article className="heroStatCard"><span>탐지 위험</span><strong>{risks.length}</strong></article>
+          <article className="heroStatCard"><span>포착 위험</span><strong>{risks.length}</strong></article>
         </div>
       </section>
 
@@ -535,7 +546,7 @@ export function SimulationWorkspace() {
                       <strong>{scenario.facilitatorBrief}</strong>
                     </article>
                     <article className="scenarioMetaCard">
-                      <span>시나리오 엔진</span>
+                      <span>엔진</span>
                       <strong>{scenario.engine}</strong>
                     </article>
                   </div>
@@ -588,7 +599,7 @@ export function SimulationWorkspace() {
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Simulation Log</p>
-                <h2>수업 실행 로그</h2>
+                <h2>모의 수업 실행 결과</h2>
               </div>
               <p className="panelHint">{message}</p>
             </div>
@@ -617,10 +628,7 @@ export function SimulationWorkspace() {
                         <div><dt>교사 행동</dt><dd>{turn.teacherAction}</dd></div>
                         <div><dt>AI 행동</dt><dd>{turn.aiAction}</dd></div>
                         <div><dt>예상 학생 반응</dt><dd>{turn.expectedStudentResponse}</dd></div>
-                        <div>
-                          <dt>놓친 기회</dt>
-                          <dd>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "특별한 누락 없음"}</dd>
-                        </div>
+                        <div><dt>놓친 기회</dt><dd>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "특별한 누락 없음"}</dd></div>
                       </dl>
                       <div className="evidenceList">
                         {turn.evidenceObserved.map((item) => (
@@ -651,7 +659,7 @@ export function SimulationWorkspace() {
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Reflection Journal</p>
-                <h2>질문 응답과 수정 계획</h2>
+                <h2>성찰 질문과 응답</h2>
               </div>
               <p className="panelHint">응답은 브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 남길 수 있습니다.</p>
             </div>
@@ -693,7 +701,7 @@ export function SimulationWorkspace() {
                 </label>
                 <label className="reflectionQuestionCard reflectionSummaryCard">
                   <span>다음 수정 체크리스트</span>
-                  <small>한 줄에 하나씩 적으면 markdown 내보내기에도 그대로 반영됩니다.</small>
+                  <small>한 줄에 하나씩 적으면 리포트에도 그대로 반영됩니다.</small>
                   <textarea
                     rows={5}
                     value={nextRevisionText}
@@ -722,8 +730,8 @@ export function SimulationWorkspace() {
             </div>
             <div className="snapshotList">
               <div>
-                <strong>학습목표</strong>
-                <span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습목표가 없습니다."}</span>
+                <strong>학습 목표</strong>
+                <span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span>
               </div>
             </div>
             {analysis ? (
@@ -780,9 +788,7 @@ export function SimulationWorkspace() {
                   <article key={session.id} className="historyCard">
                     <div className="historyCardBody">
                       <strong>{formatSessionLabel(session)}</strong>
-                      <p>
-                        에피소드 {session.scenario?.episodes.length ?? 0}개 · 턴 {session.turns.length}개 · 위험 {session.risks.length}개
-                      </p>
+                      <p>에피소드 {session.scenario?.episodes.length ?? 0}개 · 턴 {session.turns.length}개 · 위험 {session.risks.length}개</p>
                       <span>{formatSyncTime(session.updatedAt)}</span>
                     </div>
                     <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>

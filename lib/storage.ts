@@ -1,5 +1,6 @@
 import { STORAGE_KEYS } from "@/lib/constants";
 import type { LessonDesign } from "@/types/lesson";
+import type { SimulationReportSnapshot } from "@/types/report";
 import type { StoredSimulationState } from "@/types/workspace";
 
 function readJSON<T>(key: string): T | null {
@@ -41,4 +42,12 @@ export function loadStoredSimulation(): StoredSimulationState | null {
 
 export function saveStoredSimulation(value: StoredSimulationState) {
   writeJSON(STORAGE_KEYS.simulation, value);
+}
+
+export function loadStoredReport(): SimulationReportSnapshot | null {
+  return readJSON<SimulationReportSnapshot>(STORAGE_KEYS.report);
+}
+
+export function saveStoredReport(value: SimulationReportSnapshot) {
+  writeJSON(STORAGE_KEYS.report, value);
 }
