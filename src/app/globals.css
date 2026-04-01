@@ -976,3 +976,271 @@ a {
     min-height: 56px;
   }
 }
+.heroStatRack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-width: min(360px, 100%);
+}
+
+.heroStatCard {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(156, 188, 248, 0.34);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 245, 255, 0.9));
+  box-shadow: var(--shadow-sm);
+}
+
+.heroStatCard span,
+.selectionStat span,
+.stageChip span,
+.snapshotMetric span,
+.riskSummaryCard span {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.heroStatCard strong,
+.selectionStat strong,
+.stageChip strong,
+.snapshotMetric strong,
+.riskSummaryCard strong {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+}
+
+.tableStageBar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stageChip {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(156, 188, 248, 0.32);
+  background: rgba(244, 248, 255, 0.88);
+}
+
+.selectionWorkspace {
+  display: grid;
+  gap: 16px;
+}
+
+.selectionHero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.98), rgba(255, 255, 255, 0.94));
+  border: 1px solid rgba(156, 188, 248, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+.selectionHero h3 {
+  margin: 8px 0;
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.selectionHero p,
+.detailSectionHeader p,
+.reflectionColumnHeader p,
+.timelineObserverNote p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.selectionEyebrow,
+.sectionMicroTag {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.selectionHeroBadge {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
+  color: white;
+  font-weight: 800;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+}
+
+.selectionStatsGrid,
+.snapshotMetricGrid,
+.riskSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.selectionStat,
+.snapshotMetric,
+.riskSummaryCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(156, 188, 248, 0.26);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.detailSection {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(156, 188, 248, 0.24);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.detailSectionSoft {
+  background: rgba(246, 249, 255, 0.88);
+}
+
+.detailSectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.detailSectionHeader h3,
+.reflectionColumnHeader h3 {
+  margin: 8px 0 0;
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
+}
+
+.libraryColumn {
+  display: grid;
+  gap: 14px;
+}
+
+.libraryColumnHeader,
+.reflectionColumnHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timelineRail {
+  gap: 16px;
+}
+
+.linkedCardList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.linkedCardChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(224, 231, 255, 0.9);
+  color: var(--accent-strong);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.timelineObserverNote {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(156, 188, 248, 0.22);
+}
+
+.timelineObserverNote strong {
+  font-weight: 800;
+}
+
+.reflectionSplit {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 18px;
+}
+
+.reflectionColumn,
+.reflectionStack {
+  display: grid;
+  gap: 14px;
+}
+
+.reflectionSummaryCard {
+  align-content: start;
+}
+
+.simulationStageBar .stageChip strong {
+  font-size: 1.1rem;
+}
+
+.riskSummaryCard-high {
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.98), rgba(255, 255, 255, 0.92));
+}
+
+.riskSummaryCard-medium {
+  background: linear-gradient(180deg, rgba(255, 247, 237, 0.98), rgba(255, 255, 255, 0.92));
+}
+
+.riskSummaryCard-low {
+  background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(255, 255, 255, 0.92));
+}
+
+.statusBarFull {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1180px) {
+  .heroStatRack,
+  .tableStageBar,
+  .selectionStatsGrid,
+  .snapshotMetricGrid,
+  .riskSummaryGrid,
+  .reflectionSplit,
+  .statusBarFull {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .heroStatRack,
+  .selectionStatsGrid,
+  .snapshotMetricGrid,
+  .riskSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .selectionHero,
+  .detailSectionHeader,
+  .libraryColumnHeader,
+  .reflectionColumnHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

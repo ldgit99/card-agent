@@ -6,8 +6,8 @@ export const orchestrationCards: OrchestrationCard[] = [
     actor: "teacher",
     category: "사고 촉진",
     title: "사고 확장",
-    prompt: "왜 그렇게 생각했나요?",
-    intent: "사고를 깊게 확장한다.",
+    prompt: "왜 그렇게 생각하나요?",
+    intent: "학생의 사고를 더 깊고 넓게 확장한다.",
   },
   {
     id: "T02",
@@ -15,7 +15,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "사고 촉진",
     title: "비교 질문",
     prompt: "다른 방법도 있을까요?",
-    intent: "다양한 해결 방법을 탐색한다.",
+    intent: "다양한 해결 방법을 탐색하게 한다.",
   },
   {
     id: "T03",
@@ -23,7 +23,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "사고 촉진",
     title: "관점 전환",
     prompt: "다른 입장에서 보면 어떨까요?",
-    intent: "관점을 확장한다.",
+    intent: "관점을 바꿔 보며 문제를 다시 보게 한다.",
   },
   {
     id: "T04",
@@ -31,7 +31,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "사고 촉진",
     title: "예측 질문",
     prompt: "어떻게 될 것 같나요?",
-    intent: "가설을 생성한다.",
+    intent: "가설을 세우고 예측하게 한다.",
   },
   {
     id: "T05",
@@ -39,7 +39,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "AI 판단",
     title: "AI 비교 질문",
     prompt: "AI의 답과 우리의 생각은 어떻게 다른가요?",
-    intent: "인간과 AI를 비교한다.",
+    intent: "인간의 생각과 AI의 제안을 비교하게 한다.",
   },
   {
     id: "T06",
@@ -47,15 +47,15 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "AI 판단",
     title: "AI 신뢰 점검",
     prompt: "이 AI 결과를 얼마나 믿을 수 있을까요?",
-    intent: "비판적 판단을 유도한다.",
+    intent: "AI 결과를 비판적으로 점검하게 한다.",
   },
   {
     id: "T07",
     actor: "teacher",
     category: "AI 판단",
     title: "AI 선택 판단",
-    prompt: "여러 AI 답 중 어떤 것이 가장 적절한가요?",
-    intent: "선택과 평가를 수행한다.",
+    prompt: "여러 AI 안 중 어떤 것이 가장 적절한가요?",
+    intent: "AI 제안들을 비교하고 선택하게 한다.",
   },
   {
     id: "T08",
@@ -63,39 +63,39 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "AI 판단",
     title: "AI 의존 조절",
     prompt: "AI 없이도 해결할 수 있을까요?",
-    intent: "학습 주도성을 유지한다.",
+    intent: "학습 주도성과 독립적 사고를 유지하게 한다.",
   },
   {
     id: "T09",
     actor: "teacher",
-    category: "협력",
-    title: "역할 재조정",
-    prompt: "역할을 바꿔서 다시 해봅시다.",
-    intent: "협력의 유연성을 만든다.",
+    category: "협력 설계",
+    title: "역할 조정",
+    prompt: "역할을 바꾸어 다시 해봅시다.",
+    intent: "협력 구조를 유연하게 재조정한다.",
   },
   {
     id: "T10",
     actor: "teacher",
-    category: "협력",
+    category: "협력 설계",
     title: "근거 기반 토론",
     prompt: "왜 그렇게 생각하는지 설명해봅시다.",
-    intent: "논증을 강화한다.",
+    intent: "주장과 근거를 연결해 추론을 강화한다.",
   },
   {
     id: "T11",
     actor: "teacher",
     category: "모니터링",
     title: "이해 점검",
-    prompt: "여기까지 이해됐나요?",
-    intent: "학습 상태를 확인한다.",
+    prompt: "여기까지 이해했나요?",
+    intent: "학생의 현재 이해 상태를 확인한다.",
   },
   {
     id: "T12",
     actor: "teacher",
-    category: "지원",
+    category: "모니터링",
     title: "전략 비교",
     prompt: "어떤 방법이 더 효과적일까요?",
-    intent: "전략적으로 판단한다.",
+    intent: "전략을 비교하며 더 나은 선택을 돕는다.",
   },
   {
     id: "T13",
@@ -103,7 +103,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "Agency",
     title: "최종 판단",
     prompt: "최종 결정은 우리가 내려봅시다.",
-    intent: "인간의 주도성을 명확히 한다.",
+    intent: "인간의 최종 판단 책임을 명확히 한다.",
   },
   {
     id: "T14",
@@ -111,7 +111,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "Agency",
     title: "책임 인식",
     prompt: "이 결과에 대해 우리는 어떻게 책임질 수 있을까요?",
-    intent: "책임 구조를 형성한다.",
+    intent: "행동과 결과의 책임 구조를 드러낸다.",
   },
   {
     id: "A15",
@@ -119,15 +119,15 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "생성",
     title: "대안 생성",
     prompt: "다양한 해결 방법을 제시합니다.",
-    intent: "선택 폭을 확장한다.",
+    intent: "교사와 학생이 선택할 수 있는 안을 넓혀 준다.",
   },
   {
     id: "A16",
     actor: "ai",
     category: "분석",
     title: "비교 분석",
-    prompt: "여러 답을 비교합니다.",
-    intent: "판단을 지원한다.",
+    prompt: "여러 답안을 비교합니다.",
+    intent: "비교 관점을 제공해 판단을 지원한다.",
   },
   {
     id: "A17",
@@ -135,7 +135,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "피드백",
     title: "피드백 제공",
     prompt: "결과에 대한 피드백을 제공합니다.",
-    intent: "개선을 지원한다.",
+    intent: "개선 방향을 빠르게 제안한다.",
   },
   {
     id: "A18",
@@ -143,7 +143,7 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "설명",
     title: "설명 제공",
     prompt: "개념을 설명합니다.",
-    intent: "이해를 지원한다.",
+    intent: "이해를 돕는 보조 설명을 제공한다.",
   },
   {
     id: "A19",
@@ -151,15 +151,15 @@ export const orchestrationCards: OrchestrationCard[] = [
     category: "탐구",
     title: "질문 제안",
     prompt: "더 좋은 질문을 제안합니다.",
-    intent: "탐구를 촉진한다.",
+    intent: "탐구를 이어갈 질문을 생성한다.",
   },
   {
     id: "A20",
     actor: "ai",
     category: "한계",
     title: "한계 명시",
-    prompt: "이 답의 한계를 설명합니다.",
-    intent: "비판적으로 활용하도록 돕는다.",
+    prompt: "답변의 한계를 설명합니다.",
+    intent: "AI를 비판적으로 사용하도록 돕는다.",
   },
 ];
 
@@ -168,4 +168,3 @@ export const teacherCards = orchestrationCards.filter(
 );
 
 export const aiCards = orchestrationCards.filter((card) => card.actor === "ai");
-

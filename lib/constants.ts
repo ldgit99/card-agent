@@ -16,4 +16,3 @@ export const riskLabels: Record<RiskType, string> = {
 };
 
 export const humanCriticalCards = ["T05", "T06", "T08", "T10", "T13", "T14"];
-
