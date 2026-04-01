@@ -1379,32 +1379,10 @@ a {
   background: rgba(37, 99, 235, 0.18);
 }
 
-.selectedActivityPanel {
-  margin-top: 18px;
-}
-
-.detailFormWide {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.detailFormSpan2 {
-  grid-column: span 2;
-}
-
 .cardLibraryBottomGrid {
   align-items: start;
 }
 
-@media (max-width: 1180px) {
-  .metaSupplementGrid,
-  .detailFormWide {
-    grid-template-columns: 1fr;
-  }
-
-  .detailFormSpan2 {
-    grid-column: span 1;
-  }
-}
 
 /* Reference UI override: togethertr.web.app */
 :root {
