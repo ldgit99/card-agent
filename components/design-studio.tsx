@@ -56,7 +56,12 @@ function DraggableCard({ card, onQuickAdd, disabled = false }: DraggableCardProp
         <h4>{card.title}</h4>
         <p className="libraryCardPrompt">{card.prompt}</p>
       </div>
-      <button type="button" className="ghostButton" onClick={() => onQuickAdd(card)} disabled={disabled}>
+      <button
+        type="button"
+        className="ghostButton"
+        onClick={() => onQuickAdd(card)}
+        disabled={disabled}
+      >
         배치
       </button>
     </article>
@@ -371,8 +376,8 @@ export function DesignStudio() {
             <p className="eyebrow">Harness-Based Teacher Agent</p>
             <h1>수업 설계 오케스트레이션 스튜디오</h1>
             <p className="heroCopy">
-              상단에서 주제, 교과, 대상, 성취기준, 학습 목표를 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를
-              배치합니다. 카드 라이브러리는 하단에 두고, 각 활동 행의 카드 열에 직접 드래그해 배치하도록 구성했습니다.
+              상단에서 주제, 교과, 대상, 성취기준, 학습 목표를 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
+              카드 라이브러리는 하단에 두고, 각 활동 행의 카드 열에 직접 드래그해 배치하도록 구성했습니다.
             </p>
             <div className="heroActions">
               <button type="button" className="primaryButton" onClick={analyzeDesign}>
@@ -390,9 +395,18 @@ export function DesignStudio() {
             </div>
           </div>
           <div className="heroStatRack">
-            <article className="heroStatCard"><span>설계 활동</span><strong>{design.activities.length}</strong></article>
-            <article className="heroStatCard"><span>교사 카드 배치</span><strong>{totalHumanAssignments}</strong></article>
-            <article className="heroStatCard"><span>AI 카드 배치</span><strong>{totalAiAssignments}</strong></article>
+            <article className="heroStatCard">
+              <span>설계 활동</span>
+              <strong>{design.activities.length}</strong>
+            </article>
+            <article className="heroStatCard">
+              <span>교사 카드 배치</span>
+              <strong>{totalHumanAssignments}</strong>
+            </article>
+            <article className="heroStatCard">
+              <span>AI 카드 배치</span>
+              <strong>{totalAiAssignments}</strong>
+            </article>
           </div>
         </section>
 
@@ -452,7 +466,6 @@ export function DesignStudio() {
               </label>
             </div>
           </section>
-
           <section className="panel">
             <div className="panelHeader">
               <div>
@@ -461,24 +474,39 @@ export function DesignStudio() {
               </div>
               <div className="inlineActions">
                 <span className="panelHint">평가 방법 옆 카드 열에서 행 단위 드래그 앤 드롭 배치를 수행합니다.</span>
-                <button type="button" className="ghostButton" onClick={addActivity}>활동 추가</button>
+                <button type="button" className="ghostButton" onClick={addActivity}>
+                  활동 추가
+                </button>
               </div>
             </div>
             <div className="tableStageBar">
-              <article className="stageChip"><span>현재 선택 활동</span><strong>{selectedActivity ? `${selectedActivity.order}차 활동 · ${getActivityHeading(selectedActivity)}` : "활동을 선택해 주세요"}</strong></article>
-              <article className="stageChip"><span>선택 활동 카드</span><strong>{selectedCardTotal}장 배치</strong></article>
-              <article className="stageChip"><span>설계 분석 상태</span><strong>{analysis ? "분석 완료" : "설계 작성 중"}</strong></article>
+              <article className="stageChip">
+                <span>현재 선택 활동</span>
+                <strong>
+                  {selectedActivity
+                    ? `${selectedActivity.order}차 활동 · ${getActivityHeading(selectedActivity)}`
+                    : "활동을 선택해 주세요"}
+                </strong>
+              </article>
+              <article className="stageChip">
+                <span>선택 활동 카드</span>
+                <strong>{selectedCardTotal}장 배치</strong>
+              </article>
+              <article className="stageChip">
+                <span>설계 분석 상태</span>
+                <strong>{analysis ? "분석 완료" : "설계 작성 중"}</strong>
+              </article>
             </div>
             <div className="tableWrap tableWrapWide">
               <table className="lessonTable lessonTableCards">
                 <thead>
                   <tr>
-                    <th>기능</th>
-                    <th>교과</th>
-                    <th>학습활동</th>
-                    <th>평가 방법</th>
-                    <th>교사 카드</th>
-                    <th>AI 카드</th>
+                    <th className="colFunction">기능</th>
+                    <th className="colSubject">교과</th>
+                    <th className="colLearningActivity">학습활동</th>
+                    <th className="colAssessment">평가 방법</th>
+                    <th className="colTeacherCards">교사 카드</th>
+                    <th className="colAiCards">AI 카드</th>
                     <th className="narrowCell">선택</th>
                   </tr>
                 </thead>
@@ -489,12 +517,18 @@ export function DesignStudio() {
                     const rowAiCards = findCards(activity.aiCardIds);
 
                     return (
-                      <tr key={activity.id} className={isSelected ? "selectedRow" : ""} onClick={() => setSelectedActivityId(activity.id)}>
+                      <tr
+                        key={activity.id}
+                        className={isSelected ? "selectedRow" : ""}
+                        onClick={() => setSelectedActivityId(activity.id)}
+                      >
                         <td>
                           <input
                             value={activity.functionLabel}
                             onFocus={() => setSelectedActivityId(activity.id)}
-                            onChange={(event) => updateActivity(activity.id, { functionLabel: event.target.value })}
+                            onChange={(event) =>
+                              updateActivity(activity.id, { functionLabel: event.target.value })
+                            }
                             placeholder="예: 조사하기"
                           />
                         </td>
@@ -502,7 +536,9 @@ export function DesignStudio() {
                           <input
                             value={activity.subjectLabel}
                             onFocus={() => setSelectedActivityId(activity.id)}
-                            onChange={(event) => updateActivity(activity.id, { subjectLabel: event.target.value })}
+                            onChange={(event) =>
+                              updateActivity(activity.id, { subjectLabel: event.target.value })
+                            }
                             placeholder="예: 과학(3)"
                           />
                         </td>
@@ -511,7 +547,9 @@ export function DesignStudio() {
                             rows={3}
                             value={activity.learningActivity}
                             onFocus={() => setSelectedActivityId(activity.id)}
-                            onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
+                            onChange={(event) =>
+                              updateActivity(activity.id, { learningActivity: event.target.value })
+                            }
                             placeholder="예: 지구온난화 원인과 영향을 조사하고 AI의 해석과 비교한다."
                           />
                         </td>
@@ -520,7 +558,9 @@ export function DesignStudio() {
                             rows={3}
                             value={activity.assessmentMethod}
                             onFocus={() => setSelectedActivityId(activity.id)}
-                            onChange={(event) => updateActivity(activity.id, { assessmentMethod: event.target.value })}
+                            onChange={(event) =>
+                              updateActivity(activity.id, { assessmentMethod: event.target.value })
+                            }
                             placeholder="예: 보고서 평가, 토론 참여 관찰"
                           />
                         </td>
@@ -584,7 +624,9 @@ export function DesignStudio() {
                     <textarea
                       rows={3}
                       value={selectedActivity.learningObjective}
-                      onChange={(event) => updateActivity(selectedActivity.id, { learningObjective: event.target.value })}
+                      onChange={(event) =>
+                        updateActivity(selectedActivity.id, { learningObjective: event.target.value })
+                      }
                       placeholder="학생이 이 활동에서 무엇을 이해하거나 판단해야 하는지 적어 주세요."
                     />
                   </label>
@@ -593,7 +635,9 @@ export function DesignStudio() {
                     <textarea
                       rows={3}
                       value={selectedActivity.teacherMove}
-                      onChange={(event) => updateActivity(selectedActivity.id, { teacherMove: event.target.value })}
+                      onChange={(event) =>
+                        updateActivity(selectedActivity.id, { teacherMove: event.target.value })
+                      }
                       placeholder="교사가 어느 시점에 어떤 질문과 피드백으로 조율할지 적습니다."
                     />
                   </label>
@@ -602,7 +646,11 @@ export function DesignStudio() {
                     <textarea
                       rows={3}
                       value={selectedActivity.tools.join("\n")}
-                      onChange={(event) => updateActivity(selectedActivity.id, { tools: parseMultilineField(event.target.value) })}
+                      onChange={(event) =>
+                        updateActivity(selectedActivity.id, {
+                          tools: parseMultilineField(event.target.value),
+                        })
+                      }
                       placeholder="예: ChatGPT, Padlet, 교과서"
                     />
                   </label>
@@ -611,7 +659,11 @@ export function DesignStudio() {
                     <textarea
                       rows={3}
                       value={selectedActivity.evidenceOfSuccess.join("\n")}
-                      onChange={(event) => updateActivity(selectedActivity.id, { evidenceOfSuccess: parseMultilineField(event.target.value) })}
+                      onChange={(event) =>
+                        updateActivity(selectedActivity.id, {
+                          evidenceOfSuccess: parseMultilineField(event.target.value),
+                        })
+                      }
                       placeholder="예: 학생 발화, 산출물, 근거 제시, 토론 참여"
                     />
                   </label>
@@ -642,27 +694,40 @@ export function DesignStudio() {
               <div className="analysisGrid">
                 <article>
                   <h3>강점</h3>
-                  <ul>{analysis.strengths.map((item) => <li key={item}>{item}</li>)}</ul>
+                  <ul>
+                    {analysis.strengths.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </article>
                 <article>
                   <h3>보완점</h3>
-                  <ul>{analysis.gaps.map((item) => <li key={item}>{item}</li>)}</ul>
+                  <ul>
+                    {analysis.gaps.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </article>
                 <article>
                   <h3>권장 수정</h3>
-                  <ul>{analysis.recommendations.map((item) => <li key={item}>{item}</li>)}</ul>
+                  <ul>
+                    {analysis.recommendations.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </article>
               </div>
             </section>
           ) : null}
-
           <section className="panel">
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Card Library</p>
                 <h2>하단 카드 라이브러리</h2>
               </div>
-              <p className="panelHint">원하는 활동 행의 카드 열로 바로 드래그하거나, 선택한 활동에 빠르게 배치할 수 있습니다.</p>
+              <p className="panelHint">
+                원하는 활동 행의 카드 열로 바로 드래그하거나, 선택한 활동에 빠르게 배치할 수 있습니다.
+              </p>
             </div>
             <div className="cardLibraryGrid cardLibraryBottomGrid">
               <section className="libraryColumn">
@@ -679,7 +744,9 @@ export function DesignStudio() {
                       key={card.id}
                       card={card}
                       disabled={!selectedActivity}
-                      onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
+                      onQuickAdd={(nextCard) =>
+                        selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined
+                      }
                     />
                   ))}
                 </div>
@@ -698,7 +765,9 @@ export function DesignStudio() {
                       key={card.id}
                       card={card}
                       disabled={!selectedActivity}
-                      onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
+                      onQuickAdd={(nextCard) =>
+                        selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined
+                      }
                     />
                   ))}
                 </div>
@@ -720,10 +789,16 @@ export function DesignStudio() {
                   <article key={`${historyItem.id}-${historyItem.version}`} className="historyCard">
                     <div className="historyCardBody">
                       <strong>{formatDesignLabel(historyItem)}</strong>
-                      <p>활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개</p>
+                      <p>
+                        활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개
+                      </p>
                       <span>{formatSyncTime(historyItem.updatedAt)}</span>
                     </div>
-                    <button type="button" className="tableActionButton" onClick={() => loadDesignVersion(historyItem)}>
+                    <button
+                      type="button"
+                      className="tableActionButton"
+                      onClick={() => loadDesignVersion(historyItem)}
+                    >
                       이 버전 불러오기
                     </button>
                   </article>
