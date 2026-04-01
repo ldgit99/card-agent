@@ -219,6 +219,16 @@ export function ReportViewer() {
                 </div>
                 <h3>{episode.title}</h3>
                 <p>{episode.narrative}</p>
+                <div className="reportGrid reportGridTwo reportContrastGrid">
+                  <div className="reportMiniBlock reportContrastCard reportContrastCard-positive">
+                    <strong>잘되고 있는 모습</strong>
+                    <p>{episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다."}</p>
+                  </div>
+                  <div className="reportMiniBlock reportContrastCard reportContrastCard-negative">
+                    <strong>잘 안되는 모습</strong>
+                    <p>{episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 여기에 제시됩니다."}</p>
+                  </div>
+                </div>
                 <div className="reportGrid reportGridTwo">
                   <div className="reportMiniBlock"><strong>Human agency</strong><p>{episode.humanAgencyFocus}</p></div>
                   <div className="reportMiniBlock"><strong>AI agency</strong><p>{episode.aiAgencyFocus}</p></div>

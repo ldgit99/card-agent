@@ -11,6 +11,8 @@ export const simulationEpisodeSchema = z.object({
   title: z.string(),
   lens: z.string(),
   narrative: z.string(),
+  successScene: z.string(),
+  challengeScene: z.string(),
   humanAgencyFocus: z.string(),
   aiAgencyFocus: z.string(),
   studentLearningSignal: z.string(),

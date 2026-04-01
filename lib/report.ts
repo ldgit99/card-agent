@@ -126,6 +126,10 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                   </div>
                   <h3>${escapeHtml(episode.title)}</h3>
                   <p>${escapeHtml(episode.narrative)}</p>
+                  <ul class="report-bullet-grid report-contrast-grid">
+                    <li class="report-contrast-card report-contrast-card-positive"><strong>잘되고 있는 모습</strong><span>${escapeHtml(episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다.")}</span></li>
+                    <li class="report-contrast-card report-contrast-card-negative"><strong>잘 안되는 모습</strong><span>${escapeHtml(episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 여기에 제시됩니다.")}</span></li>
+                  </ul>
                   <ul class="report-bullet-grid">
                     <li><strong>Human agency</strong><span>${escapeHtml(episode.humanAgencyFocus)}</span></li>
                     <li><strong>AI agency</strong><span>${escapeHtml(episode.aiAgencyFocus)}</span></li>
@@ -358,6 +362,17 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
         padding: 12px 14px;
         border-radius: 16px;
         background: var(--surface-soft);
+      }
+      .report-contrast-grid {
+        margin-top: 14px;
+      }
+      .report-contrast-card-positive {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+      }
+      .report-contrast-card-negative {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
       }
       .report-detail-list strong,
       .report-bullet-grid strong {

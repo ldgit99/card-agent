@@ -39,7 +39,7 @@ export async function POST(request: Request) {
           schemaName: "simulation_scenario",
           model: process.env.OPENAI_MODEL_DEEP ?? "gpt-5.4",
           system:
-            "당신은 교사의 모의수업 시뮬레이션 설계자다. 주어진 설계안을 바탕으로 수업 시나리오와 episode를 생성하라. 각 episode는 Human-AI agency, 깊이 있는 학습, 책임 구조 관점에서 관찰 가능한 장면이어야 한다.",
+            "You are designing a Korean mock lesson scenario for teachers. Follow the given lesson design closely. For each episode, show both a successful scene and a struggling scene that could emerge from the same design. Keep the activity and card placements intact, and write every field in Korean. Make the contrast useful for observing human-AI agency, depth of learning, and responsibility.",
           payload: {
             design,
             analysis,

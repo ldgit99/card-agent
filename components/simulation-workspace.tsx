@@ -525,7 +525,7 @@ export function SimulationWorkspace() {
                 <p className="sectionTag">Lesson Scenario</p>
                 <h2>수업 시나리오와 에피소드</h2>
               </div>
-              <p className="panelHint">모의수업 실행을 누르면 먼저 수업 장면과 Human-AI 학습 에피소드가 제시됩니다.</p>
+              <p className="panelHint">모의수업 실행을 누르면 설계를 따른 장면이 먼저 구성되고, 각 에피소드마다 잘되는 모습과 잘 안되는 모습이 함께 제시됩니다.</p>
             </div>
 
             {scenario ? (
@@ -561,6 +561,16 @@ export function SimulationWorkspace() {
                       </div>
                       <h3>{episode.title}</h3>
                       <p className="scenarioEpisodeNarrative">{episode.narrative}</p>
+                      <div className="scenarioContrastGrid">
+                        <div className="scenarioContrastCard scenarioContrastCard-positive">
+                          <strong>잘되고 있는 모습</strong>
+                          <p>{episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다."}</p>
+                        </div>
+                        <div className="scenarioContrastCard scenarioContrastCard-negative">
+                          <strong>잘 안되는 모습</strong>
+                          <p>{episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 여기에 제시됩니다."}</p>
+                        </div>
+                      </div>
                       <div className="scenarioEpisodeDetails">
                         <div>
                           <strong>Human agency</strong>

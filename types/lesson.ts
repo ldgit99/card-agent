@@ -79,6 +79,8 @@ export interface SimulationEpisode {
   title: string;
   lens: string;
   narrative: string;
+  successScene: string;
+  challengeScene: string;
   humanAgencyFocus: string;
   aiAgencyFocus: string;
   studentLearningSignal: string;
