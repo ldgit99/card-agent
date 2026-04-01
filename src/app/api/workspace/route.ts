@@ -1,20 +1,25 @@
-import {
+﻿import {
   getLatestSimulationSession,
   getWorkspaceStorageBackend,
   readWorkspaceSnapshot,
 } from "@/lib/server/workspace-store";
+import {
+  normalizeSimulationSessionRecord,
+  normalizeWorkspaceSnapshot,
+} from "@/lib/simulation-normalize";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const snapshot = await readWorkspaceSnapshot();
+    const rawSnapshot = await readWorkspaceSnapshot();
+    const snapshot = normalizeWorkspaceSnapshot(rawSnapshot);
     const latestSession = await getLatestSimulationSession(snapshot.currentDesign?.id);
 
     return NextResponse.json({
       currentDesign: snapshot.currentDesign,
       designHistory: snapshot.designHistory,
       sessions: snapshot.sessions,
-      latestSession,
+      latestSession: latestSession ? normalizeSimulationSessionRecord(latestSession) : null,
       updatedAt: snapshot.updatedAt,
       storageBackend: getWorkspaceStorageBackend(),
     });

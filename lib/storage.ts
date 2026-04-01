@@ -1,4 +1,8 @@
-import { STORAGE_KEYS } from "@/lib/constants";
+﻿import { STORAGE_KEYS } from "@/lib/constants";
+import {
+  normalizeReportSnapshot,
+  normalizeStoredSimulationState,
+} from "@/lib/simulation-normalize";
 import type { LessonDesign } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
 import type { StoredSimulationState } from "@/types/workspace";
@@ -37,7 +41,7 @@ export function saveStoredDesign(value: LessonDesign) {
 }
 
 export function loadStoredSimulation(): StoredSimulationState | null {
-  return readJSON<StoredSimulationState>(STORAGE_KEYS.simulation);
+  return normalizeStoredSimulationState(readJSON<StoredSimulationState>(STORAGE_KEYS.simulation));
 }
 
 export function saveStoredSimulation(value: StoredSimulationState) {
@@ -45,7 +49,7 @@ export function saveStoredSimulation(value: StoredSimulationState) {
 }
 
 export function loadStoredReport(): SimulationReportSnapshot | null {
-  return readJSON<SimulationReportSnapshot>(STORAGE_KEYS.report);
+  return normalizeReportSnapshot(readJSON<SimulationReportSnapshot>(STORAGE_KEYS.report));
 }
 
 export function saveStoredReport(value: SimulationReportSnapshot) {
