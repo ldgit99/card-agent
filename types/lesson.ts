@@ -74,12 +74,37 @@ export interface DesignAnalysis {
   engine: InferenceEngine;
 }
 
+export interface SimulationEpisode {
+  id: string;
+  title: string;
+  lens: string;
+  narrative: string;
+  humanAgencyFocus: string;
+  aiAgencyFocus: string;
+  studentLearningSignal: string;
+  possibleTension: string;
+  relatedActivityId: string | null;
+  linkedCardIds: string[];
+}
+
+export interface SimulationScenario {
+  id: string;
+  simulationRunId: string;
+  title: string;
+  setting: string;
+  learningArc: string;
+  facilitatorBrief: string;
+  episodes: SimulationEpisode[];
+  engine: InferenceEngine;
+}
+
 export interface SimulationTurn {
   id: string;
   simulationRunId: string;
   turnIndex: number;
   activityId: string;
   activityTitle: string;
+  scenarioEpisodeId: string | null;
   teacherAction: string;
   aiAction: string;
   expectedStudentResponse: string;

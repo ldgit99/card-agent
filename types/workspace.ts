@@ -4,6 +4,7 @@ import type {
   LessonDesign,
   ReflectionJournalEntry,
   ReflectionQuestion,
+  SimulationScenario,
   SimulationTurn,
 } from "@/types/lesson";
 
@@ -11,6 +12,7 @@ export type WorkspaceStorageBackend = "file" | "postgres";
 
 export interface StoredSimulationState {
   analysis: DesignAnalysis | null;
+  scenario: SimulationScenario | null;
   turns: SimulationTurn[];
   risks: DetectedRisk[];
   questions: ReflectionQuestion[];

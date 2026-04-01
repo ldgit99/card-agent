@@ -7,10 +7,31 @@ export const designAnalysisSchema = z.object({
   recommendations: z.array(z.string()),
 });
 
+export const simulationEpisodeSchema = z.object({
+  title: z.string(),
+  lens: z.string(),
+  narrative: z.string(),
+  humanAgencyFocus: z.string(),
+  aiAgencyFocus: z.string(),
+  studentLearningSignal: z.string(),
+  possibleTension: z.string(),
+  relatedActivityId: z.string().nullable(),
+  linkedCardIds: z.array(z.string()),
+});
+
+export const simulationScenarioSchema = z.object({
+  title: z.string(),
+  setting: z.string(),
+  learningArc: z.string(),
+  facilitatorBrief: z.string(),
+  episodes: z.array(simulationEpisodeSchema),
+});
+
 export const simulationTurnSchema = z.object({
   turnIndex: z.number(),
   activityId: z.string(),
   activityTitle: z.string(),
+  scenarioEpisodeId: z.string().nullable(),
   teacherAction: z.string(),
   aiAction: z.string(),
   expectedStudentResponse: z.string(),
@@ -51,4 +72,3 @@ export const reflectionQuestionsSchema = z.object({
     }),
   ),
 });
-

@@ -1,0 +1,76 @@
+import { simulationScenarioSchema } from "@/lib/ai/schemas";
+import { hasOpenAIKey, parseStructuredResponse } from "@/lib/ai/openai";
+import { createHeuristicScenario } from "@/lib/orchestration";
+import type { DesignAnalysis, LessonDesign, SimulationScenario } from "@/types/lesson";
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+  try {
+    const payload = (await request.json()) as {
+      design?: LessonDesign;
+      analysis?: DesignAnalysis | null;
+      simulationRunId?: string;
+    };
+
+    const design = payload.design;
+    const analysis = payload.analysis ?? null;
+    const simulationRunId = payload.simulationRunId ?? crypto.randomUUID();
+
+    if (!design) {
+      return NextResponse.json({ error: "design is required" }, { status: 400 });
+    }
+
+    const fallbackDraft = createHeuristicScenario(design, simulationRunId);
+    const fallback: SimulationScenario = {
+      id: crypto.randomUUID(),
+      simulationRunId,
+      title: fallbackDraft.title,
+      setting: fallbackDraft.setting,
+      learningArc: fallbackDraft.learningArc,
+      facilitatorBrief: fallbackDraft.facilitatorBrief,
+      episodes: fallbackDraft.episodes,
+      engine: "heuristic",
+    };
+
+    if (hasOpenAIKey()) {
+      try {
+        const response = await parseStructuredResponse({
+          schema: simulationScenarioSchema,
+          schemaName: "simulation_scenario",
+          model: process.env.OPENAI_MODEL_DEEP ?? "gpt-5.4",
+          system:
+            "당신은 교사의 모의수업 시뮬레이션 설계자다. 주어진 설계안을 바탕으로 수업 시나리오와 episode를 생성하라. 각 episode는 Human-AI agency, 깊이 있는 학습, 책임 구조 관점에서 관찰 가능한 장면이어야 한다.",
+          payload: {
+            design,
+            analysis,
+          },
+        });
+
+        if (response) {
+          return NextResponse.json({
+            scenario: {
+              id: crypto.randomUUID(),
+              simulationRunId,
+              title: response.title,
+              setting: response.setting,
+              learningArc: response.learningArc,
+              facilitatorBrief: response.facilitatorBrief,
+              episodes: response.episodes.map((episode) => ({
+                id: crypto.randomUUID(),
+                ...episode,
+              })),
+              engine: "openai" as const,
+            } satisfies SimulationScenario,
+          });
+        }
+      } catch (error) {
+        console.error("simulation scenario fallback", error);
+      }
+    }
+
+    return NextResponse.json({ scenario: fallback });
+  } catch (error) {
+    console.error("simulation scenario route error", error);
+    return NextResponse.json({ error: "failed to create simulation scenario" }, { status: 500 });
+  }
+}

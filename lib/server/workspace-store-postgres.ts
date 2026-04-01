@@ -1,8 +1,5 @@
 import type { LessonDesign } from "@/types/lesson";
-import type {
-  SimulationSessionRecord,
-  WorkspaceSnapshot,
-} from "@/types/workspace";
+import type { SimulationSessionRecord, WorkspaceSnapshot } from "@/types/workspace";
 import { Pool } from "pg";
 
 const schemaStatements = [
@@ -34,6 +31,7 @@ const schemaStatements = [
     lesson_design_id text not null references lesson_designs(id) on delete cascade,
     design_version integer not null,
     analysis jsonb,
+    scenario jsonb,
     turns jsonb not null,
     risks jsonb not null,
     questions jsonb not null,
@@ -41,6 +39,7 @@ const schemaStatements = [
     created_at timestamptz not null,
     updated_at timestamptz not null
   )`,
+  `alter table simulation_sessions add column if not exists scenario jsonb`,
   `create index if not exists idx_simulation_sessions_design_id
     on simulation_sessions (lesson_design_id, updated_at desc)`,
 ];
@@ -83,6 +82,7 @@ function mapSessionRow(row: {
   lesson_design_id: string;
   design_version: number;
   analysis: SimulationSessionRecord["analysis"];
+  scenario: SimulationSessionRecord["scenario"];
   turns: SimulationSessionRecord["turns"];
   risks: SimulationSessionRecord["risks"];
   questions: SimulationSessionRecord["questions"];
@@ -94,6 +94,7 @@ function mapSessionRow(row: {
     lessonDesignId: row.lesson_design_id,
     designVersion: row.design_version,
     analysis: row.analysis,
+    scenario: row.scenario,
     turns: row.turns,
     risks: row.risks,
     questions: row.questions,
@@ -127,24 +128,21 @@ export async function readWorkspaceSnapshotPostgres(): Promise<WorkspaceSnapshot
   const database = getPool();
 
   const [currentDesignResult, designHistoryResult, sessionsResult] = await Promise.all([
-    database.query<{ payload: LessonDesign }>(
-      `select payload from lesson_designs order by updated_at desc limit 1`,
-    ),
-    database.query<{ payload: LessonDesign }>(
-      `select payload from lesson_design_versions order by updated_at desc`,
-    ),
+    database.query<{ payload: LessonDesign }>(`select payload from lesson_designs order by updated_at desc limit 1`),
+    database.query<{ payload: LessonDesign }>(`select payload from lesson_design_versions order by updated_at desc`),
     database.query<{
       id: string;
       lesson_design_id: string;
       design_version: number;
       analysis: SimulationSessionRecord["analysis"];
+      scenario: SimulationSessionRecord["scenario"];
       turns: SimulationSessionRecord["turns"];
       risks: SimulationSessionRecord["risks"];
       questions: SimulationSessionRecord["questions"];
       journal: SimulationSessionRecord["journal"];
       updated_at: string | Date;
     }>(
-      `select id, lesson_design_id, design_version, analysis, turns, risks, questions, journal, updated_at
+      `select id, lesson_design_id, design_version, analysis, scenario, turns, risks, questions, journal, updated_at
        from simulation_sessions
        order by updated_at desc`,
     ),
@@ -158,11 +156,7 @@ export async function readWorkspaceSnapshotPostgres(): Promise<WorkspaceSnapshot
     currentDesign,
     designHistory,
     sessions,
-    updatedAt: computeSnapshotUpdatedAt({
-      currentDesign,
-      designHistory,
-      sessions,
-    }),
+    updatedAt: computeSnapshotUpdatedAt({ currentDesign, designHistory, sessions }),
   };
 }
 
@@ -240,12 +234,13 @@ export async function saveSimulationSessionPostgres(
 
   await database.query(
     `insert into simulation_sessions (
-      id, lesson_design_id, design_version, analysis, turns, risks, questions, journal, created_at, updated_at
-    ) values ($1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb, $9, $10)
+      id, lesson_design_id, design_version, analysis, scenario, turns, risks, questions, journal, created_at, updated_at
+    ) values ($1, $2, $3, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb, $9::jsonb, $10, $11)
     on conflict (id) do update set
       lesson_design_id = excluded.lesson_design_id,
       design_version = excluded.design_version,
       analysis = excluded.analysis,
+      scenario = excluded.scenario,
       turns = excluded.turns,
       risks = excluded.risks,
       questions = excluded.questions,
@@ -256,6 +251,7 @@ export async function saveSimulationSessionPostgres(
       session.lessonDesignId,
       session.designVersion,
       JSON.stringify(session.analysis),
+      JSON.stringify(session.scenario),
       JSON.stringify(session.turns),
       JSON.stringify(session.risks),
       JSON.stringify(session.questions),
@@ -278,13 +274,14 @@ export async function getLatestSimulationSessionPostgres(lessonDesignId?: string
         lesson_design_id: string;
         design_version: number;
         analysis: SimulationSessionRecord["analysis"];
+        scenario: SimulationSessionRecord["scenario"];
         turns: SimulationSessionRecord["turns"];
         risks: SimulationSessionRecord["risks"];
         questions: SimulationSessionRecord["questions"];
         journal: SimulationSessionRecord["journal"];
         updated_at: string | Date;
       }>(
-        `select id, lesson_design_id, design_version, analysis, turns, risks, questions, journal, updated_at
+        `select id, lesson_design_id, design_version, analysis, scenario, turns, risks, questions, journal, updated_at
          from simulation_sessions
          where lesson_design_id = $1
          order by updated_at desc
@@ -296,13 +293,14 @@ export async function getLatestSimulationSessionPostgres(lessonDesignId?: string
         lesson_design_id: string;
         design_version: number;
         analysis: SimulationSessionRecord["analysis"];
+        scenario: SimulationSessionRecord["scenario"];
         turns: SimulationSessionRecord["turns"];
         risks: SimulationSessionRecord["risks"];
         questions: SimulationSessionRecord["questions"];
         journal: SimulationSessionRecord["journal"];
         updated_at: string | Date;
       }>(
-        `select id, lesson_design_id, design_version, analysis, turns, risks, questions, journal, updated_at
+        `select id, lesson_design_id, design_version, analysis, scenario, turns, risks, questions, journal, updated_at
          from simulation_sessions
          order by updated_at desc
          limit 1`,

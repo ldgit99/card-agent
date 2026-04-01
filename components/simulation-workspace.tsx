@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { normalizeLessonDesignDraft, parseMultilineField } from "@/lib/design";
 import { riskLabels } from "@/lib/constants";
 import { buildReflectionMarkdown } from "@/lib/orchestration";
@@ -21,10 +22,10 @@ import type {
   LessonDesign,
   ReflectionJournalEntry,
   ReflectionQuestion,
+  SimulationScenario,
   SimulationTurn,
 } from "@/types/lesson";
 import type { SimulationSessionRecord, StoredSimulationState } from "@/types/workspace";
-import { useEffect, useMemo, useState } from "react";
 
 function buildJournal(
   simulationRunId: string | null,
@@ -66,6 +67,7 @@ function buildSessionRecord(input: {
   design: LessonDesign | null;
   simulationRunId: string | null;
   analysis: DesignAnalysis | null;
+  scenario: SimulationScenario | null;
   turns: SimulationTurn[];
   risks: DetectedRisk[];
   questions: ReflectionQuestion[];
@@ -82,6 +84,7 @@ function buildSessionRecord(input: {
     lessonDesignId: input.design.id,
     designVersion: input.design.version,
     analysis: input.analysis,
+    scenario: input.scenario,
     turns: input.turns,
     risks: input.risks,
     questions: input.questions,
@@ -97,6 +100,7 @@ function formatSessionLabel(session: SimulationSessionRecord) {
 export function SimulationWorkspace() {
   const [design, setDesign] = useState<LessonDesign | null>(null);
   const [analysis, setAnalysis] = useState<DesignAnalysis | null>(null);
+  const [scenario, setScenario] = useState<SimulationScenario | null>(null);
   const [turns, setTurns] = useState<SimulationTurn[]>([]);
   const [risks, setRisks] = useState<DetectedRisk[]>([]);
   const [questions, setQuestions] = useState<ReflectionQuestion[]>([]);
@@ -118,24 +122,38 @@ export function SimulationWorkspace() {
     return serverSessions.filter((session) => session.lessonDesignId === design.id);
   }, [design, serverSessions]);
 
+  const episodeTitleById = useMemo(() => {
+    return new Map((scenario?.episodes ?? []).map((episode) => [episode.id, episode.title]));
+  }, [scenario]);
+
   function applyStoredSimulationState(state: StoredSimulationState) {
     setAnalysis(state.analysis);
+    setScenario(state.scenario);
     setTurns(state.turns);
     setRisks(state.risks);
     setQuestions(state.questions);
     setSimulationRunId(
-      state.turns[0]?.simulationRunId ?? state.questions[0]?.simulationRunId ?? state.journal?.simulationRunId ?? null,
+      state.turns[0]?.simulationRunId ??
+        state.questions[0]?.simulationRunId ??
+        state.scenario?.simulationRunId ??
+        state.journal?.simulationRunId ??
+        null,
     );
 
     if (state.journal) {
       setSummary(state.journal.summary);
       setAnswers(Object.fromEntries(state.journal.answers.map((answer) => [answer.questionId, answer.answer])));
       setNextRevisionText(state.journal.nextRevisionNotes.join("\n"));
+    } else {
+      setSummary("");
+      setAnswers({});
+      setNextRevisionText("");
     }
   }
 
   function applySessionRecord(session: SimulationSessionRecord) {
     setAnalysis(session.analysis);
+    setScenario(session.scenario);
     setTurns(session.turns);
     setRisks(session.risks);
     setQuestions(session.questions);
@@ -210,12 +228,13 @@ export function SimulationWorkspace() {
   useEffect(() => {
     saveStoredSimulation({
       analysis,
+      scenario,
       turns,
       risks,
       questions,
       journal: buildJournal(simulationRunId, summary, answers, nextRevisionText),
     });
-  }, [analysis, turns, risks, questions, simulationRunId, summary, answers, nextRevisionText]);
+  }, [analysis, scenario, turns, risks, questions, simulationRunId, summary, answers, nextRevisionText]);
 
   async function runSimulation() {
     if (!design) {
@@ -232,6 +251,10 @@ export function SimulationWorkspace() {
       setSummary("");
       setAnswers({});
       setNextRevisionText("");
+      setScenario(null);
+      setTurns([]);
+      setRisks([]);
+      setQuestions([]);
 
       try {
         const savedDesign = await saveDesignToWorkspace({ design: nextDesign, persistVersion: true });
@@ -254,9 +277,24 @@ export function SimulationWorkspace() {
 
       const runId = crypto.randomUUID();
       setSimulationRunId(runId);
-      setTurns([]);
-      setRisks([]);
-      setQuestions([]);
+
+      setMessage("수업 시나리오와 핵심 에피소드를 구성하는 중입니다.");
+
+      const scenarioResponse = await fetch("/api/simulation/scenario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          design: nextDesign,
+          analysis: analysisPayload.analysis,
+          simulationRunId: runId,
+        }),
+      });
+      if (!scenarioResponse.ok) {
+        throw new Error("수업 시나리오 생성 단계가 실패했습니다.");
+      }
+
+      const scenarioPayload = (await scenarioResponse.json()) as { scenario: SimulationScenario };
+      setScenario(scenarioPayload.scenario);
 
       const generatedTurns: SimulationTurn[] = [];
       for (const activity of nextDesign.activities) {
@@ -268,6 +306,7 @@ export function SimulationWorkspace() {
           body: JSON.stringify({
             design: nextDesign,
             activity,
+            scenario: scenarioPayload.scenario,
             previousTurns: generatedTurns,
             simulationRunId: runId,
           }),
@@ -317,6 +356,7 @@ export function SimulationWorkspace() {
         design: nextDesign,
         simulationRunId: runId,
         analysis: analysisPayload.analysis,
+        scenario: scenarioPayload.scenario,
         turns: generatedTurns,
         risks: riskPayload.risks,
         questions: questionPayload.questions,
@@ -335,7 +375,7 @@ export function SimulationWorkspace() {
         }
       }
 
-      setMessage("모의수업 실행과 성찰 질문 생성이 완료되었습니다.");
+      setMessage("모의수업 시나리오, 에피소드, 실행 로그, 성찰 질문 생성이 완료되었습니다.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "모의수업 실행 중 오류가 발생했습니다.");
     } finally {
@@ -348,6 +388,7 @@ export function SimulationWorkspace() {
       design,
       simulationRunId,
       analysis,
+      scenario,
       turns,
       risks,
       questions,
@@ -387,6 +428,7 @@ export function SimulationWorkspace() {
     const markdown = buildReflectionMarkdown({
       design,
       analysis,
+      scenario,
       turns,
       risks,
       questions,
@@ -436,8 +478,8 @@ export function SimulationWorkspace() {
           <p className="eyebrow">Step 2</p>
           <h1>모의수업 실행과 성찰 일지</h1>
           <p className="heroCopy">
-            설계안을 바탕으로 human-AI agency, 깊이 있는 학습, 책임 구조가 실제 수업에서 어떻게 드러나는지
-            시뮬레이션합니다. 실행 로그를 보고 위험을 확인한 뒤, AI가 제안한 질문에 답하며 다음 수정안을 정리합니다.
+            설계안을 바탕으로 Human-AI agency, 깊이 있는 학습, 책임 구조가 실제 수업에서 어떻게 드러나는지
+            시뮬레이션합니다. 먼저 수업 시나리오와 에피소드를 제시하고, 이어서 실행 로그와 위험, 성찰 질문을 생성합니다.
           </p>
           <div className="heroActions">
             <button type="button" className="primaryButton" onClick={runSimulation}>
@@ -452,7 +494,7 @@ export function SimulationWorkspace() {
         </div>
         <div className="heroStatRack">
           <article className="heroStatCard"><span>모의 활동</span><strong>{design.activities.length}</strong></article>
-          <article className="heroStatCard"><span>연결 카드</span><strong>{linkedCardCount}</strong></article>
+          <article className="heroStatCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
           <article className="heroStatCard"><span>탐지 위험</span><strong>{risks.length}</strong></article>
         </div>
       </section>
@@ -460,12 +502,88 @@ export function SimulationWorkspace() {
       <section className="statusCards">
         <article className="summaryCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
         <article className="summaryCard"><span>배치 카드</span><strong>{design.placements.length}</strong></article>
-        <article className="summaryCard"><span>위험 요소</span><strong>{risks.length}</strong></article>
+        <article className="summaryCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
         <article className="summaryCard"><span>성찰 질문</span><strong>{questions.length}</strong></article>
       </section>
 
       <section className="workspaceGrid simulationGrid">
         <div className="mainColumn">
+          <section className="panel">
+            <div className="panelHeader">
+              <div>
+                <p className="sectionTag">Lesson Scenario</p>
+                <h2>수업 시나리오와 에피소드</h2>
+              </div>
+              <p className="panelHint">모의수업 실행을 누르면 먼저 수업 장면과 Human-AI 학습 에피소드가 제시됩니다.</p>
+            </div>
+
+            {scenario ? (
+              <div className="scenarioStack">
+                <article className="scenarioHeroCard">
+                  <div>
+                    <p className="sectionMicroTag">Simulation Storyline</p>
+                    <h3>{scenario.title}</h3>
+                    <p>{scenario.setting}</p>
+                  </div>
+                  <div className="scenarioMetaGrid">
+                    <article className="scenarioMetaCard">
+                      <span>학습 흐름</span>
+                      <strong>{scenario.learningArc}</strong>
+                    </article>
+                    <article className="scenarioMetaCard">
+                      <span>관찰 포인트</span>
+                      <strong>{scenario.facilitatorBrief}</strong>
+                    </article>
+                    <article className="scenarioMetaCard">
+                      <span>시나리오 엔진</span>
+                      <strong>{scenario.engine}</strong>
+                    </article>
+                  </div>
+                </article>
+
+                <div className="scenarioEpisodeList">
+                  {scenario.episodes.map((episode, index) => (
+                    <article key={episode.id} className="scenarioEpisodeCard">
+                      <div className="scenarioEpisodeHeader">
+                        <span className="scenarioEpisodeIndex">Episode {index + 1}</span>
+                        <span className="scenarioLensBadge">{episode.lens}</span>
+                      </div>
+                      <h3>{episode.title}</h3>
+                      <p className="scenarioEpisodeNarrative">{episode.narrative}</p>
+                      <div className="scenarioEpisodeDetails">
+                        <div>
+                          <strong>Human agency</strong>
+                          <p>{episode.humanAgencyFocus}</p>
+                        </div>
+                        <div>
+                          <strong>AI agency</strong>
+                          <p>{episode.aiAgencyFocus}</p>
+                        </div>
+                        <div>
+                          <strong>학생 학습 신호</strong>
+                          <p>{episode.studentLearningSignal}</p>
+                        </div>
+                        <div>
+                          <strong>잠재 긴장</strong>
+                          <p>{episode.possibleTension}</p>
+                        </div>
+                      </div>
+                      {episode.linkedCardIds.length ? (
+                        <div className="linkedCardList">
+                          {episode.linkedCardIds.map((cardId) => (
+                            <span key={`${episode.id}-${cardId}`} className="linkedCardChip">{cardId}</span>
+                          ))}
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="emptyPanelText">아직 시뮬레이션 시나리오가 없습니다. `모의수업 실행` 버튼으로 시작해 주세요.</p>
+            )}
+          </section>
+
           <section className="panel">
             <div className="panelHeader">
               <div>
@@ -487,7 +605,12 @@ export function SimulationWorkspace() {
                     <div className="timelineMarker">{turn.turnIndex}</div>
                     <div className="timelineBody">
                       <div className="timelineHeader">
-                        <h3>{turn.activityTitle}</h3>
+                        <div className="timelineTitleBlock">
+                          <h3>{turn.activityTitle}</h3>
+                          {turn.scenarioEpisodeId ? (
+                            <span className="scenarioLinkBadge">{episodeTitleById.get(turn.scenarioEpisodeId) ?? "연결 에피소드"}</span>
+                          ) : null}
+                        </div>
                         <span className="engineBadge">{turn.engine}</span>
                       </div>
                       <dl className="timelineFacts">
@@ -547,9 +670,7 @@ export function SimulationWorkspace() {
                         <textarea
                           rows={4}
                           value={answers[question.id] ?? ""}
-                          onChange={(event) =>
-                            setAnswers((current) => ({ ...current, [question.id]: event.target.value }))
-                          }
+                          onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))}
                           placeholder="이 장면에서 무엇을 수정할지, 어떤 질문을 더 추가할지 적어 주세요."
                         />
                       </label>
@@ -659,7 +780,9 @@ export function SimulationWorkspace() {
                   <article key={session.id} className="historyCard">
                     <div className="historyCardBody">
                       <strong>{formatSessionLabel(session)}</strong>
-                      <p>턴 {session.turns.length}개 · 위험 {session.risks.length}개 · 질문 {session.questions.length}개</p>
+                      <p>
+                        에피소드 {session.scenario?.episodes.length ?? 0}개 · 턴 {session.turns.length}개 · 위험 {session.risks.length}개
+                      </p>
                       <span>{formatSyncTime(session.updatedAt)}</span>
                     </div>
                     <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>
@@ -681,12 +804,12 @@ export function SimulationWorkspace() {
           <span>{simulationRunId ?? "아직 실행 전"}</span>
         </div>
         <div>
-          <strong>서버 저장 세션</strong>
-          <span>{designSessions.length}개</span>
+          <strong>에피소드 수</strong>
+          <span>{scenario?.episodes.length ?? 0}개</span>
         </div>
         <div>
-          <strong>마지막 서버 저장</strong>
-          <span>{formatSyncTime(lastServerSyncAt)}</span>
+          <strong>서버 저장 세션</strong>
+          <span>{designSessions.length}개</span>
         </div>
         <div>
           <strong>상태 메시지</strong>
