@@ -58,6 +58,7 @@ export interface LessonDesign {
   title: string;
   meta: LessonDesignMeta;
   durationMinutes: number | null;
+  achievementStandards: string[];
   learningGoals: string[];
   activities: LessonActivity[];
   placements: CardPlacement[];
@@ -128,4 +129,3 @@ export interface ReflectionJournalEntry {
   nextRevisionNotes: string[];
   createdAt: string;
 }
-

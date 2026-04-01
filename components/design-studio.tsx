@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import {
@@ -33,12 +33,14 @@ import { useEffect, useState } from "react";
 interface DraggableCardProps {
   card: OrchestrationCard;
   onQuickAdd: (card: OrchestrationCard) => void;
+  disabled?: boolean;
 }
 
-function DraggableCard({ card, onQuickAdd }: DraggableCardProps) {
+function DraggableCard({ card, onQuickAdd, disabled = false }: DraggableCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `library-${card.id}`,
     data: { card },
+    disabled,
   });
 
   return (
@@ -54,56 +56,43 @@ function DraggableCard({ card, onQuickAdd }: DraggableCardProps) {
         <h4>{card.title}</h4>
         <p className="libraryCardPrompt">{card.prompt}</p>
       </div>
-      <button type="button" className="ghostButton" onClick={() => onQuickAdd(card)}>
+      <button type="button" className="ghostButton" onClick={() => onQuickAdd(card)} disabled={disabled}>
         배치
       </button>
     </article>
   );
 }
 
-interface DropZoneProps {
+interface RowDropZoneProps {
   id: string;
-  title: string;
-  description: string;
   actor: CardActor;
   cards: OrchestrationCard[];
   onRemove: (cardId: string) => void;
 }
 
-function DropZone({ id, title, description, actor, cards, onRemove }: DropZoneProps) {
+function RowDropZone({ id, actor, cards, onRemove }: RowDropZoneProps) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { actor } });
 
   return (
-    <section ref={setNodeRef} className={`dropZone dropZone-${actor} ${isOver ? "dropZone-over" : ""}`}>
-      <header className="dropZoneHeader">
-        <div>
-          <h3>{title}</h3>
-          <p>{description}</p>
-        </div>
-        <span className="dropZoneCount">{cards.length}</span>
-      </header>
-      <div className="dropZoneBody">
-        {cards.length ? (
-          cards.map((card) => (
-            <div key={`${id}-${card.id}`} className={`placedCard placedCard-${card.actor}`}>
-              <div>
-                <strong>{card.title}</strong>
-                <p>{card.intent}</p>
-              </div>
-              <button type="button" className="iconButton" onClick={() => onRemove(card.id)}>
-                삭제
+    <div
+      ref={setNodeRef}
+      className={`tableDropZone tableDropZone-${actor} ${isOver ? "tableDropZone-over" : ""}`}
+    >
+      {cards.length ? (
+        <div className="tableDropList">
+          {cards.map((card) => (
+            <div key={`${id}-${card.id}`} className={`tablePlacedCard tablePlacedCard-${card.actor}`}>
+              <span>{card.title}</span>
+              <button type="button" className="tableChipRemove" onClick={() => onRemove(card.id)}>
+                ×
               </button>
             </div>
-          ))
-        ) : (
-          <p className="dropZoneEmpty">
-            {actor === "teacher"
-              ? "왼쪽 카드 라이브러리에서 인간 활동 카드를 끌어 놓거나 배치 버튼으로 추가하세요."
-              : "왼쪽 카드 라이브러리에서 AI 카드를 끌어 놓거나 배치 버튼으로 추가하세요."}
-          </p>
-        )}
-      </div>
-    </section>
+          ))}
+        </div>
+      ) : (
+        <p className="tableDropZoneEmpty">{actor === "teacher" ? "교사 카드" : "AI 카드"}</p>
+      )}
+    </div>
   );
 }
 
@@ -201,13 +190,19 @@ export function DesignStudio() {
       active = false;
     };
   }, []);
-
   function commitDesign(nextDesign: LessonDesign) {
     setDesign(normalizeLessonDesignDraft(nextDesign));
   }
 
   function updateMeta(field: keyof LessonDesign["meta"], value: string) {
     commitDesign({ ...design, meta: { ...design.meta, [field]: value } });
+  }
+
+  function updateDesignList(field: "achievementStandards" | "learningGoals", value: string) {
+    commitDesign({
+      ...design,
+      [field]: parseMultilineField(value),
+    });
   }
 
   function updateActivity(activityId: string, patch: Partial<LessonActivity>) {
@@ -261,17 +256,22 @@ export function DesignStudio() {
   function handleDragEnd(event: DragEndEvent) {
     const card = event.active.data.current?.card as OrchestrationCard | undefined;
     const overId = String(event.over?.id ?? "");
+    const match = overId.match(/^(human|ai)-slot-(.+)$/);
 
-    if (!card || !selectedActivity) {
+    if (!card || !match) {
       return;
     }
 
-    if (overId === `human-slot-${selectedActivity.id}` && card.actor === "teacher") {
-      appendCard(selectedActivity.id, card);
+    const slot = match[1] as "human" | "ai";
+    const activityId = match[2];
+
+    if (slot === "human" && card.actor === "teacher") {
+      appendCard(activityId, card);
+      return;
     }
 
-    if (overId === `ai-slot-${selectedActivity.id}` && card.actor === "ai") {
-      appendCard(selectedActivity.id, card);
+    if (slot === "ai" && card.actor === "ai") {
+      appendCard(activityId, card);
     }
   }
 
@@ -351,11 +351,17 @@ export function DesignStudio() {
     setStatusMessage(`${formatDesignLabel(versionDesign)} 버전을 작업 화면으로 불러왔습니다.`);
   }
 
-  const selectedHumanCards = selectedActivity ? findCards(selectedActivity.humanCardIds) : [];
-  const selectedAiCards = selectedActivity ? findCards(selectedActivity.aiCardIds) : [];
-  const selectedCardTotal = selectedHumanCards.length + selectedAiCards.length;
-  const totalHumanAssignments = design.activities.reduce((count, activity) => count + activity.humanCardIds.length, 0);
-  const totalAiAssignments = design.activities.reduce((count, activity) => count + activity.aiCardIds.length, 0);
+  const selectedCardTotal = selectedActivity
+    ? selectedActivity.humanCardIds.length + selectedActivity.aiCardIds.length
+    : 0;
+  const totalHumanAssignments = design.activities.reduce(
+    (count, activity) => count + activity.humanCardIds.length,
+    0,
+  );
+  const totalAiAssignments = design.activities.reduce(
+    (count, activity) => count + activity.aiCardIds.length,
+    0,
+  );
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
@@ -365,9 +371,8 @@ export function DesignStudio() {
             <p className="eyebrow">Harness-Based Teacher Agent</p>
             <h1>수업 설계 오케스트레이션 스튜디오</h1>
             <p className="heroCopy">
-              첫 페이지에서는 수업 활동 구조를 입력하고, 선택한 활동마다 인간 활동 카드와 AI 카드를
-              배치합니다. 카드 배치는 장식이 아니라 다음 페이지 모의수업 시뮬레이션에 직접 사용되는
-              오케스트레이션 데이터입니다.
+              상단에서 주제, 교과, 대상, 성취기준, 학습 목표를 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를
+              배치합니다. 카드 라이브러리는 하단에 두고, 각 활동 행의 카드 열에 직접 드래그해 배치하도록 구성했습니다.
             </p>
             <div className="heroActions">
               <button type="button" className="primaryButton" onClick={analyzeDesign}>
@@ -386,351 +391,348 @@ export function DesignStudio() {
           </div>
           <div className="heroStatRack">
             <article className="heroStatCard"><span>설계 활동</span><strong>{design.activities.length}</strong></article>
-            <article className="heroStatCard"><span>인간 카드 배치</span><strong>{totalHumanAssignments}</strong></article>
+            <article className="heroStatCard"><span>교사 카드 배치</span><strong>{totalHumanAssignments}</strong></article>
             <article className="heroStatCard"><span>AI 카드 배치</span><strong>{totalAiAssignments}</strong></article>
           </div>
         </section>
 
-        <section className="workspaceGrid">
-          <div className="mainColumn">
-            <section className="panel">
-              <div className="panelHeader">
-                <div>
-                  <p className="sectionTag">Step 1</p>
-                  <h2>수업 개요 입력</h2>
-                </div>
-                <p className="panelHint">주제, 교과, 대상을 먼저 고정합니다.</p>
+        <section className="designStack">
+          <section className="panel">
+            <div className="panelHeader">
+              <div>
+                <p className="sectionTag">Step 1</p>
+                <h2>수업 개요 입력</h2>
               </div>
-              <div className="metaTable">
-                <div className="metaCell metaLabel">주제</div>
-                <div className="metaCell metaValue metaWide">
-                  <input value={design.meta.topic} onChange={(event) => updateMeta("topic", event.target.value)} placeholder="예: 생성형 AI를 활용한 기후 위기 탐구 수업" />
-                </div>
-                <div className="metaCell metaLabel">교과</div>
-                <div className="metaCell metaValue">
-                  <input value={design.meta.subject} onChange={(event) => updateMeta("subject", event.target.value)} placeholder="예: 과학" />
-                </div>
-                <div className="metaCell metaLabel">대상</div>
-                <div className="metaCell metaValue">
-                  <input value={design.meta.target} onChange={(event) => updateMeta("target", event.target.value)} placeholder="예: 중학교 3학년" />
-                </div>
+              <p className="panelHint">교과와 대상 아래에 성취기준과 학습 목표를 바로 연결합니다.</p>
+            </div>
+            <div className="metaTable metaTableExtended">
+              <div className="metaCell metaLabel">주제</div>
+              <div className="metaCell metaValue metaWide">
+                <input
+                  value={design.meta.topic}
+                  onChange={(event) => updateMeta("topic", event.target.value)}
+                  placeholder="예: 생성형 AI를 활용한 기후 위기 탐구 수업"
+                />
               </div>
-            </section>
+              <div className="metaCell metaLabel">교과</div>
+              <div className="metaCell metaValue">
+                <input
+                  value={design.meta.subject}
+                  onChange={(event) => updateMeta("subject", event.target.value)}
+                  placeholder="예: 과학"
+                />
+              </div>
+              <div className="metaCell metaLabel">대상</div>
+              <div className="metaCell metaValue">
+                <input
+                  value={design.meta.target}
+                  onChange={(event) => updateMeta("target", event.target.value)}
+                  placeholder="예: 중학교 3학년"
+                />
+              </div>
+            </div>
+            <div className="metaSupplementGrid">
+              <label className="metaSupplementCard">
+                <span>성취기준</span>
+                <textarea
+                  rows={4}
+                  value={design.achievementStandards.join("\n")}
+                  onChange={(event) => updateDesignList("achievementStandards", event.target.value)}
+                  placeholder="한 줄에 하나씩 입력하세요. 예: 과학적 현상을 다양한 자료를 활용해 설명할 수 있다."
+                />
+              </label>
+              <label className="metaSupplementCard">
+                <span>학습 목표</span>
+                <textarea
+                  rows={4}
+                  value={design.learningGoals.join("\n")}
+                  onChange={(event) => updateDesignList("learningGoals", event.target.value)}
+                  placeholder="한 줄에 하나씩 입력하세요. 예: AI의 제안을 비판적으로 비교해 자신의 판단을 말할 수 있다."
+                />
+              </label>
+            </div>
+          </section>
 
-            <section className="panel">
-              <div className="panelHeader">
-                <div>
-                  <p className="sectionTag">Step 2</p>
-                  <h2>학습 활동 설계</h2>
-                </div>
-                <div className="inlineActions">
-                  <span className="panelHint">표에서 선택한 행이 오른쪽 카드 배치 레일과 즉시 연결됩니다.</span>
-                  <button type="button" className="ghostButton" onClick={addActivity}>활동 추가</button>
-                </div>
+          <section className="panel">
+            <div className="panelHeader">
+              <div>
+                <p className="sectionTag">Step 2</p>
+                <h2>학습 활동 설계</h2>
               </div>
-              <div className="tableStageBar">
-                <article className="stageChip"><span>현재 선택 활동</span><strong>{selectedActivity ? `${selectedActivity.order}차 활동 · ${getActivityHeading(selectedActivity)}` : "활동을 선택해 주세요"}</strong></article>
-                <article className="stageChip"><span>선택 활동 카드</span><strong>{selectedCardTotal}장 배치</strong></article>
-                <article className="stageChip"><span>전체 설계 상태</span><strong>{analysis ? "분석 완료" : "설계 작성 중"}</strong></article>
+              <div className="inlineActions">
+                <span className="panelHint">평가 방법 옆 카드 열에서 행 단위 드래그 앤 드롭 배치를 수행합니다.</span>
+                <button type="button" className="ghostButton" onClick={addActivity}>활동 추가</button>
               </div>
-              <div className="tableWrap">
-                <table className="lessonTable">
-                  <thead>
-                    <tr>
-                      <th>기능</th><th>교과</th><th>학습활동</th><th>평가 방법</th><th className="narrowCell">선택</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {design.activities.map((activity) => {
-                      const isSelected = selectedActivity?.id === activity.id;
+            </div>
+            <div className="tableStageBar">
+              <article className="stageChip"><span>현재 선택 활동</span><strong>{selectedActivity ? `${selectedActivity.order}차 활동 · ${getActivityHeading(selectedActivity)}` : "활동을 선택해 주세요"}</strong></article>
+              <article className="stageChip"><span>선택 활동 카드</span><strong>{selectedCardTotal}장 배치</strong></article>
+              <article className="stageChip"><span>설계 분석 상태</span><strong>{analysis ? "분석 완료" : "설계 작성 중"}</strong></article>
+            </div>
+            <div className="tableWrap tableWrapWide">
+              <table className="lessonTable lessonTableCards">
+                <thead>
+                  <tr>
+                    <th>기능</th>
+                    <th>교과</th>
+                    <th>학습활동</th>
+                    <th>평가 방법</th>
+                    <th>교사 카드</th>
+                    <th>AI 카드</th>
+                    <th className="narrowCell">선택</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {design.activities.map((activity) => {
+                    const isSelected = selectedActivity?.id === activity.id;
+                    const humanCards = findCards(activity.humanCardIds);
+                    const rowAiCards = findCards(activity.aiCardIds);
 
-                      return (
-                        <tr key={activity.id} className={isSelected ? "selectedRow" : ""} onClick={() => setSelectedActivityId(activity.id)}>
-                          <td>
-                            <input
-                              value={activity.functionLabel}
-                              onFocus={() => setSelectedActivityId(activity.id)}
-                              onChange={(event) => updateActivity(activity.id, { functionLabel: event.target.value })}
-                              placeholder="예: 조사하기"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              value={activity.subjectLabel}
-                              onFocus={() => setSelectedActivityId(activity.id)}
-                              onChange={(event) => updateActivity(activity.id, { subjectLabel: event.target.value })}
-                              placeholder="예: 과학(3)"
-                            />
-                          </td>
-                          <td>
-                            <textarea
-                              rows={3}
-                              value={activity.learningActivity}
-                              onFocus={() => setSelectedActivityId(activity.id)}
-                              onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
-                              placeholder="예: 지구온난화 원인과 영향을 조사하고 AI가 제시한 해석과 비교한다."
-                            />
-                          </td>
-                          <td>
-                            <textarea
-                              rows={3}
-                              value={activity.assessmentMethod}
-                              onFocus={() => setSelectedActivityId(activity.id)}
-                              onChange={(event) => updateActivity(activity.id, { assessmentMethod: event.target.value })}
-                              placeholder="예: 보고서 평가, 토론 참여 관찰"
-                            />
-                          </td>
-                          <td className="actionCell">
-                            <button
-                              type="button"
-                              className="tableActionButton"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setSelectedActivityId(activity.id);
-                              }}
-                            >
-                              선택
-                            </button>
-                            <button
-                              type="button"
-                              className="tableActionButton tableActionDanger"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                removeActivity(activity.id);
-                              }}
-                            >
-                              삭제
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </section>
+                    return (
+                      <tr key={activity.id} className={isSelected ? "selectedRow" : ""} onClick={() => setSelectedActivityId(activity.id)}>
+                        <td>
+                          <input
+                            value={activity.functionLabel}
+                            onFocus={() => setSelectedActivityId(activity.id)}
+                            onChange={(event) => updateActivity(activity.id, { functionLabel: event.target.value })}
+                            placeholder="예: 조사하기"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            value={activity.subjectLabel}
+                            onFocus={() => setSelectedActivityId(activity.id)}
+                            onChange={(event) => updateActivity(activity.id, { subjectLabel: event.target.value })}
+                            placeholder="예: 과학(3)"
+                          />
+                        </td>
+                        <td>
+                          <textarea
+                            rows={3}
+                            value={activity.learningActivity}
+                            onFocus={() => setSelectedActivityId(activity.id)}
+                            onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
+                            placeholder="예: 지구온난화 원인과 영향을 조사하고 AI의 해석과 비교한다."
+                          />
+                        </td>
+                        <td>
+                          <textarea
+                            rows={3}
+                            value={activity.assessmentMethod}
+                            onFocus={() => setSelectedActivityId(activity.id)}
+                            onChange={(event) => updateActivity(activity.id, { assessmentMethod: event.target.value })}
+                            placeholder="예: 보고서 평가, 토론 참여 관찰"
+                          />
+                        </td>
+                        <td className="cardColumnCell">
+                          <RowDropZone
+                            id={`human-slot-${activity.id}`}
+                            actor="teacher"
+                            cards={humanCards}
+                            onRemove={(cardId) => removeCard(activity.id, "teacher", cardId)}
+                          />
+                        </td>
+                        <td className="cardColumnCell">
+                          <RowDropZone
+                            id={`ai-slot-${activity.id}`}
+                            actor="ai"
+                            cards={rowAiCards}
+                            onRemove={(cardId) => removeCard(activity.id, "ai", cardId)}
+                          />
+                        </td>
+                        <td className="actionCell">
+                          <button
+                            type="button"
+                            className="tableActionButton"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setSelectedActivityId(activity.id);
+                            }}
+                          >
+                            선택
+                          </button>
+                          <button
+                            type="button"
+                            className="tableActionButton tableActionDanger"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              removeActivity(activity.id);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-            {analysis ? (
-              <section className="panel analysisPanel">
-                <div className="panelHeader">
+            {selectedActivity ? (
+              <section className="detailSection detailSectionSoft selectedActivityPanel">
+                <div className="detailSectionHeader">
                   <div>
-                    <p className="sectionTag">Step 3</p>
-                    <h2>설계 분석 결과</h2>
+                    <p className="sectionMicroTag">Selected Activity</p>
+                    <h3>{getActivityHeading(selectedActivity)}</h3>
                   </div>
-                  <p className="panelHint">엔진: {analysis.engine}</p>
+                  <p>선택한 활동의 목표와 메모를 보강합니다. 카드 라이브러리는 아래 하단에 있습니다.</p>
                 </div>
-                <p className="analysisSummary">{analysis.summary}</p>
-                <div className="analysisGrid">
-                  <article>
-                    <h3>강점</h3>
-                    <ul>{analysis.strengths.map((item) => <li key={item}>{item}</li>)}</ul>
-                  </article>
-                  <article>
-                    <h3>보완점</h3>
-                    <ul>{analysis.gaps.map((item) => <li key={item}>{item}</li>)}</ul>
-                  </article>
-                  <article>
-                    <h3>권장 수정</h3>
-                    <ul>{analysis.recommendations.map((item) => <li key={item}>{item}</li>)}</ul>
-                  </article>
+                <div className="detailForm detailFormWide">
+                  <label>
+                    <span>학습목표</span>
+                    <textarea
+                      rows={3}
+                      value={selectedActivity.learningObjective}
+                      onChange={(event) => updateActivity(selectedActivity.id, { learningObjective: event.target.value })}
+                      placeholder="학생이 이 활동에서 무엇을 이해하거나 판단해야 하는지 적어 주세요."
+                    />
+                  </label>
+                  <label>
+                    <span>교사 개입 메모</span>
+                    <textarea
+                      rows={3}
+                      value={selectedActivity.teacherMove}
+                      onChange={(event) => updateActivity(selectedActivity.id, { teacherMove: event.target.value })}
+                      placeholder="교사가 어느 시점에 어떤 질문과 피드백으로 조율할지 적습니다."
+                    />
+                  </label>
+                  <label>
+                    <span>사용 도구</span>
+                    <textarea
+                      rows={3}
+                      value={selectedActivity.tools.join("\n")}
+                      onChange={(event) => updateActivity(selectedActivity.id, { tools: parseMultilineField(event.target.value) })}
+                      placeholder="예: ChatGPT, Padlet, 교과서"
+                    />
+                  </label>
+                  <label>
+                    <span>성공 증거</span>
+                    <textarea
+                      rows={3}
+                      value={selectedActivity.evidenceOfSuccess.join("\n")}
+                      onChange={(event) => updateActivity(selectedActivity.id, { evidenceOfSuccess: parseMultilineField(event.target.value) })}
+                      placeholder="예: 학생 발화, 산출물, 근거 제시, 토론 참여"
+                    />
+                  </label>
+                  <label className="detailFormSpan2">
+                    <span>메모</span>
+                    <textarea
+                      rows={3}
+                      value={selectedActivity.notes}
+                      onChange={(event) => updateActivity(selectedActivity.id, { notes: event.target.value })}
+                      placeholder="시간 운영, 안전, 역할 분담, 추가 유의사항을 적습니다."
+                    />
+                  </label>
                 </div>
               </section>
             ) : null}
+          </section>
 
-            <section className="panel">
+          {analysis ? (
+            <section className="panel analysisPanel">
               <div className="panelHeader">
                 <div>
-                  <p className="sectionTag">서버 설계 이력</p>
-                  <h2>저장된 버전</h2>
+                  <p className="sectionTag">Step 3</p>
+                  <h2>설계 분석 결과</h2>
                 </div>
-                <p className="panelHint">필요한 버전을 작업 화면으로 복원할 수 있습니다.</p>
+                <p className="panelHint">엔진: {analysis.engine}</p>
               </div>
-              {designHistory.length ? (
-                <div className="historyList">
-                  {designHistory.map((historyItem) => (
-                    <article key={`${historyItem.id}-${historyItem.version}`} className="historyCard">
-                      <div className="historyCardBody">
-                        <strong>{formatDesignLabel(historyItem)}</strong>
-                        <p>활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개</p>
-                        <span>{formatSyncTime(historyItem.updatedAt)}</span>
-                      </div>
-                      <button type="button" className="tableActionButton" onClick={() => loadDesignVersion(historyItem)}>
-                        이 버전 불러오기
-                      </button>
-                    </article>
+              <p className="analysisSummary">{analysis.summary}</p>
+              <div className="analysisGrid">
+                <article>
+                  <h3>강점</h3>
+                  <ul>{analysis.strengths.map((item) => <li key={item}>{item}</li>)}</ul>
+                </article>
+                <article>
+                  <h3>보완점</h3>
+                  <ul>{analysis.gaps.map((item) => <li key={item}>{item}</li>)}</ul>
+                </article>
+                <article>
+                  <h3>권장 수정</h3>
+                  <ul>{analysis.recommendations.map((item) => <li key={item}>{item}</li>)}</ul>
+                </article>
+              </div>
+            </section>
+          ) : null}
+
+          <section className="panel">
+            <div className="panelHeader">
+              <div>
+                <p className="sectionTag">Card Library</p>
+                <h2>하단 카드 라이브러리</h2>
+              </div>
+              <p className="panelHint">원하는 활동 행의 카드 열로 바로 드래그하거나, 선택한 활동에 빠르게 배치할 수 있습니다.</p>
+            </div>
+            <div className="cardLibraryGrid cardLibraryBottomGrid">
+              <section className="libraryColumn">
+                <div className="libraryColumnHeader">
+                  <div>
+                    <p className="sectionMicroTag">Teacher Cards</p>
+                    <h3 className="libraryHeading">교사 카드</h3>
+                  </div>
+                  <span className="engineBadge">{teacherCards.length}</span>
+                </div>
+                <div className="libraryList">
+                  {teacherCards.map((card) => (
+                    <DraggableCard
+                      key={card.id}
+                      card={card}
+                      disabled={!selectedActivity}
+                      onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
+                    />
                   ))}
                 </div>
-              ) : (
-                <p className="emptyPanelText">아직 서버에 저장된 설계 버전이 없습니다.</p>
-              )}
-            </section>
-          </div>
-
-          <aside className="sideColumn">
-            <section className="panel stickyPanel">
-              <div className="panelHeader">
-                <div>
-                  <p className="sectionTag">선택한 활동</p>
-                  <h2>{getActivityHeading(selectedActivity)}</h2>
+              </section>
+              <section className="libraryColumn">
+                <div className="libraryColumnHeader">
+                  <div>
+                    <p className="sectionMicroTag">AI Cards</p>
+                    <h3 className="libraryHeading">AI 카드</h3>
+                  </div>
+                  <span className="engineBadge">{aiCards.length}</span>
                 </div>
-                <p className="panelHint">
-                  {selectedActivity ? `${selectedActivity.order}차 활동을 기준으로 카드와 메모를 설계합니다.` : "표에서 활동을 하나 선택해 주세요."}
-                </p>
-              </div>
-
-              {selectedActivity ? (
-                <div className="selectionWorkspace">
-                  <div className="selectionHero">
-                    <div>
-                      <p className="selectionEyebrow">Activity Focus</p>
-                      <h3>{getActivityHeading(selectedActivity)}</h3>
-                      <p>{selectedActivity.learningActivity.trim() || "이 활동에서 학생이 무엇을 하고 어떤 판단을 하게 할지 먼저 적어 보세요."}</p>
-                    </div>
-                    <span className="selectionHeroBadge">#{selectedActivity.order}</span>
-                  </div>
-
-                  <div className="selectionStatsGrid">
-                    <article className="selectionStat"><span>인간 카드</span><strong>{selectedHumanCards.length}</strong></article>
-                    <article className="selectionStat"><span>AI 카드</span><strong>{selectedAiCards.length}</strong></article>
-                    <article className="selectionStat"><span>도구 수</span><strong>{selectedActivity.tools.length}</strong></article>
-                  </div>
-
-                  <section className="detailSection">
-                    <div className="detailSectionHeader">
-                      <div>
-                        <p className="sectionMicroTag">Orchestration</p>
-                        <h3>인간·AI 카드 레일</h3>
-                      </div>
-                      <p>현재 선택한 활동에 직접 연결되는 카드 배치 영역입니다.</p>
-                    </div>
-                    <DropZone
-                      id={`human-slot-${selectedActivity.id}`}
-                      title="인간 활동 카드"
-                      description="교사의 질문, 조율, 최종 판단을 드러내는 카드"
-                      actor="teacher"
-                      cards={selectedHumanCards}
-                      onRemove={(cardId) => removeCard(selectedActivity.id, "teacher", cardId)}
+                <div className="libraryList">
+                  {aiCards.map((card) => (
+                    <DraggableCard
+                      key={card.id}
+                      card={card}
+                      disabled={!selectedActivity}
+                      onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
                     />
-                    <DropZone
-                      id={`ai-slot-${selectedActivity.id}`}
-                      title="AI 카드"
-                      description="생성, 분석, 설명, 피드백 등 AI 역할을 정의하는 카드"
-                      actor="ai"
-                      cards={selectedAiCards}
-                      onRemove={(cardId) => removeCard(selectedActivity.id, "ai", cardId)}
-                    />
-                  </section>
-
-                  <section className="detailSection detailSectionSoft">
-                    <div className="detailSectionHeader">
-                      <div>
-                        <p className="sectionMicroTag">Activity Notes</p>
-                        <h3>세부 설계 메모</h3>
-                      </div>
-                      <p>선택한 활동의 목표, 도구, 증거를 한 번에 정리합니다.</p>
-                    </div>
-                    <div className="detailForm">
-                      <label>
-                        <span>학습목표</span>
-                        <textarea
-                          rows={3}
-                          value={selectedActivity.learningObjective}
-                          onChange={(event) => updateActivity(selectedActivity.id, { learningObjective: event.target.value })}
-                          placeholder="학생이 이 활동에서 무엇을 이해하거나 판단해야 하는지 적어 주세요."
-                        />
-                      </label>
-                      <label>
-                        <span>교사 개입 메모</span>
-                        <textarea
-                          rows={3}
-                          value={selectedActivity.teacherMove}
-                          onChange={(event) => updateActivity(selectedActivity.id, { teacherMove: event.target.value })}
-                          placeholder="교사가 어느 시점에 어떤 질문과 피드백으로 조율할지 적습니다."
-                        />
-                      </label>
-                      <label>
-                        <span>사용 도구</span>
-                        <textarea
-                          rows={2}
-                          value={selectedActivity.tools.join("\n")}
-                          onChange={(event) => updateActivity(selectedActivity.id, { tools: parseMultilineField(event.target.value) })}
-                          placeholder="예: ChatGPT, Padlet, 교과서"
-                        />
-                      </label>
-                      <label>
-                        <span>성공 증거</span>
-                        <textarea
-                          rows={2}
-                          value={selectedActivity.evidenceOfSuccess.join("\n")}
-                          onChange={(event) => updateActivity(selectedActivity.id, { evidenceOfSuccess: parseMultilineField(event.target.value) })}
-                          placeholder="예: 학생 발화, 산출물, 근거 제시, 토론 참여"
-                        />
-                      </label>
-                      <label>
-                        <span>메모</span>
-                        <textarea
-                          rows={3}
-                          value={selectedActivity.notes}
-                          onChange={(event) => updateActivity(selectedActivity.id, { notes: event.target.value })}
-                          placeholder="시간 운영, 안전, 역할 분담, 추가 유의사항을 적습니다."
-                        />
-                      </label>
-                    </div>
-                  </section>
+                  ))}
                 </div>
-              ) : (
-                <p className="emptyPanelText">왼쪽 표에서 활동을 하나 선택하면 이 영역이 해당 활동의 카드 배치와 세부 메모 폼으로 전환됩니다.</p>
-              )}
-            </section>
+              </section>
+            </div>
+          </section>
 
-            <section className="panel">
-              <div className="panelHeader">
-                <div>
-                  <p className="sectionTag">카드 라이브러리</p>
-                  <h2>드래그 앤 드롭 배치</h2>
-                </div>
-                <p className="panelHint">드래그가 어렵다면 각 카드의 배치 버튼으로 즉시 넣을 수 있습니다.</p>
+          <section className="panel">
+            <div className="panelHeader">
+              <div>
+                <p className="sectionTag">Server History</p>
+                <h2>저장된 버전</h2>
               </div>
-              <div className="cardLibraryGrid">
-                <section className="libraryColumn">
-                  <div className="libraryColumnHeader">
-                    <div>
-                      <p className="sectionMicroTag">Human Cards</p>
-                      <h3 className="libraryHeading">인간 활동 카드</h3>
+              <p className="panelHint">필요한 버전을 작업 화면으로 복원할 수 있습니다.</p>
+            </div>
+            {designHistory.length ? (
+              <div className="historyList">
+                {designHistory.map((historyItem) => (
+                  <article key={`${historyItem.id}-${historyItem.version}`} className="historyCard">
+                    <div className="historyCardBody">
+                      <strong>{formatDesignLabel(historyItem)}</strong>
+                      <p>활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개</p>
+                      <span>{formatSyncTime(historyItem.updatedAt)}</span>
                     </div>
-                    <span className="engineBadge">{teacherCards.length}</span>
-                  </div>
-                  <div className="libraryList">
-                    {teacherCards.map((card) => (
-                      <DraggableCard
-                        key={card.id}
-                        card={card}
-                        onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
-                      />
-                    ))}
-                  </div>
-                </section>
-                <section className="libraryColumn">
-                  <div className="libraryColumnHeader">
-                    <div>
-                      <p className="sectionMicroTag">AI Cards</p>
-                      <h3 className="libraryHeading">AI 카드</h3>
-                    </div>
-                    <span className="engineBadge">{aiCards.length}</span>
-                  </div>
-                  <div className="libraryList">
-                    {aiCards.map((card) => (
-                      <DraggableCard
-                        key={card.id}
-                        card={card}
-                        onQuickAdd={(nextCard) => selectedActivity ? appendCard(selectedActivity.id, nextCard) : undefined}
-                      />
-                    ))}
-                  </div>
-                </section>
+                    <button type="button" className="tableActionButton" onClick={() => loadDesignVersion(historyItem)}>
+                      이 버전 불러오기
+                    </button>
+                  </article>
+                ))}
               </div>
-            </section>
-          </aside>
+            ) : (
+              <p className="emptyPanelText">아직 서버에 저장된 설계 버전이 없습니다.</p>
+            )}
+          </section>
         </section>
 
         <footer className="statusBar statusBarFull">

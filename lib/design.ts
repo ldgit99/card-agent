@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   CardPlacement,
   LessonActivity,
   LessonDesign,
@@ -73,9 +73,8 @@ export function createLessonDesign(
     title: meta.topic.trim() || "새 수업 설계",
     meta,
     durationMinutes: null,
-    learningGoals: normalizedActivities
-      .map((activity) => activity.learningObjective.trim())
-      .filter(Boolean),
+    achievementStandards: [],
+    learningGoals: [],
     activities: normalizedActivities,
     placements: buildPlacements(normalizedActivities),
     createdAt: now,
@@ -104,13 +103,18 @@ export function normalizeLessonDesignDraft(
       `활동 ${index + 1}`,
   }));
 
+  const fallbackLearningGoals = normalizedActivities
+    .map((activity) => activity.learningObjective.trim())
+    .filter(Boolean);
+
   return {
     ...draft,
     version: overrides?.version ?? draft.version,
     title: draft.meta.topic.trim() || "새 수업 설계",
-    learningGoals: normalizedActivities
-      .map((activity) => activity.learningObjective.trim())
-      .filter(Boolean),
+    achievementStandards: (draft.achievementStandards ?? []).filter(Boolean),
+    learningGoals: (draft.learningGoals?.length ? draft.learningGoals : fallbackLearningGoals).filter(
+      Boolean,
+    ),
     activities: normalizedActivities,
     placements: buildPlacements(normalizedActivities),
     updatedAt: new Date().toISOString(),
