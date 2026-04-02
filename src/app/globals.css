@@ -3172,43 +3172,21 @@ body {
 /* Horizontal contrast scenes */
 .storySceneGrid,
 .reportContrastGrid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scroll-snap-type: x proximity;
 }
 
 .storySceneGrid > .scenarioContrastCard,
 .reportContrastGrid > .reportMiniBlock,
 .reportContrastGrid > .reportContrastCard {
-  flex: 0 0 clamp(260px, 30vw, 360px);
-  min-width: 260px;
-  scroll-snap-align: start;
+  min-width: 0;
 }
 
-.storySceneGrid > .scenarioContrastCard {
-  min-height: 100%;
-}
-
-@media (max-width: 1280px) {
+@media (max-width: 980px) {
   .storySceneGrid,
   .reportContrastGrid {
-    grid-template-columns: none;
-  }
-}
-
-@media print {
-  .reportContrastGrid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: visible;
-  }
-
-  .reportContrastGrid > .reportMiniBlock,
-  .reportContrastGrid > .reportContrastCard {
-    min-width: 0;
-    flex: initial;
+    grid-template-columns: 1fr;
   }
 }
 /* Workspace navigation header */
