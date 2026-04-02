@@ -2356,6 +2356,35 @@ a {
   border: 1px solid rgba(219, 234, 254, 0.88);
 }
 
+.issueMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.issueMetaLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(235, 126, 87, 0.22);
+  background: rgba(255, 243, 235, 0.92);
+  color: #9c5d38;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.issueToggleButton {
+  padding: 10px 14px;
+  font-size: 0.84rem;
+  white-space: nowrap;
+}
+
 .riskCardCompact {
   padding: 16px;
 }

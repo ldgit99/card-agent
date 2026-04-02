@@ -122,6 +122,7 @@ export function SimulationWorkspace() {
   const [isSavingReflection, setIsSavingReflection] = useState(false);
   const [serverSessions, setServerSessions] = useState<SimulationSessionRecord[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
+  const [expandedIssueTurns, setExpandedIssueTurns] = useState<Record<string, boolean>>({});
 
   const designSessions = useMemo(() => {
     if (!design) {
@@ -691,8 +692,16 @@ export function SimulationWorkspace() {
               </div>
             </div>
 
-            {simulationRows.map(({ turn, episode, linkedRisks, linkedQuestions }) => (
-              <article key={turn.id} className="simulationTriRow">
+            {simulationRows.map(({ turn, episode, linkedRisks, linkedQuestions }) => {
+              const prioritizedHighRisks = linkedRisks.filter((risk) => risk.severity === "high");
+              const defaultVisibleRisks = prioritizedHighRisks.length ? prioritizedHighRisks.slice(0, 2) : linkedRisks.slice(0, 2);
+              const visibleRiskIds = new Set(defaultVisibleRisks.map((risk) => risk.id));
+              const hiddenRisks = linkedRisks.filter((risk) => !visibleRiskIds.has(risk.id));
+              const isIssueExpanded = expandedIssueTurns[turn.id] ?? false;
+              const displayedRisks = isIssueExpanded ? linkedRisks : defaultVisibleRisks;
+
+              return (
+                <article key={turn.id} className="simulationTriRow">
                 <section className="triColumn triColumn-story">
                   <div className="triColumnHeader">
                     <div className="timelineTitleBlock">
@@ -753,9 +762,28 @@ export function SimulationWorkspace() {
                     ))}
                   </div>
                   {linkedRisks.length ? (
-                    <div className="issueRiskList">
-                      {linkedRisks.map((risk) => (
-                        <article key={risk.id} className={`riskCard risk-${risk.severity} riskCardCompact`}>
+                    <>
+                      <div className="issueMetaRow">
+                        <span className="issueMetaLabel">
+                          {prioritizedHighRisks.length
+                            ? `HIGH ${Math.min(2, prioritizedHighRisks.length)}개 우선 표시`
+                            : `우선순위 문제점 ${Math.min(2, linkedRisks.length)}개 표시`}
+                        </span>
+                        {hiddenRisks.length ? (
+                          <button
+                            type="button"
+                            className="tableActionButton issueToggleButton"
+                            onClick={() =>
+                              setExpandedIssueTurns((current) => ({ ...current, [turn.id]: !isIssueExpanded }))
+                            }
+                          >
+                            {isIssueExpanded ? "접기" : `문제점 더 보기 (${hiddenRisks.length})`}
+                          </button>
+                        ) : null}
+                      </div>
+                      <div className="issueRiskList">
+                        {displayedRisks.map((risk) => (
+                          <article key={risk.id} className={`riskCard risk-${risk.severity} riskCardCompact`}>
                           <div className="riskHeader">
                             <h3>{riskLabels[risk.riskType]}</h3>
                             <span>{risk.severity}</span>
@@ -768,9 +796,10 @@ export function SimulationWorkspace() {
                           </div>
                           <strong>권장 개입</strong>
                           <p>{risk.recommendedIntervention}</p>
-                        </article>
-                      ))}
-                    </div>
+                          </article>
+                        ))}
+                      </div>
+                    </>
                   ) : (
                     <p className="emptyPanelText">이 활동에서는 큰 위험보다 안정적으로 유지할 설계 포인트가 더 두드러집니다.</p>
                   )}
@@ -840,8 +869,9 @@ export function SimulationWorkspace() {
                     )}
                   </div>
                 </section>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         ) : (
           <p className="emptyPanelText">아직 실행 결과가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
