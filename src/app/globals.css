@@ -3871,3 +3871,29 @@ body {
   white-space: pre-wrap;
   line-height: 1.7;
 }
+/* Shared page shell width */
+.appShell,
+.reportShell {
+  width: min(1500px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.reportShell {
+  padding: 20px 0 30px;
+}
+
+@media (max-width: 860px) {
+  .appShell,
+  .reportShell {
+    width: min(100% - 20px, 1500px);
+  }
+}
+
+@media (max-width: 640px) {
+  .appShell,
+  .reportShell {
+    width: min(100% - 16px, 1500px);
+    padding-top: 12px;
+    padding-bottom: 24px;
+  }
+}
