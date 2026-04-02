@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   KeyboardSensor,
@@ -179,6 +180,7 @@ function getActivityHeading(activity: LessonActivity | null) {
 }
 
 export function DesignStudio() {
+  const router = useRouter();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor),
@@ -191,6 +193,7 @@ export function DesignStudio() {
   const [statusMessage, setStatusMessage] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSyncingWorkspace, setIsSyncingWorkspace] = useState(false);
+  const [isNavigatingToSimulation, setIsNavigatingToSimulation] = useState(false);
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
 
@@ -398,6 +401,32 @@ export function DesignStudio() {
     }
   }
 
+
+  async function navigateToSimulation() {
+    if (isNavigatingToSimulation) {
+      return;
+    }
+
+    setIsNavigatingToSimulation(true);
+    setStatusMessage("수업 설계를 저장한 뒤 모의 수업 실행 화면으로 이동합니다.");
+
+    try {
+      saveStoredDesign(design);
+      const response = await saveDesignToWorkspace({ design, persistVersion: true });
+      setDesignHistory(response.designHistory);
+      setLastServerSyncAt(response.updatedAt);
+      router.push("/simulation");
+    } catch (error) {
+      setStatusMessage(
+        error instanceof Error
+          ? `${error.message} 브라우저 저장본으로 모의 수업 실행 화면으로 이동합니다.`
+          : "서버 저장 없이 브라우저 저장본으로 모의 수업 실행 화면으로 이동합니다.",
+      );
+      router.push("/simulation");
+    } finally {
+      setIsNavigatingToSimulation(false);
+    }
+  }
   function loadDesignVersion(versionDesign: LessonDesign) {
     const nextDesign = normalizeLessonDesignDraft(versionDesign);
     setDesign(nextDesign);
@@ -426,6 +455,8 @@ export function DesignStudio() {
           <div className="heroPanelStack">
             <WorkspaceTopbar
               active="design"
+              navigationHandlers={{ simulation: navigateToSimulation }}
+              disabledSection={isNavigatingToSimulation ? "simulation" : null}
               actions={
                 <>
                   <button type="button" className="primaryButton" onClick={analyzeDesign}>

@@ -3294,3 +3294,9 @@ body {
     justify-content: flex-start;
   }
 }
+
+.workspaceNavLink[disabled],
+.workspaceNavLink[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.58;
+}
