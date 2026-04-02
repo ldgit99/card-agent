@@ -167,47 +167,50 @@ export function ReportViewer() {
 
   return (
     <main className="reportShell">
-      <section className="reportToolbar printHidden">
-        <WorkspaceTopbar
-          active="report"
-          actions={
-            <>
-              <button type="button" className="primaryButton" onClick={() => void handleDownloadPdf()} disabled={isDownloadingPdf}>
-                {isDownloadingPdf ? "PDF 생성 중..." : "PDF로 저장"}
-              </button>
-              <button type="button" className="secondaryButton" onClick={() => downloadHtml(report)}>
-                HTML 다운로드
-              </button>
-            </>
-          }
-        />
+      <section className="heroPanel printHidden">
+        <div className="heroPanelStack">
+          <WorkspaceTopbar
+            active="report"
+            actions={
+              <>
+                <button type="button" className="primaryButton" onClick={() => void handleDownloadPdf()} disabled={isDownloadingPdf}>
+                  {isDownloadingPdf ? "PDF 생성 중..." : "PDF로 저장"}
+                </button>
+                <button type="button" className="secondaryButton" onClick={() => downloadHtml(report)}>
+                  HTML 다운로드
+                </button>
+              </>
+            }
+          />
+          <div className="heroPanelMain">
+            <div>
+              <p className="eyebrow">Teacher Agent Report</p>
+              <h1>{report.reportTitle}</h1>
+              <p className="heroCopy">생성 시각: {formatDateTime(report.generatedAt)}</p>
+            </div>
+            <div className="heroStatRack">
+              <article className="heroStatCard">
+                <span>주제</span>
+                <strong>{report.design.meta.topic || "미입력"}</strong>
+              </article>
+              <article className="heroStatCard">
+                <span>교과</span>
+                <strong>{report.design.meta.subject || "미입력"}</strong>
+              </article>
+              <article className="heroStatCard">
+                <span>대상</span>
+                <strong>{report.design.meta.target || "미입력"}</strong>
+              </article>
+              <article className="heroStatCard">
+                <span>활동 수</span>
+                <strong>{report.design.activities.length}개</strong>
+              </article>
+            </div>
+          </div>
+        </div>
       </section>
 
       <div ref={reportDocumentRef} className="reportDocument">
-        <section className="reportSection reportHeroSection" data-report-section>
-          <p className="sectionTag">Teacher Agent Report</p>
-          <h2>{report.reportTitle}</h2>
-          <p className="panelHint">생성 시각: {formatDateTime(report.generatedAt)}</p>
-          <div className="reportMetaGrid">
-            <article className="reportMetricCard">
-              <span>주제</span>
-              <strong>{report.design.meta.topic || "미입력"}</strong>
-            </article>
-            <article className="reportMetricCard">
-              <span>교과</span>
-              <strong>{report.design.meta.subject || "미입력"}</strong>
-            </article>
-            <article className="reportMetricCard">
-              <span>대상</span>
-              <strong>{report.design.meta.target || "미입력"}</strong>
-            </article>
-            <article className="reportMetricCard">
-              <span>활동 수</span>
-              <strong>{report.design.activities.length}개</strong>
-            </article>
-          </div>
-        </section>
-
         <section className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>

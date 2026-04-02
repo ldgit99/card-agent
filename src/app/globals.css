@@ -4982,8 +4982,9 @@ body {
 }
 
 .heroStatRack {
-  width: min(560px, 100%);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  max-width: 720px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
 }
 
