@@ -161,6 +161,16 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     `
     : "";
 
+  const activityCardMap = new Map(
+    report.design.activities.map((activity) => [
+      activity.id,
+      {
+        teacher: activity.humanCardIds.map(cardTitle),
+        ai: activity.aiCardIds.map(cardTitle),
+      },
+    ]),
+  );
+
   const turnsSection = report.turns.length
     ? `
       <section class="report-section">
@@ -182,6 +192,8 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                     <li><strong>관찰 메모</strong><span>${escapeHtml(turn.observerNote)}</span></li>
                     <li><strong>놓칠 수 있는 지점</strong><span>${escapeHtml(turn.missedOpportunities.join(" / ") || "없음")}</span></li>
                     <li><strong>연결된 질문·행동</strong><span>${escapeHtml(turn.linkedCardIds.map(cardTitle).join(" / ") || "없음")}</span></li>
+                    <li><strong>설계된 교사 질문·행동</strong><span>${escapeHtml((activityCardMap.get(turn.activityId)?.teacher ?? []).join(" / ") || "없음")}</span></li>
+                    <li><strong>설계된 AI 질문·행동</strong><span>${escapeHtml((activityCardMap.get(turn.activityId)?.ai ?? []).join(" / ") || "없음")}</span></li>
                     <li><strong>활동별 위험 신호</strong><span>${escapeHtml((turn.activityRiskSignals ?? []).join(" / ") || "없음")}</span></li>
                   </ul>
                   <div class="report-card-grid report-card-grid-2">
@@ -499,4 +511,5 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
   </body>
 </html>`;
 }
+
 

@@ -313,7 +313,10 @@ export function ReportViewer() {
           </div>
           {report.turns.length ? (
             <div className="reportStack">
-              {report.turns.map((turn) => (
+              {report.turns.map((turn) => {
+                const cards = activityCards.get(turn.activityId) ?? { teacher: [], ai: [] };
+
+                return (
                 <article key={turn.id} className="reportCard">
                   <div className="reportEpisodeHead">
                     <span className="reportChip">{turn.turnIndex}차 활동</span>
@@ -344,6 +347,14 @@ export function ReportViewer() {
                     <li>
                       <strong>연결된 질문·행동</strong>
                       <span>{findCardTitles(turn.linkedCardIds, report.design.customCards).join(" / ") || "없음"}</span>
+                    </li>
+                    <li>
+                      <strong>설계된 교사 질문·행동</strong>
+                      <span>{cards.teacher.join(" / ") || "없음"}</span>
+                    </li>
+                    <li>
+                      <strong>설계된 AI 질문·행동</strong>
+                      <span>{cards.ai.join(" / ") || "없음"}</span>
                     </li>
                     <li>
                       <strong>활동별 위험 신호</strong>
@@ -393,7 +404,8 @@ export function ReportViewer() {
                     </div>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="emptyPanelText">저장된 실행 로그가 없습니다.</p>

@@ -40,6 +40,34 @@ function getPrimaryAiCard(activity: LessonActivity) {
   return activity.aiCardIds.length ? getCard(activity.aiCardIds[0]) : null;
 }
 
+function getTeacherCardTitles(activity: LessonActivity) {
+  return activity.humanCardIds
+    .map((cardId) => getCard(cardId)?.title ?? cardId)
+    .filter(Boolean);
+}
+
+function getAiCardTitles(activity: LessonActivity) {
+  return activity.aiCardIds
+    .map((cardId) => getCard(cardId)?.title ?? cardId)
+    .filter(Boolean);
+}
+
+function formatCardTitleSeries(titles: string[]) {
+  if (!titles.length) {
+    return "";
+  }
+
+  if (titles.length === 1) {
+    return "'" + titles[0] + "'";
+  }
+
+  if (titles.length === 2) {
+    return "'" + titles[0] + "'와 '" + titles[1] + "'";
+  }
+
+  return "'" + titles[0] + "', '" + titles[1] + "' 등";
+}
+
 function summarizeTools(activity: LessonActivity) {
   return activity.tools.length ? activity.tools.join(", ") : "교실 대화와 활동지";
 }
@@ -303,7 +331,7 @@ function buildTeacherInterventions(
         ? `교사가 '${teacherCardTitle}'에 담긴 질문처럼 "왜 그렇게 판단했는지"를 다시 묻는다.`
         : "교사가 답을 확인하는 대신 선택 이유와 비교 기준을 다시 묻는다.",
       expectedImpact: "학생이 결과가 아니라 근거를 말하게 되어 깊이 있는 학습 신호가 드러난다.",
-      linkedCardIds: activity.humanCardIds.slice(0, 2),
+      linkedCardIds: [...activity.humanCardIds],
     },
     {
       id: crypto.randomUUID(),
@@ -315,15 +343,13 @@ function buildTeacherInterventions(
       expectedImpact: activity.aiCardIds.length > 0
         ? "AI 과의존을 줄이고 인간의 최종 판단을 다시 세운다."
         : "참여 편중을 줄이고 학급 전체의 학습 신호를 확인할 수 있다.",
-      linkedCardIds: [...activity.humanCardIds.slice(0, 1), ...activity.aiCardIds.slice(0, 1)],
+      linkedCardIds: [...activity.humanCardIds, ...activity.aiCardIds],
     },
   ];
 }
 
 function buildCardOutcomeLinks(activity: LessonActivity): CardOutcomeLink[] {
-  return [...activity.humanCardIds, ...activity.aiCardIds]
-    .slice(0, 4)
-    .map((cardId) => {
+  return [...activity.humanCardIds, ...activity.aiCardIds].map((cardId) => {
       const card = getCard(cardId);
       return {
         cardId,
@@ -440,6 +466,10 @@ export function createHeuristicScenario(
   const episodes = design.activities.map((activity) => {
     const teacherCard = getPrimaryTeacherCard(activity);
     const aiCard = getPrimaryAiCard(activity);
+    const teacherCardTitles = getTeacherCardTitles(activity);
+    const aiCardTitles = getAiCardTitles(activity);
+    const teacherCardSeries = formatCardTitleSeries(teacherCardTitles);
+    const aiCardSeries = formatCardTitleSeries(aiCardTitles);
     const title = getActivityTitle(activity);
     const featuredPersonas = selectFeaturedPersonas(activity, studentPersonas);
 
@@ -448,11 +478,11 @@ export function createHeuristicScenario(
       title: `${activity.order}차 활동 · ${title}`,
       lens: getEpisodeLens(activity),
       narrative: `이 장면은 '${title}' 활동에서 교사의 질문, 학생의 판단, AI 도구 사용이 실제 교실 안에서 어떻게 맞물리는지 살펴보는 시뮬레이션이다. 사용 도구는 ${summarizeTools(activity)}이며, 학습활동은 ${activity.learningActivity || title}을 중심으로 전개된다.`,
-      successScene: buildSuccessScene(activity, teacherCard?.title, aiCard?.title),
-      ordinaryScene: buildOrdinaryScene(activity, teacherCard?.title, aiCard?.title),
-      challengeScene: buildChallengeScene(activity, teacherCard?.title, aiCard?.title),
-      humanAgencyFocus: buildHumanAgencyFocus(activity, teacherCard?.title),
-      aiAgencyFocus: buildAiAgencyFocus(activity, aiCard?.title),
+      successScene: buildSuccessScene(activity, teacherCardSeries || teacherCard?.title, aiCardSeries || aiCard?.title),
+      ordinaryScene: buildOrdinaryScene(activity, teacherCardSeries || teacherCard?.title, aiCardSeries || aiCard?.title),
+      challengeScene: buildChallengeScene(activity, teacherCardSeries || teacherCard?.title, aiCardSeries || aiCard?.title),
+      humanAgencyFocus: buildHumanAgencyFocus(activity, teacherCardSeries || teacherCard?.title),
+      aiAgencyFocus: buildAiAgencyFocus(activity, aiCardSeries || aiCard?.title),
       studentLearningSignal: buildStudentLearningSignal(activity),
       possibleTension: buildPossibleTension(activity),
       relatedActivityId: activity.id,
@@ -488,6 +518,10 @@ export function createHeuristicTurn(
 ): Omit<SimulationTurn, "id" | "simulationRunId" | "engine"> {
   const teacherCard = getPrimaryTeacherCard(activity);
   const aiCard = getPrimaryAiCard(activity);
+  const teacherCardTitles = getTeacherCardTitles(activity);
+  const aiCardTitles = getAiCardTitles(activity);
+  const teacherCardSeries = formatCardTitleSeries(teacherCardTitles);
+  const aiCardSeries = formatCardTitleSeries(aiCardTitles);
   const title = getActivityTitle(activity);
   const scenarioEpisode = scenario?.episodes.find((episode) => episode.relatedActivityId === activity.id) ?? null;
   const personas = scenario?.studentPersonas ?? createStudentPersonas(design);
@@ -497,12 +531,12 @@ export function createHeuristicTurn(
   const cardOutcomeLinks = scenarioEpisode?.cardOutcomeLinks ?? buildCardOutcomeLinks(activity);
   const activityRiskSignals = buildActivityRiskSignals(activity);
 
-  const teacherAction = teacherCard
-    ? `선생님은 "${teacherCard.prompt}"라고 묻고 ${title} 활동을 연다. ${activity.teacherMove || "학생이 답만 고르지 말고 왜 그렇게 생각했는지 한 번 더 말하게 한다."}`
+  const teacherAction = teacherCardTitles.length
+    ? `선생님은 ${teacherCardSeries} 질문·행동을 중심으로 ${title} 활동을 연다. ${activity.teacherMove || "학생이 답만 고르지 말고 왜 그렇게 생각했는지 한 번 더 말하게 한다."}`
     : `선생님은 ${title} 활동에서 학생이 먼저 생각을 꺼내게 하고, 결과보다 판단의 근거를 다시 묻게 한다.`;
 
-  const aiAction = aiCard
-    ? `AI는 '${aiCard.title}' 역할로 초안과 비교 자료를 보여 준다. 학생은 이를 참고하지만, 선생님은 그대로 채택하지 말고 무엇을 취할지 말하게 한다.`
+  const aiAction = aiCardTitles.length
+    ? `AI는 ${aiCardSeries} 역할로 초안과 비교 자료를 보여 준다. 학생은 이를 참고하지만, 선생님은 그대로 채택하지 말고 무엇을 취할지 말하게 한다.`
     : "AI는 전면에 나서지 않고, 교실 대화와 자료 탐구가 활동의 중심이 된다.";
 
   const expectedStudentResponse = scenarioEpisode
@@ -919,3 +953,4 @@ export function buildReflectionMarkdown(input: {
 
   return sections.join("\n");
 }
+

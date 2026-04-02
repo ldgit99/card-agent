@@ -106,6 +106,22 @@ function formatSessionLabel(session: SimulationSessionRecord) {
   return `실행 ${session.id.slice(0, 8)} · v${session.designVersion}`;
 }
 
+function pickNewerDesign(left: LessonDesign | null, right: LessonDesign | null) {
+  if (!left) {
+    return right;
+  }
+
+  if (!right) {
+    return left;
+  }
+
+  if (left.version !== right.version) {
+    return left.version > right.version ? left : right;
+  }
+
+  return new Date(left.updatedAt).getTime() >= new Date(right.updatedAt).getTime() ? left : right;
+}
+
 export function SimulationWorkspace() {
   const [design, setDesign] = useState<LessonDesign | null>(null);
   const [analysis, setAnalysis] = useState<DesignAnalysis | null>(null);
@@ -211,7 +227,7 @@ export function SimulationWorkspace() {
           return;
         }
 
-        const nextDesign = snapshot.currentDesign ?? storedDesign;
+        const nextDesign = pickNewerDesign(snapshot.currentDesign ?? null, storedDesign ?? null);
         setDesign(nextDesign ? normalizeLessonDesignDraft(nextDesign) : null);
         setServerSessions(snapshot.sessions);
         setLastServerSyncAt(snapshot.updatedAt);
