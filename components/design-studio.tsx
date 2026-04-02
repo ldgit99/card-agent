@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import {
@@ -572,7 +572,7 @@ export function DesignStudio() {
                             value={activity.subjectLabel}
                             onFocus={() => setSelectedActivityId(activity.id)}
                             onChange={(event) => updateActivity(activity.id, { subjectLabel: event.target.value })}
-                            placeholder="예: 과학(3)"
+                            placeholder="예: 과학"
                           />
                         </td>
                         <td>
