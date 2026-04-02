@@ -4501,8 +4501,9 @@ body {
 }
 
 .heroPanelStack {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   width: 100%;
 }
 
@@ -4949,251 +4950,29 @@ body {
   justify-content: center;
 }
 
-/* Final topbar layout: steps left, actions right */
-.heroPanelStack {
-  grid-template-columns: 1fr;
-}
 
-.heroPanelMain {
-  grid-column: auto;
-}
 
-.workspaceTopbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  overflow: visible;
-  padding-bottom: 0;
-}
-
-.workspaceNav {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  flex-wrap: wrap;
-  overflow: visible;
-}
-
-.workspaceNavLink {
-  min-width: 132px;
-  flex: 0 1 auto;
-}
-
-.workspaceTopbarActions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-left: 0;
-  white-space: nowrap;
-}
-
-@media (max-width: 1100px) {
-  .workspaceTopbar {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
-
-  .workspaceTopbarActions {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 640px) {
-  .workspaceNavLink {
-    min-width: 124px;
-  }
-}
-
-/* Three-column hero header: steps left, title center, actions right */
-.heroPanel {
-  padding: 20px 22px;
-}
-
-.heroPanelStack {
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) auto;
-  gap: 24px;
-  align-items: start;
-}
-
-.heroPanelStack > .workspaceTopbar {
-  display: contents;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNav {
-  grid-column: 1;
-  align-self: start;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-  min-width: 0;
-  overflow: visible;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNavLink {
-  min-width: 0;
-  width: 100%;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-  grid-column: 3;
-  align-self: start;
-  justify-self: end;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-  max-width: 320px;
-  margin-left: 0;
-}
-
-.heroPanelMain {
-  grid-column: 2;
-  display: grid;
-  gap: 18px;
-  align-items: start;
-}
-
-.heroPanelMain > div:first-child {
-  min-width: 0;
-}
-
-.heroStatRack {
-  width: 100%;
-  max-width: 420px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-@media (max-width: 1280px) {
-  .heroPanelStack {
-    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-    grid-column: 2;
-    justify-self: start;
-    justify-content: flex-start;
-    max-width: none;
-  }
-
-  .heroPanelMain {
-    grid-column: 2;
-    margin-top: 72px;
-  }
-}
-
-@media (max-width: 980px) {
-  .heroPanelStack {
-    grid-template-columns: 1fr;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNav,
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions,
-  .heroPanelMain {
-    grid-column: 1;
-    justify-self: stretch;
-    margin-top: 0;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNavLink {
-    width: auto;
-    min-width: 160px;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-    justify-content: flex-start;
-    max-width: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .heroPanelStack > .workspaceTopbar .workspaceNavLink {
-    min-width: 140px;
-  }
-}
-
-/* Option 1 polish: compact left nav, centered title, right actions */
+/* heroPanel: flat topbar layout */
 .heroPanel {
   padding: 18px 20px;
 }
 
 .heroPanelStack {
-  display: grid;
-  grid-template-columns: 248px minmax(0, 1fr) auto;
-  gap: 24px;
-  align-items: start;
-}
-
-.heroPanelStack > .workspaceTopbar {
-  display: contents;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNav {
-  grid-column: 1;
-  display: grid;
-  gap: 10px;
-  align-content: start;
-  min-width: 0;
-  max-width: 248px;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNavLink {
-  width: 100%;
-  min-height: 86px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  justify-content: center;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNavStep {
-  font-size: 0.82rem;
-  letter-spacing: 0;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceNavText {
-  font-size: 0.92rem;
-  line-height: 1.28;
-}
-
-.heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-  grid-column: 3;
-  justify-self: end;
-  align-self: start;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-  max-width: 320px;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .heroPanelMain {
-  grid-column: 2;
   display: grid;
-  gap: 18px;
-  align-self: start;
-  min-height: 0;
-  padding-top: 4px;
-}
-
-.heroPanelMain > div:first-child {
+  gap: 14px;
   min-width: 0;
 }
 
 .heroPanel h1 {
   margin: 8px 0 12px;
-  font-size: clamp(2.1rem, 3vw, 3.5rem);
-  line-height: 1.08;
+  font-size: clamp(1.9rem, 2.8vw, 3rem);
+  line-height: 1.1;
 }
 
 .heroCopy {
@@ -5204,14 +4983,13 @@ body {
 
 .heroStatRack {
   width: min(560px, 100%);
-  max-width: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .heroStatCard {
-  padding: 16px 18px;
-  border-radius: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
 }
 
 .heroStatCard span {
@@ -5220,61 +4998,11 @@ body {
 }
 
 .heroStatCard strong {
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   line-height: 1;
 }
 
-@media (max-width: 1280px) {
-  .heroPanelStack {
-    grid-template-columns: 220px minmax(0, 1fr);
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNav {
-    max-width: 220px;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-    grid-column: 2;
-    justify-self: start;
-    justify-content: flex-start;
-    max-width: none;
-  }
-
-  .heroPanelMain {
-    grid-column: 2;
-    padding-top: 84px;
-  }
-}
-
-@media (max-width: 980px) {
-  .heroPanelStack {
-    grid-template-columns: 1fr;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNav,
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions,
-  .heroPanelMain {
-    grid-column: 1;
-    justify-self: stretch;
-    max-width: none;
-    padding-top: 0;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNav {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceNavLink {
-    width: auto;
-    min-width: 160px;
-    min-height: 72px;
-  }
-
-  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
-    justify-content: flex-start;
-  }
-
+@media (max-width: 640px) {
   .heroStatRack {
     width: 100%;
   }
