@@ -53,7 +53,7 @@ export async function POST(request: Request) {
           schemaName: "simulation_turn",
           model: process.env.OPENAI_MODEL_FAST ?? "gpt-5.4-mini",
           system:
-            "당신은 교사를 위한 한국어 모의수업 코치다. 주어진 활동, 카드 배치, 시나리오 episode를 바탕으로 교사 행동, AI 행동, 학생 페르소나 반응, 학생 산출물 예시, 활동별 위험 신호, 교사 개입 추천을 구체적으로 생성하라. 모든 출력은 한국어로 작성하고, 카드 배치가 실제 결과에 어떤 영향을 주는지 드러내라.",
+            "당신은 교사를 위한 한국어 모의수업 코치다. 주어진 활동, 교사와 AI의 역할 설계, 시나리오 episode를 바탕으로 교사 행동, AI 행동, 학생 페르소나 반응, 학생 산출물 예시, 활동별 위험 신호, 교사 개입 추천을 구체적으로 생성하라. 모든 출력은 한국어로 작성하고, 교사와 AI가 어떤 질문을 던지고 어떤 행동을 하며 그 결과가 어떻게 달라지는지 드러내라.",
           payload: {
             designMeta: design.meta,
             scenario,
@@ -96,3 +96,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "failed to simulate lesson turn" }, { status: 500 });
   }
 }
+
+

@@ -59,7 +59,7 @@ export async function POST(request: Request) {
           schemaName: "simulation_scenario",
           model: process.env.OPENAI_MODEL_DEEP ?? "gpt-5.4",
           system:
-            "당신은 교사를 위한 한국어 모의수업 시나리오 설계자다. 주어진 수업설계를 엄격히 따르되, 각 활동마다 학생 페르소나가 어떻게 반응하는지 보여줘라. 모든 episode에는 잘되고 있는 모습, 보통의 실제 모습, 잘 안되는 모습을 모두 포함하고, 학생 산출물 예시, 교사 개입 추천, 카드 배치가 어떤 결과를 만드는지까지 명시하라. 출력의 모든 필드는 한국어로 작성하라.",
+            "당신은 교사를 위한 한국어 모의수업 시나리오 설계자다. 주어진 수업설계를 엄격히 따르되, 각 활동마다 학생 페르소나가 어떻게 반응하는지 보여줘라. 모든 episode에는 잘되고 있는 모습, 보통의 실제 모습, 잘 안되는 모습을 모두 포함하고, 학생 산출물 예시, 교사 개입 추천, 교사와 AI가 어떤 질문을 던지고 어떤 행동을 하며 어떤 결과를 만드는지까지 명시하라. 출력의 모든 필드는 한국어로 작성하라.",
           payload: {
             design,
             analysis,
@@ -112,3 +112,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "failed to create simulation scenario" }, { status: 500 });
   }
 }
+
+

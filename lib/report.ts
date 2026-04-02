@@ -179,7 +179,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                     }))}</article>
                     <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((episode.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
                     <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((episode.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
-                    <article class="report-card"><h3>카드-결과 연결</h3>${renderMiniList((episode.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
+                    <article class="report-card"><h3>질문·행동과 결과 연결</h3>${renderMiniList((episode.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
                   </div>
                 </article>
               `,
@@ -210,14 +210,14 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
                     <li><strong>예상 학생 반응</strong><span>${escapeHtml(turn.expectedStudentResponse)}</span></li>
                     <li><strong>관찰 메모</strong><span>${escapeHtml(turn.observerNote)}</span></li>
                     <li><strong>놓칠 수 있는 지점</strong><span>${escapeHtml(turn.missedOpportunities.join(" / ") || "없음")}</span></li>
-                    <li><strong>연결 카드</strong><span>${escapeHtml(turn.linkedCardIds.map(cardTitle).join(" / ") || "없음")}</span></li>
+                    <li><strong>연결된 질문·행동</strong><span>${escapeHtml(turn.linkedCardIds.map(cardTitle).join(" / ") || "없음")}</span></li>
                     <li><strong>활동별 위험 신호</strong><span>${escapeHtml((turn.activityRiskSignals ?? []).join(" / ") || "없음")}</span></li>
                   </ul>
                   <div class="report-card-grid report-card-grid-2">
                     <article class="report-card"><h3>학생 페르소나 반응</h3>${renderMiniList((turn.studentPersonaResponses ?? []).map((item) => `${item.personaName}: ${item.response}`))}</article>
                     <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((turn.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
                     <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((turn.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
-                    <article class="report-card"><h3>카드-결과 연결</h3>${renderMiniList((turn.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
+                    <article class="report-card"><h3>질문·행동과 결과 연결</h3>${renderMiniList((turn.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
                   </div>
                 </article>
               `,
@@ -514,8 +514,8 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
               <th>교과</th>
               <th>학습활동</th>
               <th>평가 방법</th>
-              <th>교사 카드</th>
-              <th>AI 카드</th>
+              <th>교사 질문·행동</th>
+              <th>AI 질문·행동</th>
             </tr>
           </thead>
           <tbody>${activityRows}</tbody>
@@ -530,3 +530,4 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
   </body>
 </html>`;
 }
+

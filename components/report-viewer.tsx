@@ -126,8 +126,8 @@ export function ReportViewer() {
                 <th>교과</th>
                 <th>학습활동</th>
                 <th>평가 방법</th>
-                <th>교사 카드</th>
-                <th>AI 카드</th>
+                <th>교사 질문·행동</th>
+                <th>AI 질문·행동</th>
               </tr>
             </thead>
             <tbody>
@@ -205,7 +205,7 @@ export function ReportViewer() {
                   <div className="reportMiniBlock"><strong>주요 학생 페르소나</strong><div className="reportChipWrap">{(episode.featuredPersonaIds ?? []).map((personaId) => { const persona = personaById.get(personaId); return <span key={`${episode.id}-${personaId}`} className="reportChip">{persona ? `${persona.name} · ${persona.label}` : personaId}</span>; })}</div></div>
                   <div className="reportMiniBlock"><strong>학생 산출물 예시</strong><ul>{(episode.sampleArtifacts ?? []).map((artifact) => <li key={artifact.id}>{artifact.title}: {artifact.content}</li>)}</ul></div>
                   <div className="reportMiniBlock"><strong>교사 개입 추천</strong><ul>{(episode.teacherInterventions ?? []).map((item) => <li key={item.id}>{item.title}: {item.move}</li>)}</ul></div>
-                  <div className="reportMiniBlock"><strong>카드-결과 연결</strong><ul>{(episode.cardOutcomeLinks ?? []).map((item) => <li key={`${episode.id}-${item.cardId}`}>{item.cardTitle}: {item.resultingChange}</li>)}</ul></div>
+                  <div className="reportMiniBlock"><strong>질문·행동과 결과 연결</strong><ul>{(episode.cardOutcomeLinks ?? []).map((item) => <li key={`${episode.id}-${item.cardId}`}>{item.cardTitle}: {item.resultingChange}</li>)}</ul></div>
                 </div>
               </article>
             ))}
@@ -227,14 +227,14 @@ export function ReportViewer() {
                   <li><strong>예상 학생 반응</strong><span>{turn.expectedStudentResponse}</span></li>
                   <li><strong>관찰 메모</strong><span>{turn.observerNote}</span></li>
                   <li><strong>놓칠 수 있는 지점</strong><span>{turn.missedOpportunities.join(" / ") || "없음"}</span></li>
-                  <li><strong>연결 카드</strong><span>{findCardTitles(turn.linkedCardIds).join(" / ") || "없음"}</span></li>
+                  <li><strong>연결된 질문·행동</strong><span>{findCardTitles(turn.linkedCardIds).join(" / ") || "없음"}</span></li>
                   <li><strong>활동별 위험 신호</strong><span>{(turn.activityRiskSignals ?? []).join(" / ") || "없음"}</span></li>
                 </ul>
                 <div className="reportGrid reportGridTwo reportScenarioDetailGrid">
                   <div className="reportMiniBlock"><strong>학생 페르소나 반응</strong><ul>{(turn.studentPersonaResponses ?? []).map((item) => <li key={`${turn.id}-${item.personaId}`}>{item.personaName}: {item.response}</li>)}</ul></div>
                   <div className="reportMiniBlock"><strong>학생 산출물 예시</strong><ul>{(turn.sampleArtifacts ?? []).map((artifact) => <li key={artifact.id}>{artifact.title}: {artifact.content}</li>)}</ul></div>
                   <div className="reportMiniBlock"><strong>교사 개입 추천</strong><ul>{(turn.teacherInterventions ?? []).map((item) => <li key={item.id}>{item.title}: {item.move}</li>)}</ul></div>
-                  <div className="reportMiniBlock"><strong>카드-결과 연결</strong><ul>{(turn.cardOutcomeLinks ?? []).map((item) => <li key={`${turn.id}-${item.cardId}`}>{item.cardTitle}: {item.resultingChange}</li>)}</ul></div>
+                  <div className="reportMiniBlock"><strong>질문·행동과 결과 연결</strong><ul>{(turn.cardOutcomeLinks ?? []).map((item) => <li key={`${turn.id}-${item.cardId}`}>{item.cardTitle}: {item.resultingChange}</li>)}</ul></div>
                 </div>
               </article>
             ))}
@@ -283,3 +283,4 @@ export function ReportViewer() {
     </main>
   );
 }
+

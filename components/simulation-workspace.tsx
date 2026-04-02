@@ -517,7 +517,7 @@ export function SimulationWorkspace() {
       </section>
 
       <section className="statusCards">
-        <article className="summaryCard"><span>배치 카드</span><strong>{design.placements.length}</strong></article>
+        <article className="summaryCard"><span>설계 요소</span><strong>{design.placements.length}</strong></article>
         <article className="summaryCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
         <article className="summaryCard"><span>활동 로그</span><strong>{turns.length}</strong></article>
         <article className="summaryCard"><span>성찰 질문</span><strong>{questions.length}</strong></article>
@@ -635,11 +635,11 @@ export function SimulationWorkspace() {
                           </div>
                         </section>
                         <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>카드 배치와 결과 연결</h3></div></div>
+                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>교사·AI 질문과 행동이 결과에 미친 영향</h3></div></div>
                           <div className="outcomeLinkList">
                             {(episode.cardOutcomeLinks ?? []).map((link) => (
                               <article key={`${episode.id}-${link.cardId}`} className="outcomeLinkCard">
-                                <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 카드" : "AI 카드"}</span></div>
+                                <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 질문" : "AI 행동"}</span></div>
                                 <p>{link.influence}</p>
                                 <small>{link.resultingChange}</small>
                               </article>
@@ -745,11 +745,11 @@ export function SimulationWorkspace() {
                         </section>
                       </div>
                       <section className="detailSection detailSectionSoft">
-                        <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>카드 배치와 결과 연결</h3></div></div>
+                        <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>교사·AI 질문과 행동이 결과에 미친 영향</h3></div></div>
                         <div className="outcomeLinkList">
                           {(turn.cardOutcomeLinks ?? []).map((link) => (
                             <article key={`${turn.id}-${link.cardId}`} className="outcomeLinkCard">
-                              <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 카드" : "AI 카드"}</span></div>
+                              <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 질문" : "AI 행동"}</span></div>
                               <p>{link.influence}</p>
                               <small>{link.resultingChange}</small>
                             </article>
@@ -805,7 +805,7 @@ export function SimulationWorkspace() {
                 <label className="reflectionQuestionCard reflectionSummaryCard">
                   <span>다음 수정 체크리스트</span>
                   <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
-                  <textarea rows={5} value={nextRevisionText} onChange={(event) => setNextRevisionText(event.target.value)} placeholder="예: 탐구 활동에 AI 신뢰 묻기 카드 추가" />
+                  <textarea rows={5} value={nextRevisionText} onChange={(event) => setNextRevisionText(event.target.value)} placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가" />
                 </label>
               </div>
             </div>
@@ -897,3 +897,4 @@ export function SimulationWorkspace() {
     </main>
   );
 }
+

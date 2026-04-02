@@ -136,7 +136,7 @@ function buildStudentLearningSignal(activity: LessonActivity) {
 
 function buildHumanAgencyFocus(activity: LessonActivity, teacherCardTitle?: string) {
   if (teacherCardTitle) {
-    return `교사는 '${teacherCardTitle}' 카드의 질문을 통해 학생의 사고를 다시 열고, 판단 기준을 수업 안에 붙잡아 둡니다.`;
+    return `교사는 '${teacherCardTitle}'와 같은 질문을 던지며 학생의 사고를 다시 열고, 판단 기준을 수업 안에 붙잡아 둡니다.`;
   }
 
   return "교사의 개입은 보이지만 어떤 질문으로 판단을 조율할지 더 분명해질 필요가 있습니다.";
@@ -182,7 +182,7 @@ function buildOrdinaryScene(activity: LessonActivity, teacherCardTitle?: string,
   const title = getActivityTitle(activity);
 
   if (activity.aiCardIds.length > 0) {
-    return `'${title}' 활동에서 일부 학생은 AI 결과를 먼저 참고하고, 일부 학생은 자신의 의견을 늦게 꺼낸다. ${teacherCardTitle ? `교사가 '${teacherCardTitle}' 카드를 사용하면` : "교사가 중간에 질문을 넣으면"} 수업이 다시 비교와 설명 쪽으로 돌아오지만, 그렇지 않으면 결과 정리로 빨라질 수 있다.`;
+    return `'${title}' 활동에서 일부 학생은 AI 결과를 먼저 참고하고, 일부 학생은 자신의 의견을 늦게 꺼낸다. ${teacherCardTitle ? `교사가 '${teacherCardTitle}'와 같은 질문을 던지면` : "교사가 중간에 질문을 넣으면"} 수업이 다시 비교와 설명 쪽으로 돌아오지만, 그렇지 않으면 결과 정리로 빨라질 수 있다.`;
   }
 
   return `'${title}' 활동은 대체로 안정적으로 진행되지만, 참여가 빠른 학생 중심으로 논의가 이어질 수 있다. 교사가 한두 번 근거를 묻고 조용한 학생의 생각을 드러내면 학습의 깊이가 유지된다.`;
@@ -192,14 +192,14 @@ function buildChallengeScene(activity: LessonActivity, teacherCardTitle?: string
   const title = getActivityTitle(activity);
 
   if (activity.aiCardIds.length > 0 && !hasAnyCard(activity, aiCheckCardIds)) {
-    return `'${title}' 활동에서 ${aiCardTitle ? `'${aiCardTitle}' 카드로 생성된 결과가` : "AI 결과가"} 빠르게 정답처럼 채택된다. 학생은 왜 그 답을 골랐는지 설명하지 못하고, 교사도 기준을 다시 묻지 못한 채 다음 단계로 넘어간다.`;
+    return `'${title}' 활동에서 ${aiCardTitle ? `'${aiCardTitle}'가 제안한 결과가` : "AI 결과가"} 빠르게 정답처럼 채택된다. 학생은 왜 그 답을 골랐는지 설명하지 못하고, 교사도 기준을 다시 묻지 못한 채 다음 단계로 넘어간다.`;
   }
 
   if (!hasAnyCard(activity, deepLearningCardIds)) {
     return `'${title}' 활동이 산출물 작성 중심으로 흘러 학생이 비교, 반론, 재설명 없이 정리만 하게 된다. 학습목표보다 제출 형식이 더 크게 남는다.`;
   }
 
-  return `${teacherCardTitle ? `'${teacherCardTitle}' 카드를 배치했더라도` : "활동이 진행되더라도"} 조용한 학생은 참여하지 못하고 몇몇 학생만 답을 주도한다. 결과는 나오지만 학급 전체의 학습 신호는 충분히 드러나지 않는다.`;
+  return `${teacherCardTitle ? `'${teacherCardTitle}'와 같은 질문이 들어가더라도` : "활동이 진행되더라도"} 조용한 학생은 참여하지 못하고 몇몇 학생만 답을 주도한다. 결과는 나오지만 학급 전체의 학습 신호는 충분히 드러나지 않는다.`;
 }
 
 function selectFeaturedPersonas(activity: LessonActivity, personas: StudentPersona[]) {
@@ -232,7 +232,7 @@ function buildArtifacts(
       content: `${primaryPersona?.name ?? "학생"}이(가) 자신의 판단 기준 두 가지와 선택 이유를 짧게 적었다.`,
       quality: hasAnyCard(activity, ["T10", "T12"]) ? "strong" : "mixed",
       insight: hasAnyCard(activity, ["T10", "T12"])
-        ? "근거를 말하게 하는 카드가 실제 학생 메모 품질을 끌어올린다."
+        ? "근거를 말하게 하는 질문이 실제 학생 메모 품질을 끌어올린다."
         : "메모는 있지만 선택 기준이 분명하지 않아 교사 질문이 더 필요하다.",
     },
   ];
@@ -300,7 +300,7 @@ function buildTeacherInterventions(
       title: "근거를 다시 묻기",
       timing: `${title} 활동 중 학생이 답을 고른 직후`,
       move: teacherCardTitle
-        ? `교사가 '${teacherCardTitle}' 카드의 문장으로 "왜 그렇게 판단했는지"를 다시 묻는다.`
+        ? `교사가 '${teacherCardTitle}'에 담긴 질문처럼 "왜 그렇게 판단했는지"를 다시 묻는다.`
         : "교사가 답을 확인하는 대신 선택 이유와 비교 기준을 다시 묻는다.",
       expectedImpact: "학생이 결과가 아니라 근거를 말하게 되어 깊이 있는 학습 신호가 드러난다.",
       linkedCardIds: activity.humanCardIds.slice(0, 2),
@@ -381,29 +381,29 @@ export function createHeuristicAnalysis(design: LessonDesign): Omit<DesignAnalys
   const hasAccountability = design.activities.some((activity) => activity.humanCardIds.includes("T14"));
 
   if (hasFinalDecision) {
-    strengths.push("교사의 최종 판단 카드가 포함되어 인간의 책임과 수업 마감 구조가 비교적 분명합니다.");
+    strengths.push("교사의 최종 판단을 분명히 하는 장면이 포함되어 인간의 책임과 수업 마감 구조가 비교적 분명합니다.");
   } else {
     gaps.push("AI를 쓰는 활동이 있지만 교사의 최종 판단 장치가 약합니다.");
-    recommendations.push("정리 또는 평가 직전에 '최종 판단' 카드를 배치해 누가 결정을 마무리하는지 분명히 하세요.");
+    recommendations.push("정리 또는 평가 직전에 교사가 최종 판단을 언어화하는 질문을 넣어 누가 결정을 마무리하는지 분명히 하세요.");
   }
 
   if (hasDeepLearning) {
     strengths.push("비교, 근거 설명, 재질문과 같은 깊이 있는 학습 장치가 일부 활동에 보입니다.");
   } else {
-    gaps.push("학생이 왜 그렇게 판단했는지 설명하도록 만드는 카드가 부족합니다.");
-    recommendations.push("'비교 질문', '근거 기반 토론', '관점 비교' 카드를 두 개 이상 활동에 배치하세요.");
+    gaps.push("학생이 왜 그렇게 판단했는지 설명하도록 만드는 질문과 행동이 부족합니다.");
+    recommendations.push("두 개 이상의 활동에서 비교 질문, 근거 기반 토론, 관점 전환이 실제로 일어나도록 설계하세요.");
   }
 
   if (hasAiCheck) {
     strengths.push("AI 결과를 그대로 수용하지 않고 비교하거나 점검하는 장치가 포함되어 있습니다.");
   } else if (design.activities.some((activity) => activity.aiCardIds.length > 0)) {
     gaps.push("AI를 사용하는 활동에 검증 질문과 신뢰 점검이 충분히 드러나지 않습니다.");
-    recommendations.push("AI를 쓰는 모든 활동에 'AI 비교 질문' 또는 'AI 신뢰 묻기' 카드를 함께 배치하세요.");
+    recommendations.push("AI를 쓰는 모든 활동에서 AI 결과를 비교하거나 신뢰도를 묻는 질문이 실제로 나오도록 설계하세요.");
   }
 
   if (!hasAccountability) {
-    gaps.push("결과의 책임 주체를 확인하는 카드가 부족합니다.");
-    recommendations.push("마무리 활동에 '책임 인식' 카드를 추가해 결과와 판단의 책임을 다시 묻게 하세요.");
+    gaps.push("결과의 책임 주체를 확인하는 질문과 마무리 행동이 부족합니다.");
+    recommendations.push("마무리 활동에서 결과와 판단의 책임을 다시 묻게 하는 질문을 추가하세요.");
   }
 
   if (design.activities.some((activity) => activity.evidenceOfSuccess.length > 0)) {
@@ -502,8 +502,8 @@ export function createHeuristicTurn(
   const evidenceObserved = [
     activity.functionLabel ? `기능: ${activity.functionLabel}` : null,
     activity.assessmentMethod ? `평가: ${activity.assessmentMethod}` : null,
-    teacherCard ? `교사 카드: ${teacherCard.title}` : null,
-    aiCard ? `AI 카드: ${aiCard.title}` : null,
+    teacherCard ? `교사 질문/행동: ${teacherCard.title}` : null,
+    aiCard ? `AI 역할/행동: ${aiCard.title}` : null,
     activity.learningObjective ? `목표: ${activity.learningObjective}` : null,
   ].filter(Boolean) as string[];
 
@@ -587,7 +587,7 @@ export function detectHeuristicRisks(design: LessonDesign, turns: SimulationTurn
           turn,
           "AI_OVER_RELIANCE",
           "high",
-          "AI를 쓰는 활동이지만 결과를 비교하거나 신뢰도를 묻는 카드가 부족해 학생이 AI 답을 정답처럼 채택할 수 있습니다.",
+          "AI를 쓰는 활동이지만 결과를 비교하거나 신뢰도를 묻는 질문이 부족해 학생이 AI 답을 정답처럼 채택할 수 있습니다.",
           "학생이 AI 결과를 그대로 고르기 전에 무엇을 믿고 무엇을 보류할지 먼저 말하게 하세요.",
           "AI 검증 구조",
           "학생의 자기 판단 언어가 약해지고, AI 결과를 그대로 제출할 가능성이 커집니다.",
@@ -603,7 +603,7 @@ export function detectHeuristicRisks(design: LessonDesign, turns: SimulationTurn
           turn,
           "SHALLOW_LEARNING",
           activity.assessmentMethod ? "medium" : "high",
-          "비교, 재질문, 근거 설명 카드가 약해 학생이 과제를 수행해도 학습의 깊이가 충분히 드러나지 않을 수 있습니다.",
+          "비교, 재질문, 근거 설명 행동이 약해 학생이 과제를 수행해도 학습의 깊이가 충분히 드러나지 않을 수 있습니다.",
           "학생이 두 대안을 비교하거나 선택 기준을 말하는 짧은 질문을 반드시 넣으세요.",
           "깊이 있는 학습",
           "학생은 결과는 내지만 왜 그렇게 판단했는지를 설명하지 못할 수 있습니다.",
@@ -635,7 +635,7 @@ export function detectHeuristicRisks(design: LessonDesign, turns: SimulationTurn
           turn,
           "NO_HUMAN_FINAL_DECISION",
           "high",
-          "AI가 개입하는 활동인데 교사의 최종 판단 카드가 없어 누가 결정을 마무리하는지 흐려질 수 있습니다.",
+          "AI가 개입하는 활동인데 교사의 최종 판단이 드러나는 장면이 없어 누가 결정을 마무리하는지 흐려질 수 있습니다.",
           "정리 직전에 교사가 선택 기준을 다시 묻고 마지막 판단은 학생과 교사가 함께 언어화하세요.",
           "최종 판단 구조",
           "학생이 AI를 최종 권위로 오해하거나, 판단 책임을 외부로 넘길 수 있습니다.",
@@ -651,7 +651,7 @@ export function detectHeuristicRisks(design: LessonDesign, turns: SimulationTurn
           turn,
           "UNCLEAR_ACCOUNTABILITY",
           "medium",
-          "결과의 책임 주체를 확인하는 카드가 없어 누가 판단했고 누가 책임지는지 흐릴 수 있습니다.",
+          "결과의 책임 주체를 확인하는 질문이 없어 누가 판단했고 누가 책임지는지 흐릴 수 있습니다.",
           "마지막에 '이 판단을 누가 책임질 것인가'를 짧게라도 묻게 하세요.",
           "책임 구조",
           "학생은 결과를 만들고도 자신의 판단 책임을 자각하지 못할 수 있습니다.",
@@ -715,11 +715,11 @@ export function detectHeuristicRisks(design: LessonDesign, turns: SimulationTurn
           turn,
           "CARD_BEHAVIOR_MISMATCH",
           "medium",
-          "카드는 배치되어 있지만 실제 활동 장면에서는 카드 의도가 충분히 행동으로 드러나지 않습니다.",
-          "한 활동에서 정말 실행할 카드 1~2개를 골라 교사 발화 문장으로 다시 구체화하세요.",
+          "설계 의도는 분명하지만 실제 활동 장면에서는 그 의도가 충분히 질문과 행동으로 드러나지 않습니다.",
+          "한 활동에서 실제로 실행할 질문과 행동 1~2개를 골라 교사 발화 문장으로 다시 구체화하세요.",
           "설계-실행 일치",
-          "좋은 카드 배치가 있어도 학생은 그 효과를 체감하지 못하고, 수업 장면은 평면적으로 진행될 수 있습니다.",
-          ["카드 수는 많은데 교사 질문은 일반적이다.", "카드 의도와 활동 장면이 느슨하게 연결된다."],
+          "좋은 설계가 있어도 학생은 그 효과를 체감하지 못하고, 수업 장면은 평면적으로 진행될 수 있습니다.",
+          ["설계 요소는 많지만 교사 질문은 일반적이다.", "설계 의도와 활동 장면이 느슨하게 연결된다."],
         ),
       );
     }
@@ -740,7 +740,7 @@ export function createReflectionQuestions(
     return {
       id: crypto.randomUUID(),
       simulationRunId: turn?.simulationRunId ?? "draft-run",
-      prompt: `${activityLabel}에서 ${riskLabels[risk.riskType]}가 드러났습니다. 다음 차시에서는 어떤 카드 배치나 교사 질문을 바꾸겠습니까?`,
+      prompt: `${activityLabel}에서 ${riskLabels[risk.riskType]}가 드러났습니다. 다음 차시에서는 교사의 질문이나 AI의 역할을 어떻게 바꾸겠습니까?`,
       rationale: `${risk.focusArea} 관점에서 ${risk.studentImpact}`,
       linkedTurnIds: risk.evidenceTurnIds,
       linkedRiskIds: [risk.id],
@@ -862,3 +862,4 @@ export function buildReflectionMarkdown(input: {
 
   return sections.join("\n");
 }
+

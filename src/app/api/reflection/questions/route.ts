@@ -34,7 +34,7 @@ export async function POST(request: Request) {
           schemaName: "reflection_questions",
           model: process.env.OPENAI_MODEL_FAST ?? "gpt-5.4-mini",
           system:
-            "당신은 교사의 성찰 코치다. 실제 시뮬레이션 장면과 탐지된 위험에 연결된 구체적 성찰 질문을 생성하라. 일반론이 아니라 특정 턴, 특정 판단 문제, 특정 카드 배치의 수정 방향을 묻는 질문이어야 한다.",
+            "당신은 교사의 성찰 코치다. 실제 시뮬레이션 장면과 탐지된 위험에 연결된 구체적 성찰 질문을 생성하라. 일반론이 아니라 특정 턴, 특정 판단 문제, 특정 교사 질문이나 AI의 제안 방식을 어떻게 바꿀지 묻는 질문이어야 한다.",
           payload: {
             design,
             turns,
@@ -65,3 +65,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
