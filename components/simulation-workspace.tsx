@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -469,6 +469,52 @@ export function SimulationWorkspace() {
   const mediumRiskCount = risks.filter((risk) => risk.severity === "medium").length;
   const lowRiskCount = risks.filter((risk) => risk.severity === "low").length;
 
+  const risksByTurnId = useMemo(() => {
+    const next = new Map<string, DetectedRisk[]>();
+
+    for (const risk of risks) {
+      for (const turnId of risk.evidenceTurnIds ?? []) {
+        const current = next.get(turnId) ?? [];
+        current.push(risk);
+        next.set(turnId, current);
+      }
+    }
+
+    return next;
+  }, [risks]);
+
+  const questionsByTurnId = useMemo(() => {
+    const next = new Map<string, ReflectionQuestion[]>();
+
+    for (const question of questions) {
+      for (const turnId of question.linkedTurnIds ?? []) {
+        const current = next.get(turnId) ?? [];
+        current.push(question);
+        next.set(turnId, current);
+      }
+    }
+
+    return next;
+  }, [questions]);
+
+  const simulationRows = useMemo(() => {
+    const severityRank = { high: 0, medium: 1, low: 2 } as const;
+
+    return turns.map((turn) => {
+      const episode = turn.scenarioEpisodeId ? episodeById.get(turn.scenarioEpisodeId) ?? null : null;
+      const linkedRisks = [...(risksByTurnId.get(turn.id) ?? [])].sort(
+        (left, right) => severityRank[left.severity] - severityRank[right.severity],
+      );
+
+      return {
+        turn,
+        episode,
+        linkedRisks,
+        linkedQuestions: questionsByTurnId.get(turn.id) ?? [],
+      };
+    });
+  }, [turns, episodeById, risksByTurnId, questionsByTurnId]);
+
   if (!design) {
     return (
       <main className="appShell">
@@ -493,8 +539,7 @@ export function SimulationWorkspace() {
           <p className="eyebrow">Step 2</p>
           <h1>모의수업 실행과 성찰</h1>
           <p className="heroCopy">
-            설계안을 바탕으로 학생 페르소나, 잘되는 모습·보통의 실제 모습·잘 안되는 모습, 활동별 위험, 학생 산출물,
-            교사 개입 추천을 함께 제시합니다.
+            자연스러운 수업 이야기, Human-AI 에이전시 관점의 문제점, 활동별 분석과 성찰을 한 화면에서 나란히 비교합니다.
           </p>
           <div className="heroActions">
             <button type="button" className="primaryButton" onClick={runSimulation}>
@@ -511,303 +556,301 @@ export function SimulationWorkspace() {
         </div>
         <div className="heroStatRack">
           <article className="heroStatCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
-          <article className="heroStatCard"><span>에피소드</span><strong>{scenario?.episodes.length ?? 0}</strong></article>
+          <article className="heroStatCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
           <article className="heroStatCard"><span>위험</span><strong>{risks.length}</strong></article>
         </div>
       </section>
 
-      <section className="statusCards">
-        <article className="summaryCard"><span>설계 요소</span><strong>{design.placements.length}</strong></article>
-        <article className="summaryCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
-        <article className="summaryCard"><span>활동 로그</span><strong>{turns.length}</strong></article>
-        <article className="summaryCard"><span>성찰 질문</span><strong>{questions.length}</strong></article>
+      <section className="panel simulationOverviewPanel">
+        <div className="panelHeader">
+          <div>
+            <p className="sectionTag">Simulation Overview</p>
+            <h2>{scenario?.title ?? "수업 실행 개요"}</h2>
+          </div>
+          <p className="panelHint">{message}</p>
+        </div>
+        <div className="tableStageBar simulationStageBar">
+          <article className="stageChip"><span>현재 세션</span><strong>{simulationRunId ? simulationRunId.slice(0, 8) : "실행 전"}</strong></article>
+          <article className="stageChip"><span>분석 엔진</span><strong>{analysis?.engine ?? "대기 중"}</strong></article>
+          <article className="stageChip"><span>마지막 서버 동기화</span><strong>{formatSyncTime(lastServerSyncAt)}</strong></article>
+        </div>
+        <div className="simulationOverviewGrid">
+          <article className="detailSection detailSectionSoft">
+            <div className="detailSectionHeader">
+              <div>
+                <p className="sectionMicroTag">Lesson Snapshot</p>
+                <h3>{design.meta.topic || "제목 미입력"}</h3>
+              </div>
+              <span className="engineBadge">v{design.version}</span>
+            </div>
+            <div className="snapshotMetricGrid">
+              <article className="snapshotMetric"><span>교과</span><strong>{design.meta.subject || "-"}</strong></article>
+              <article className="snapshotMetric"><span>대상</span><strong>{design.meta.target || "-"}</strong></article>
+              <article className="snapshotMetric"><span>설계 요소</span><strong>{design.placements.length}</strong></article>
+            </div>
+            <div className="snapshotList">
+              <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
+              <div><strong>성취기준</strong><span>{design.achievementStandards.length ? design.achievementStandards.join(" / ") : "아직 입력된 성취기준이 없습니다."}</span></div>
+            </div>
+          </article>
+          <article className="detailSection detailSectionSoft">
+            <div className="detailSectionHeader">
+              <div>
+                <p className="sectionMicroTag">Storyline</p>
+                <h3>수업 배경과 관찰 포인트</h3>
+              </div>
+            </div>
+            <p className="overviewLead">{scenario?.setting ?? "모의 수업을 실행하면 여기에서 수업 배경과 맥락이 제시됩니다."}</p>
+            <div className="snapshotList">
+              <div><strong>학습 흐름</strong><span>{scenario?.learningArc ?? "아직 수업 흐름이 없습니다."}</span></div>
+              <div><strong>관찰 포인트</strong><span>{scenario?.facilitatorBrief ?? "모의 수업 실행 뒤 관찰 포인트가 채워집니다."}</span></div>
+            </div>
+          </article>
+          <article className="detailSection detailSectionSoft">
+            <div className="detailSectionHeader">
+              <div>
+                <p className="sectionMicroTag">Analysis</p>
+                <h3>설계 분석과 위험 분포</h3>
+              </div>
+            </div>
+            <p className="overviewLead">{analysis?.summary ?? "설계 분석은 모의 수업 실행 뒤 생성됩니다."}</p>
+            <div className="riskSummaryGrid">
+              <article className="riskSummaryCard riskSummaryCard-high"><span>High</span><strong>{highRiskCount}</strong></article>
+              <article className="riskSummaryCard riskSummaryCard-medium"><span>Medium</span><strong>{mediumRiskCount}</strong></article>
+              <article className="riskSummaryCard riskSummaryCard-low"><span>Low</span><strong>{lowRiskCount}</strong></article>
+            </div>
+          </article>
+        </div>
+        {scenario?.studentPersonas.length ? (
+          <div className="personaStrip">
+            {scenario.studentPersonas.map((persona) => (
+              <article key={persona.id} className="personaStripCard">
+                <div className="personaStripHead">
+                  <strong>{persona.name}</strong>
+                  <span>{persona.label}</span>
+                </div>
+                <p>{persona.profile}</p>
+                <small>자주 보이는 말: "{persona.likelyUtterance}"</small>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
 
-      <section className="workspaceGrid simulationGrid">
+      <section className="panel simulationBoardPanel">
+        <div className="panelHeader">
+          <div>
+            <p className="sectionTag">Simulation Board</p>
+            <h2>모의 수업 실행 결과 · 문제점 · 분석 및 성찰</h2>
+          </div>
+          <p className="panelHint">각 활동을 하나의 행으로 정리해 수업 이야기, agency 문제점, 성찰을 같은 높이에서 비교합니다.</p>
+        </div>
+
+        {simulationRows.length ? (
+          <div className="simulationTriBoard">
+            <div className="triBoardHeader">
+              <div className="triBoardHeadCell">
+                <p className="sectionMicroTag">Lesson Story</p>
+                <h3>모의 수업 실행 결과</h3>
+              </div>
+              <div className="triBoardHeadCell">
+                <p className="sectionMicroTag">Agency Issues</p>
+                <h3>Human-AI 에이전시 관점 문제점</h3>
+              </div>
+              <div className="triBoardHeadCell">
+                <p className="sectionMicroTag">Analysis & Reflection</p>
+                <h3>분석 및 성찰 쓰기</h3>
+              </div>
+            </div>
+
+            {simulationRows.map(({ turn, episode, linkedRisks, linkedQuestions }) => (
+              <article key={turn.id} className="simulationTriRow">
+                <section className="triColumn triColumn-story">
+                  <div className="triColumnHeader">
+                    <div className="timelineTitleBlock">
+                      <span className="scenarioEpisodeIndex">Activity {turn.turnIndex}</span>
+                      {episode ? <span className="scenarioLensBadge">{episode.lens}</span> : null}
+                    </div>
+                    <span className="engineBadge">{turn.engine}</span>
+                  </div>
+                  <h3>{turn.activityTitle}</h3>
+                  <p className="storyLead">{episode?.narrative ?? turn.expectedStudentResponse}</p>
+                  <div className="storyDialogueList">
+                    <article className="storyDialogueCard storyDialogueCard-teacher">
+                      <strong>선생님 발문·행동</strong>
+                      <p>{turn.teacherAction}</p>
+                    </article>
+                    {(turn.studentPersonaResponses ?? []).slice(0, 2).map((item) => {
+                      const persona = personaById.get(item.personaId);
+                      return (
+                        <article key={`${turn.id}-${item.personaId}`} className="storyDialogueCard storyDialogueCard-student">
+                          <strong>{item.personaName}</strong>
+                          <span>{persona?.label ?? "학생 페르소나"}</span>
+                          <p>{item.response}</p>
+                        </article>
+                      );
+                    })}
+                    <article className="storyDialogueCard storyDialogueCard-ai">
+                      <strong>AI 활용</strong>
+                      <p>{turn.aiAction}</p>
+                    </article>
+                  </div>
+                  <div className="storySceneGrid">
+                    <div className="scenarioContrastCard scenarioContrastCard-positive">
+                      <strong>잘되고 있는 모습</strong>
+                      <p>{episode?.successScene ?? "이 활동이 잘 풀릴 때의 장면이 여기에 제시됩니다."}</p>
+                    </div>
+                    <div className="scenarioContrastCard scenarioContrastCard-neutral">
+                      <strong>보통의 실제 모습</strong>
+                      <p>{episode?.ordinaryScene ?? turn.expectedStudentResponse}</p>
+                    </div>
+                    <div className="scenarioContrastCard scenarioContrastCard-negative">
+                      <strong>잘 안되는 모습</strong>
+                      <p>{episode?.challengeScene ?? (turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "아직 뚜렷한 위험 장면이 없습니다.")}</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="triColumn triColumn-issues">
+                  <div className="triColumnHeader">
+                    <div>
+                      <p className="sectionMicroTag">Issue Reading</p>
+                      <h3>문제점과 위험 신호</h3>
+                    </div>
+                  </div>
+                  <p className="issueLead">{turn.observerNote}</p>
+                  <div className="signalList signalList-compact">
+                    {(turn.activityRiskSignals ?? []).map((signal) => (
+                      <span key={`${turn.id}-${signal}`} className="linkedCardChip linkedCardChip-risk">{signal}</span>
+                    ))}
+                  </div>
+                  {linkedRisks.length ? (
+                    <div className="issueRiskList">
+                      {linkedRisks.map((risk) => (
+                        <article key={risk.id} className={`riskCard risk-${risk.severity} riskCardCompact`}>
+                          <div className="riskHeader">
+                            <h3>{riskLabels[risk.riskType]}</h3>
+                            <span>{risk.severity}</span>
+                          </div>
+                          <p className="riskActivityLabel">{risk.focusArea}</p>
+                          <p>{risk.rationale}</p>
+                          <div className="riskMetaBlock">
+                            <strong>학생 영향</strong>
+                            <p>{risk.studentImpact}</p>
+                          </div>
+                          <strong>권장 개입</strong>
+                          <p>{risk.recommendedIntervention}</p>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="emptyPanelText">이 활동에서는 큰 위험보다 안정적으로 유지할 설계 포인트가 더 두드러집니다.</p>
+                  )}
+                  {turn.cardOutcomeLinks.length ? (
+                    <section className="detailSection detailSectionSoft compactTraceSection">
+                      <div className="detailSectionHeader">
+                        <div>
+                          <p className="sectionMicroTag">Design Trace</p>
+                          <h3>설계와 실행의 연결</h3>
+                        </div>
+                      </div>
+                      <div className="compactTraceList">
+                        {turn.cardOutcomeLinks.slice(0, 3).map((link) => (
+                          <article key={`${turn.id}-${link.cardId}`} className="traceCard">
+                            <strong>{link.actor === "teacher" ? "교사 질문·행동" : "AI 질문·행동"} · {link.cardTitle}</strong>
+                            <p>{link.resultingChange}</p>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
+                </section>
+
+                <section className="triColumn triColumn-reflection">
+                  <div className="triColumnHeader">
+                    <div>
+                      <p className="sectionMicroTag">Evidence & Writing</p>
+                      <h3>분석 근거와 성찰 쓰기</h3>
+                    </div>
+                  </div>
+                  <div className="reflectionEvidenceList">
+                    {(turn.sampleArtifacts ?? []).slice(0, 2).map((artifact) => (
+                      <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality} artifactCardCompact`}>
+                        <div className="artifactHead">
+                          <strong>{artifact.title}</strong>
+                          <span>{qualityLabel(artifact.quality)}</span>
+                        </div>
+                        <p>{artifact.content}</p>
+                        <small>{artifact.insight}</small>
+                      </article>
+                    ))}
+                    {(turn.teacherInterventions ?? []).slice(0, 2).map((item) => (
+                      <article key={item.id} className="interventionCard interventionCardCompact">
+                        <strong>{item.title}</strong>
+                        <span>{item.timing}</span>
+                        <p>{item.move}</p>
+                        <small>{item.expectedImpact}</small>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="reflectionInlineList">
+                    {linkedQuestions.length ? (
+                      linkedQuestions.map((question) => (
+                        <label key={question.id} className="reflectionQuestionCard reflectionInlineCard">
+                          <span>{question.prompt}</span>
+                          <small>{question.rationale}</small>
+                          <textarea
+                            rows={4}
+                            value={answers[question.id] ?? ""}
+                            onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))}
+                            placeholder="이 활동에서 유지할 점, 수정할 교사 질문, AI 활용 조정점을 적어 주세요."
+                          />
+                        </label>
+                      ))
+                    ) : (
+                      <p className="emptyPanelText">이 활동과 직접 연결된 성찰 질문이 아직 없습니다.</p>
+                    )}
+                  </div>
+                </section>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="emptyPanelText">아직 실행 결과가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
+        )}
+      </section>
+
+      <section className="workspaceGrid simulationSupportGrid">
         <div className="mainColumn">
           <section className="panel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Lesson Scenario</p>
-                <h2>수업 시나리오와 학생 페르소나</h2>
+                <p className="sectionTag">Synthesis</p>
+                <h2>종합 성찰과 다음 수정 계획</h2>
               </div>
-              <p className="panelHint">설계를 따르되 잘되는 모습, 보통의 실제 모습, 잘 안되는 모습을 함께 관찰합니다.</p>
-            </div>
-            {scenario ? (
-              <div className="scenarioStack">
-                <article className="scenarioHeroCard">
-                  <div>
-                    <p className="sectionMicroTag">Simulation Storyline</p>
-                    <h3>{scenario.title}</h3>
-                    <p>{scenario.setting}</p>
-                  </div>
-                  <div className="scenarioMetaGrid">
-                    <article className="scenarioMetaCard"><span>학습 흐름</span><strong>{scenario.learningArc}</strong></article>
-                    <article className="scenarioMetaCard"><span>관찰 포인트</span><strong>{scenario.facilitatorBrief}</strong></article>
-                    <article className="scenarioMetaCard"><span>엔진</span><strong>{scenario.engine}</strong></article>
-                  </div>
-                </article>
-
-                <div className="personaGrid">
-                  {scenario.studentPersonas.map((persona) => (
-                    <article key={persona.id} className="personaCard">
-                      <div className="personaCardHead">
-                        <strong>{persona.name}</strong>
-                        <span>{persona.label}</span>
-                      </div>
-                      <p>{persona.profile}</p>
-                      <ul className="miniBulletList">
-                        <li><strong>강점</strong><span>{persona.strength}</span></li>
-                        <li><strong>관찰 포인트</strong><span>{persona.watchPoint}</span></li>
-                        <li><strong>AI 경향</strong><span>{persona.aiTendency}</span></li>
-                        <li><strong>지원 필요</strong><span>{persona.supportNeed}</span></li>
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="scenarioEpisodeList">
-                  {scenario.episodes.map((episode, index) => (
-                    <article key={episode.id} className="scenarioEpisodeCard">
-                      <div className="scenarioEpisodeHeader">
-                        <span className="scenarioEpisodeIndex">Episode {index + 1}</span>
-                        <span className="scenarioLensBadge">{episode.lens}</span>
-                      </div>
-                      <h3>{episode.title}</h3>
-                      <p className="scenarioEpisodeNarrative">{episode.narrative}</p>
-                      <div className="scenarioContrastGrid scenarioContrastGrid-three">
-                        <div className="scenarioContrastCard scenarioContrastCard-positive">
-                          <strong>잘되고 있는 모습</strong>
-                          <p>{episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 여기에 제시됩니다."}</p>
-                        </div>
-                        <div className="scenarioContrastCard scenarioContrastCard-neutral">
-                          <strong>보통의 실제 모습</strong>
-                          <p>{episode.ordinaryScene || "실제 교실에서 흔히 나타나는 평균적 장면이 여기에 제시됩니다."}</p>
-                        </div>
-                        <div className="scenarioContrastCard scenarioContrastCard-negative">
-                          <strong>잘 안되는 모습</strong>
-                          <p>{episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 여기에 제시됩니다."}</p>
-                        </div>
-                      </div>
-                      <div className="scenarioEpisodeDetails">
-                        <div><strong>Human agency</strong><p>{episode.humanAgencyFocus}</p></div>
-                        <div><strong>AI agency</strong><p>{episode.aiAgencyFocus}</p></div>
-                        <div><strong>학생 학습 신호</strong><p>{episode.studentLearningSignal}</p></div>
-                        <div><strong>잠재 긴장</strong><p>{episode.possibleTension}</p></div>
-                      </div>
-                      <div className="scenarioSubGrid">
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Featured Students</p><h3>주요 학생 페르소나</h3></div></div>
-                          <div className="linkedCardList">
-                            {(episode.featuredPersonaIds ?? []).map((personaId) => {
-                              const persona = personaById.get(personaId);
-                              return (
-                                <span key={`${episode.id}-${personaId}`} className="linkedCardChip linkedCardChip-persona">
-                                  {persona ? `${persona.name} · ${persona.label}` : personaId}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Artifacts</p><h3>학생 산출물 예시</h3></div></div>
-                          <div className="artifactList">
-                            {(episode.sampleArtifacts ?? []).map((artifact) => (
-                              <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality}`}>
-                                <div className="artifactHead"><strong>{artifact.title}</strong><span>{qualityLabel(artifact.quality)}</span></div>
-                                <p>{artifact.content}</p>
-                                <small>{artifact.insight}</small>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Teacher Moves</p><h3>교사 개입 추천</h3></div></div>
-                          <div className="interventionList">
-                            {(episode.teacherInterventions ?? []).map((item) => (
-                              <article key={item.id} className="interventionCard">
-                                <strong>{item.title}</strong>
-                                <span>{item.timing}</span>
-                                <p>{item.move}</p>
-                                <small>{item.expectedImpact}</small>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>교사·AI 질문과 행동이 결과에 미친 영향</h3></div></div>
-                          <div className="outcomeLinkList">
-                            {(episode.cardOutcomeLinks ?? []).map((link) => (
-                              <article key={`${episode.id}-${link.cardId}`} className="outcomeLinkCard">
-                                <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 질문" : "AI 행동"}</span></div>
-                                <p>{link.influence}</p>
-                                <small>{link.resultingChange}</small>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <p className="emptyPanelText">아직 시나리오가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
-            )}
-          </section>
-
-          <section className="panel">
-            <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Simulation Log</p>
-                <h2>모의 수업 실행 결과</h2>
-              </div>
-              <p className="panelHint">{message}</p>
-            </div>
-            <div className="tableStageBar simulationStageBar">
-              <article className="stageChip"><span>현재 세션</span><strong>{simulationRunId ? simulationRunId.slice(0, 8) : "실행 전"}</strong></article>
-              <article className="stageChip"><span>분석 엔진</span><strong>{analysis?.engine ?? "대기 중"}</strong></article>
-              <article className="stageChip"><span>마지막 서버 동기화</span><strong>{formatSyncTime(lastServerSyncAt)}</strong></article>
-            </div>
-
-            {turns.length ? (
-              <div className="timelineList timelineRail">
-                {turns.map((turn) => (
-                  <article key={turn.id} className="timelineCard">
-                    <div className="timelineMarker">{turn.turnIndex}</div>
-                    <div className="timelineBody">
-                      <div className="timelineHeader">
-                        <div className="timelineTitleBlock">
-                          <h3>{turn.activityTitle}</h3>
-                          {turn.scenarioEpisodeId ? <span className="scenarioLinkBadge">{episodeById.get(turn.scenarioEpisodeId)?.title ?? "연결된 에피소드"}</span> : null}
-                        </div>
-                        <span className="engineBadge">{turn.engine}</span>
-                      </div>
-                      <dl className="timelineFacts">
-                        <div><dt>교사 행동</dt><dd>{turn.teacherAction}</dd></div>
-                        <div><dt>AI 행동</dt><dd>{turn.aiAction}</dd></div>
-                        <div><dt>예상 학생 반응</dt><dd>{turn.expectedStudentResponse}</dd></div>
-                        <div><dt>놓칠 수 있는 지점</dt><dd>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "크게 놓치는 지점은 없습니다."}</dd></div>
-                      </dl>
-                      <div className="evidenceList">
-                        {turn.evidenceObserved.map((item) => (
-                          <span key={`${turn.id}-${item}`} className="evidenceChip">{item}</span>
-                        ))}
-                      </div>
-                      <div className="turnDetailGrid">
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Student Responses</p><h3>학생 페르소나 반응</h3></div></div>
-                          <div className="personaResponseList">
-                            {(turn.studentPersonaResponses ?? []).map((item) => {
-                              const persona = personaById.get(item.personaId);
-                              return (
-                                <article key={`${turn.id}-${item.personaId}`} className="responseCard">
-                                  <div className="artifactHead"><strong>{item.personaName}</strong><span>{persona?.label ?? "학생 반응"}</span></div>
-                                  <p>{item.response}</p>
-                                  <small>{item.learningSignal}</small>
-                                </article>
-                              );
-                            })}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Artifacts</p><h3>학생 산출물 예시</h3></div></div>
-                          <div className="artifactList">
-                            {(turn.sampleArtifacts ?? []).map((artifact) => (
-                              <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality}`}>
-                                <div className="artifactHead"><strong>{artifact.title}</strong><span>{qualityLabel(artifact.quality)}</span></div>
-                                <p>{artifact.content}</p>
-                                <small>{artifact.insight}</small>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Teacher Moves</p><h3>교사 개입 추천</h3></div></div>
-                          <div className="interventionList">
-                            {(turn.teacherInterventions ?? []).map((item) => (
-                              <article key={item.id} className="interventionCard">
-                                <strong>{item.title}</strong>
-                                <span>{item.timing}</span>
-                                <p>{item.move}</p>
-                                <small>{item.expectedImpact}</small>
-                              </article>
-                            ))}
-                          </div>
-                        </section>
-                        <section className="detailSection detailSectionSoft">
-                          <div className="detailSectionHeader"><div><p className="sectionMicroTag">Risk Signals</p><h3>활동별 위험 신호</h3></div></div>
-                          <div className="signalList">
-                            {(turn.activityRiskSignals ?? []).map((signal) => (
-                              <span key={`${turn.id}-${signal}`} className="linkedCardChip linkedCardChip-risk">{signal}</span>
-                            ))}
-                          </div>
-                        </section>
-                      </div>
-                      <section className="detailSection detailSectionSoft">
-                        <div className="detailSectionHeader"><div><p className="sectionMicroTag">Card Trace</p><h3>교사·AI 질문과 행동이 결과에 미친 영향</h3></div></div>
-                        <div className="outcomeLinkList">
-                          {(turn.cardOutcomeLinks ?? []).map((link) => (
-                            <article key={`${turn.id}-${link.cardId}`} className="outcomeLinkCard">
-                              <div className="artifactHead"><strong>{link.cardTitle}</strong><span>{link.actor === "teacher" ? "교사 질문" : "AI 행동"}</span></div>
-                              <p>{link.influence}</p>
-                              <small>{link.resultingChange}</small>
-                            </article>
-                          ))}
-                        </div>
-                      </section>
-                      <div className="timelineObserverNote">
-                        <strong>관찰 메모</strong>
-                        <p>{turn.observerNote}</p>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="emptyPanelText">아직 실행 결과가 없습니다. `모의 수업 실행` 버튼으로 시작해 주세요.</p>
-            )}
-          </section>
-
-          <section className="panel">
-            <div className="panelHeader">
-              <div><p className="sectionTag">Reflection Journal</p><h2>성찰 질문과 응답</h2></div>
-              <p className="panelHint">응답은 브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 반영할 수 있습니다.</p>
+              <p className="panelHint">브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 반영할 수 있습니다.</p>
             </div>
             <div className="reflectionSplit">
-              <div className="reflectionColumn">
-                <div className="reflectionColumnHeader"><p className="sectionMicroTag">AI Reflection Questions</p><h3>성찰 질문</h3></div>
-                <div className="reflectionForm">
-                  {questions.length ? (
-                    questions.map((question) => (
-                      <label key={question.id} className="reflectionQuestionCard">
-                        <span>{question.prompt}</span>
-                        <small>{question.rationale}</small>
-                        <textarea
-                          rows={4}
-                          value={answers[question.id] ?? ""}
-                          onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))}
-                          placeholder="다음 차시에서 무엇을 바꾸고 어떤 질문을 추가할지 적어 주세요."
-                        />
-                      </label>
-                    ))
-                  ) : (
-                    <p className="emptyPanelText">성찰 질문은 시뮬레이션 실행 뒤 생성됩니다.</p>
-                  )}
-                </div>
-              </div>
-              <div className="reflectionStack">
-                <label className="reflectionQuestionCard reflectionSummaryCard">
-                  <span>종합 메모</span>
-                  <small>이번 설계에서 유지할 점과 수정이 필요한 지점을 요약합니다.</small>
-                  <textarea rows={5} value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="예: AI는 초안 생성에 유용했지만, 최종 판단과 근거 토론은 교사 질문으로 더 분명히 해야 했다." />
-                </label>
-                <label className="reflectionQuestionCard reflectionSummaryCard">
-                  <span>다음 수정 체크리스트</span>
-                  <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
-                  <textarea rows={5} value={nextRevisionText} onChange={(event) => setNextRevisionText(event.target.value)} placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가" />
-                </label>
-              </div>
+              <label className="reflectionQuestionCard reflectionSummaryCard">
+                <span>종합 메모</span>
+                <small>이번 설계에서 유지할 점과 수정이 필요한 지점을 요약합니다.</small>
+                <textarea
+                  rows={7}
+                  value={summary}
+                  onChange={(event) => setSummary(event.target.value)}
+                  placeholder="예: AI는 초안 생성에 유용했지만, 최종 판단과 근거 토론은 교사 질문으로 더 분명히 해야 했다."
+                />
+              </label>
+              <label className="reflectionQuestionCard reflectionSummaryCard">
+                <span>다음 수정 체크리스트</span>
+                <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
+                <textarea
+                  rows={7}
+                  value={nextRevisionText}
+                  onChange={(event) => setNextRevisionText(event.target.value)}
+                  placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가"
+                />
+              </label>
             </div>
           </section>
         </div>
@@ -815,58 +858,8 @@ export function SimulationWorkspace() {
         <aside className="sideColumn">
           <section className="panel">
             <div className="panelHeader">
-              <div><p className="sectionTag">Design Snapshot</p><h2>{design.meta.topic || "제목 미입력"}</h2></div>
-              <span className="engineBadge">v{design.version}</span>
-            </div>
-            <div className="snapshotMetricGrid">
-              <article className="snapshotMetric"><span>교과</span><strong>{design.meta.subject || "-"}</strong></article>
-              <article className="snapshotMetric"><span>대상</span><strong>{design.meta.target || "-"}</strong></article>
-              <article className="snapshotMetric"><span>세션 수</span><strong>{designSessions.length}</strong></article>
-            </div>
-            <div className="snapshotList">
-              <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
-              <div><strong>성취기준</strong><span>{design.achievementStandards.length ? design.achievementStandards.join(" / ") : "아직 입력된 성취기준이 없습니다."}</span></div>
-            </div>
-            {analysis ? <div className="compactAnalysis"><h3>설계 분석 요약</h3><p>{analysis.summary}</p></div> : null}
-          </section>
-
-          <section className="panel">
-            <div className="panelHeader">
-              <div><p className="sectionTag">Risk Observer</p><h2>활동별 문제점</h2></div>
-              <p className="panelHint">Human-AI agency, 깊이 있는 학습, 참여, 평가 정합성 관점에서 봅니다.</p>
-            </div>
-            <div className="riskSummaryGrid">
-              <article className="riskSummaryCard riskSummaryCard-high"><span>High</span><strong>{highRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-medium"><span>Medium</span><strong>{mediumRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-low"><span>Low</span><strong>{lowRiskCount}</strong></article>
-            </div>
-            {risks.length ? (
-              <div className="riskList">
-                {risks.map((risk) => (
-                  <article key={risk.id} className={`riskCard risk-${risk.severity}`}>
-                    <div className="riskHeader"><h3>{riskLabels[risk.riskType]}</h3><span>{risk.severity}</span></div>
-                    <p className="riskActivityLabel">{`${risk.activityTitle || "공통 위험"} · ${risk.focusArea}`}</p>
-                    <p>{risk.rationale}</p>
-                    <div className="riskMetaBlock"><strong>학생 영향</strong><p>{risk.studentImpact}</p></div>
-                    <div className="signalList signalList-compact">
-                      {(risk.watchSignals ?? []).map((signal) => (
-                        <span key={`${risk.id}-${signal}`} className="linkedCardChip linkedCardChip-risk">{signal}</span>
-                      ))}
-                    </div>
-                    <strong>권장 개입</strong>
-                    <p>{risk.recommendedIntervention}</p>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="emptyPanelText">아직 주요 위험이 없습니다.</p>
-            )}
-          </section>
-
-          <section className="panel">
-            <div className="panelHeader">
               <div><p className="sectionTag">Session History</p><h2>저장된 실행 기록</h2></div>
-              <p className="panelHint">이전 세션을 불러와 성찰 일지를 이어서 수정할 수 있습니다.</p>
+              <p className="panelHint">이전 세션을 불러와 활동별 성찰을 이어서 수정할 수 있습니다.</p>
             </div>
             {designSessions.length ? (
               <div className="historyList">
@@ -890,11 +883,10 @@ export function SimulationWorkspace() {
 
       <footer className="statusBar statusBarFull">
         <div><strong>현재 세션</strong><span>{simulationRunId ?? "아직 실행 전"}</span></div>
-        <div><strong>에피소드 수</strong><span>{scenario?.episodes.length ?? 0}개</span></div>
+        <div><strong>실행 활동</strong><span>{simulationRows.length}개</span></div>
         <div><strong>서버 저장 세션</strong><span>{designSessions.length}개</span></div>
         <div><strong>상태 메시지</strong><span>{message}</span></div>
       </footer>
     </main>
   );
 }
-

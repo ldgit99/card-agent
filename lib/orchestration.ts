@@ -1,4 +1,4 @@
-﻿import { orchestrationCards } from "@/data/cards";
+import { orchestrationCards } from "@/data/cards";
 import { riskLabels } from "@/lib/constants";
 import type {
   CardOutcomeLink,
@@ -341,22 +341,32 @@ function buildPersonaResponses(activity: LessonActivity, personas: StudentPerson
   const title = getActivityTitle(activity);
   const featured = selectFeaturedPersonas(activity, personas);
 
-  return featured.map((persona, index) => ({
-    personaId: persona.id,
-    personaName: persona.name,
-    response:
-      index === 0
-        ? `${persona.name}은(는) '${title}' 활동에서 자신의 판단 근거를 먼저 말하려 한다.`
-        : index === 1 && activity.aiCardIds.length > 0
-          ? `${persona.name}은(는) AI 결과를 빨리 받아들이며 "이걸로 정리하면 될 것 같다"고 말한다.`
-          : `${persona.name}은(는) 다른 학생의 답과 기준을 비교해 보자고 제안한다.`,
-    learningSignal:
-      index === 0
-        ? "근거와 판단의 연결이 보이는 학습 신호"
-        : index === 1 && activity.aiCardIds.length > 0
-          ? "AI 과의존 위험이 드러나는 신호"
-          : "참여 확장 또는 비교 사고의 신호",
-  }));
+  return featured.map((persona, index) => {
+    if (index === 0) {
+      return {
+        personaId: persona.id,
+        personaName: persona.name,
+        response: `${persona.name}은(는) "${persona.likelyUtterance}"라고 답하며 '${title}' 활동에서 왜 그렇게 판단했는지 근거를 덧붙여 설명한다.`,
+        learningSignal: "근거와 판단의 연결이 보이는 신호",
+      };
+    }
+
+    if (index === 1 && activity.aiCardIds.length > 0) {
+      return {
+        personaId: persona.id,
+        personaName: persona.name,
+        response: `${persona.name}은(는) "AI가 이렇게 정리해 줬는데 이걸로 해도 되나요?"라고 묻는다. 속도는 빠르지만 선택 이유는 짧게 말하는 편이다.`,
+        learningSignal: "AI를 빠르게 수용하려는 신호",
+      };
+    }
+
+    return {
+      personaId: persona.id,
+      personaName: persona.name,
+      response: `${persona.name}은(는) "${persona.likelyUtterance}"라고 말하며 다른 학생의 답과 기준을 비교해 보자고 제안한다.`,
+      learningSignal: "참여 확장 또는 비교 사고의 신호",
+    };
+  });
 }
 
 function buildActivityRiskSignals(activity: LessonActivity) {
@@ -488,15 +498,15 @@ export function createHeuristicTurn(
   const activityRiskSignals = buildActivityRiskSignals(activity);
 
   const teacherAction = teacherCard
-    ? `교사는 '${teacherCard.prompt}'라는 질문으로 ${title} 활동을 열고, 학생이 선택 이유를 설명하게 한다. ${activity.teacherMove || "필요할 때 비교 기준을 다시 묻는다."}`
-    : `교사는 ${title} 활동을 진행하되, 결과보다 판단의 근거를 말하게 하려는 질문을 중간에 넣는다.`;
+    ? `선생님은 "${teacherCard.prompt}"라고 묻고 ${title} 활동을 연다. ${activity.teacherMove || "학생이 답만 고르지 말고 왜 그렇게 생각했는지 한 번 더 말하게 한다."}`
+    : `선생님은 ${title} 활동에서 학생이 먼저 생각을 꺼내게 하고, 결과보다 판단의 근거를 다시 묻게 한다.`;
 
   const aiAction = aiCard
-    ? `AI는 '${aiCard.title}' 역할로 학생에게 초안과 비교 자료를 제공한다. 다만 교사는 이를 그대로 답으로 쓰지 않도록 경계한다.`
-    : "AI는 직접 개입하지 않으며 교실 대화와 자료 탐구가 활동의 중심을 이룬다.";
+    ? `AI는 '${aiCard.title}' 역할로 초안과 비교 자료를 보여 준다. 학생은 이를 참고하지만, 선생님은 그대로 채택하지 말고 무엇을 취할지 말하게 한다.`
+    : "AI는 전면에 나서지 않고, 교실 대화와 자료 탐구가 활동의 중심이 된다.";
 
   const expectedStudentResponse = scenarioEpisode
-    ? `잘 풀리면 ${scenarioEpisode.successScene} 보통은 ${scenarioEpisode.ordinaryScene} 흔들리면 ${scenarioEpisode.challengeScene}`
+    ? scenarioEpisode.ordinaryScene
     : buildStudentLearningSignal(activity);
 
   const evidenceObserved = [
@@ -733,17 +743,32 @@ export function createReflectionQuestions(
   turns: SimulationTurn[],
   risks: DetectedRisk[],
 ): ReflectionQuestion[] {
-  const questions = risks.slice(0, 5).map((risk) => {
-    const turn = turns.find((item) => risk.evidenceTurnIds.includes(item.id));
-    const activityLabel = risk.activityTitle || turn?.activityTitle || "해당 활동";
+  const severityRank = { high: 0, medium: 1, low: 2 } as const;
+
+  const questions = turns.map((turn) => {
+    const relatedRisks = risks
+      .filter((risk) => risk.evidenceTurnIds.includes(turn.id))
+      .sort((left, right) => severityRank[left.severity] - severityRank[right.severity]);
+    const primaryRisk = relatedRisks[0];
+
+    if (primaryRisk) {
+      return {
+        id: crypto.randomUUID(),
+        simulationRunId: turn.simulationRunId ?? "draft-run",
+        prompt: `${turn.activityTitle}에서 ${riskLabels[primaryRisk.riskType]}가 드러났습니다. 다음 차시에는 선생님의 질문, 학생의 판단, AI의 역할을 어떻게 다시 설계하겠습니까?`,
+        rationale: `${primaryRisk.focusArea} 관점에서 ${primaryRisk.studentImpact}`,
+        linkedTurnIds: [turn.id],
+        linkedRiskIds: [primaryRisk.id],
+      };
+    }
 
     return {
       id: crypto.randomUUID(),
-      simulationRunId: turn?.simulationRunId ?? "draft-run",
-      prompt: `${activityLabel}에서 ${riskLabels[risk.riskType]}가 드러났습니다. 다음 차시에서는 교사의 질문이나 AI의 역할을 어떻게 바꾸겠습니까?`,
-      rationale: `${risk.focusArea} 관점에서 ${risk.studentImpact}`,
-      linkedTurnIds: risk.evidenceTurnIds,
-      linkedRiskIds: [risk.id],
+      simulationRunId: turn.simulationRunId ?? "draft-run",
+      prompt: `${turn.activityTitle}에서 유지할 장면 하나와 더 분명히 만들 교사 개입 하나를 적어 보세요.`,
+      rationale: "주요 위험이 크지 않더라도 어떤 질문과 행동이 학습을 지탱했는지 확인해야 다음 설계를 더 정교화할 수 있습니다.",
+      linkedTurnIds: [turn.id],
+      linkedRiskIds: [],
     };
   });
 

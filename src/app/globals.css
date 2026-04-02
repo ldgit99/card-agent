@@ -2277,3 +2277,222 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Simulation board redesign */
+.simulationOverviewPanel,
+.simulationBoardPanel {
+  margin-top: 22px;
+}
+
+.simulationOverviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.overviewLead {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.72;
+}
+
+.personaStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.personaStripCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(219, 234, 254, 0.96);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.personaStripHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.personaStripHead span,
+.storyDialogueCard span,
+.traceCard strong,
+.triBoardHeadCell p {
+  font-size: 0.8rem;
+  color: var(--accent-strong);
+}
+
+.personaStripCard p,
+.personaStripCard small,
+.storyLead,
+.issueLead,
+.traceCard p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.68;
+}
+
+.simulationTriBoard {
+  display: grid;
+  gap: 16px;
+}
+
+.triBoardHeader,
+.simulationTriRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.94fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.triBoardHeadCell,
+.triColumn {
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(228, 228, 231, 0.95);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.triBoardHeadCell h3,
+.triColumn h3 {
+  margin: 6px 0 0;
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
+}
+
+.triColumn {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.triColumnHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.storyDialogueList,
+.issueRiskList,
+.reflectionEvidenceList,
+.reflectionInlineList,
+.compactTraceList,
+.missedOpportunityList {
+  display: grid;
+  gap: 10px;
+}
+
+.storyDialogueCard,
+.traceCard {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(228, 228, 231, 0.95);
+  background: #fafcff;
+}
+
+.storyDialogueCard strong,
+.traceCard strong {
+  font-size: 0.92rem;
+}
+
+.storyDialogueCard p,
+.artifactCardCompact p,
+.interventionCardCompact p {
+  margin: 0;
+  line-height: 1.64;
+}
+
+.storyDialogueCard-teacher {
+  background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.storyDialogueCard-student {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.storyDialogueCard-ai {
+  background: linear-gradient(180deg, #f4fbfb 0%, #ffffff 100%);
+}
+
+.storySceneGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issueLead {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid rgba(219, 234, 254, 0.88);
+}
+
+.riskCardCompact {
+  padding: 16px;
+}
+
+.compactTraceSection {
+  gap: 10px;
+}
+
+.missedOpportunityList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.missedOpportunityList li {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(228, 228, 231, 0.92);
+  color: var(--muted);
+  line-height: 1.56;
+}
+
+.artifactCardCompact,
+.interventionCardCompact,
+.reflectionInlineCard {
+  border-radius: 16px;
+}
+
+.artifactCardCompact,
+.interventionCardCompact {
+  padding: 14px 16px;
+}
+
+.reflectionInlineCard textarea {
+  min-height: 104px;
+}
+
+.simulationSupportGrid {
+  margin-top: 22px;
+}
+
+@media (max-width: 1280px) {
+  .simulationOverviewGrid,
+  .personaStrip,
+  .triBoardHeader,
+  .simulationTriRow,
+  .storySceneGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .triBoardHeadCell,
+  .triColumn,
+  .personaStripCard {
+    padding: 16px;
+  }
+}
