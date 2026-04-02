@@ -3148,37 +3148,43 @@ body {
     border-radius: 20px;
   }
 }
-/* Card library 2-column square layout */
+/* Card library compact 4-column layout */
+.cardLibraryBottomGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
 .cardLibraryBottomGrid .libraryList {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .cardLibraryBottomGrid .promptCard-library {
   aspect-ratio: 1 / 1;
   min-height: 0;
-  padding: 18px;
+  padding: 14px;
   align-content: start;
 }
 
 .cardLibraryBottomGrid .promptCardQuestion {
-  font-size: clamp(1.42rem, 1.7vw, 1.82rem);
-  line-height: 1.3;
+  font-size: clamp(1.02rem, 1vw, 1.18rem);
+  line-height: 1.4;
 }
 
 .cardLibraryBottomGrid .promptCardIntent {
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
 .cardLibraryBottomGrid .promptCardBadge {
-  font-size: 0.92rem;
-  padding: 7px 12px;
+  font-size: 0.82rem;
+  padding: 6px 10px;
 }
 
 .cardLibraryBottomGrid .promptCardNumber {
-  font-size: 1.1rem;
+  font-size: 0.98rem;
 }
 
 .cardLibraryBottomGrid .promptCardBody {
@@ -3188,6 +3194,68 @@ body {
 .cardLibraryBottomGrid .promptCardButton {
   width: 100%;
   margin-top: auto;
+  min-height: 40px;
+  font-size: 0.9rem;
+}
+
+.promptCard-custom {
+  aspect-ratio: auto !important;
+  min-height: 320px;
+  cursor: default;
+}
+
+.promptCardCustomFields {
+  display: grid;
+  gap: 8px;
+}
+
+.promptCardField {
+  display: grid;
+  gap: 6px;
+}
+
+.promptCardField span {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #4b5d76;
+}
+
+.promptCardInput,
+.promptCardTextarea {
+  width: 100%;
+  border: 1px solid rgba(191, 219, 254, 0.95);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 10px 12px;
+  font: inherit;
+  color: #183153;
+}
+
+.promptCardTextarea {
+  resize: vertical;
+  min-height: 92px;
+}
+
+.promptCardCustomActions {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.promptCardMiniButton {
+  min-height: 40px;
+}
+
+@media (max-width: 1320px) {
+  .cardLibraryBottomGrid .libraryList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .cardLibraryBottomGrid .libraryList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -3198,6 +3266,10 @@ body {
   .cardLibraryBottomGrid .promptCard-library {
     aspect-ratio: auto;
     min-height: 220px;
+  }
+
+  .promptCard-custom {
+    min-height: 0;
   }
 }
 

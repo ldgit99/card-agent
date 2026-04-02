@@ -1,3 +1,4 @@
+import { ensureCustomCards } from "@/lib/card-registry";
 import type {
   CardPlacement,
   LessonActivity,
@@ -61,10 +62,7 @@ export function createLessonDesign(
   const normalizedActivities = activities.map((activity, index) => ({
     ...activity,
     order: index + 1,
-    title:
-      activity.title.trim() ||
-      activity.functionLabel.trim() ||
-      `활동 ${index + 1}`,
+    title: activity.title.trim() || activity.functionLabel.trim() || `활동 ${index + 1}`,
   }));
 
   return {
@@ -75,6 +73,7 @@ export function createLessonDesign(
     durationMinutes: null,
     achievementStandards: [],
     learningGoals: [],
+    customCards: ensureCustomCards(),
     activities: normalizedActivities,
     placements: buildPlacements(normalizedActivities),
     createdAt: now,
@@ -97,10 +96,7 @@ export function normalizeLessonDesignDraft(
   const normalizedActivities = draft.activities.map((activity, index) => ({
     ...activity,
     order: index + 1,
-    title:
-      activity.title.trim() ||
-      activity.functionLabel.trim() ||
-      `활동 ${index + 1}`,
+    title: activity.title.trim() || activity.functionLabel.trim() || `활동 ${index + 1}`,
   }));
 
   const fallbackLearningGoals = normalizedActivities
@@ -115,6 +111,7 @@ export function normalizeLessonDesignDraft(
     learningGoals: (draft.learningGoals?.length ? draft.learningGoals : fallbackLearningGoals).filter(
       Boolean,
     ),
+    customCards: ensureCustomCards(draft.customCards),
     activities: normalizedActivities,
     placements: buildPlacements(normalizedActivities),
     updatedAt: new Date().toISOString(),

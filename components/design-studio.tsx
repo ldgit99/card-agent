@@ -13,7 +13,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { aiCards, orchestrationCards, teacherCards } from "@/data/cards";
+import { getAvailableCards, getCardsByActor } from "@/lib/card-registry";
 import {
   createDefaultLessonDesign,
   createEmptyActivity,
@@ -35,11 +35,19 @@ import type {
   LessonDesign,
   OrchestrationCard,
 } from "@/types/lesson";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface DraggableCardProps {
   card: OrchestrationCard;
   onQuickAdd: (card: OrchestrationCard) => void;
+  disabled?: boolean;
+}
+
+interface EditableCustomCardProps {
+  card: OrchestrationCard;
+  onQuickAdd: (card: OrchestrationCard) => void;
+  onChange: (cardId: string, patch: Partial<OrchestrationCard>) => void;
+  onSave: (cardId: string) => void;
   disabled?: boolean;
 }
 
@@ -116,6 +124,81 @@ function DraggableCard({ card, onQuickAdd, disabled = false }: DraggableCardProp
   );
 }
 
+function EditableCustomCard({
+  card,
+  onQuickAdd,
+  onChange,
+  onSave,
+  disabled = false,
+}: EditableCustomCardProps) {
+  const ready = isCardReady(card);
+
+  return (
+    <article className={`libraryCard promptCard promptCard-library promptCard-${card.actor} promptCard-custom`}>
+      <div className="promptCardHeader">
+        <div className="promptCardIdentity">
+          <span className={`promptCardIcon promptCardIcon-${card.actor}`} aria-hidden="true">
+            {getCardIcon(card.actor)}
+          </span>
+          <span className={`promptCardBadge promptCardBadge-${card.actor}`}>사용자 정의</span>
+        </div>
+        <span className="promptCardNumber">{formatCardNumber(card.id)}</span>
+      </div>
+      <div className="promptCardCustomFields">
+        <label className="promptCardField">
+          <span>카드 제목</span>
+          <input
+            className="promptCardInput"
+            value={card.title}
+            onChange={(event) => onChange(card.id, { title: event.target.value })}
+            placeholder={card.actor === "teacher" ? "예: 재질문" : "예: 비교 제안"}
+          />
+        </label>
+        <label className="promptCardField">
+          <span>질문·행동</span>
+          <textarea
+            className="promptCardTextarea"
+            rows={3}
+            value={card.prompt}
+            onChange={(event) => onChange(card.id, { prompt: event.target.value })}
+            placeholder={
+              card.actor === "teacher"
+                ? "예: 왜 그렇게 생각했나요?"
+                : "예: 비교할 대안을 3가지로 정리합니다."
+            }
+          />
+        </label>
+        <label className="promptCardField">
+          <span>의도</span>
+          <input
+            className="promptCardInput"
+            value={card.intent}
+            onChange={(event) => onChange(card.id, { intent: event.target.value })}
+            placeholder="예: 학생 설명을 더 깊게 만든다"
+          />
+        </label>
+      </div>
+      <div className="promptCardCustomActions">
+        <button
+          type="button"
+          className="ghostButton promptCardMiniButton"
+          onClick={() => onSave(card.id)}
+          disabled={!ready}
+        >
+          카드 저장
+        </button>
+        <button
+          type="button"
+          className="promptCardButton"
+          onClick={() => onQuickAdd(card)}
+          disabled={disabled || !ready}
+        >
+          현재 활동에 배치
+        </button>
+      </div>
+    </article>
+  );
+}
 function RowDropZone({ id, actor, cards, onRemove }: RowDropZoneProps) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { actor } });
 
@@ -158,10 +241,14 @@ function getInitialDesign() {
   return normalizeLessonDesignDraft(stored ?? createDefaultLessonDesign());
 }
 
-function findCards(cardIds: string[]) {
+function findCards(cardIds: string[], cards: OrchestrationCard[]) {
   return cardIds
-    .map((cardId) => orchestrationCards.find((card) => card.id === cardId))
+    .map((cardId) => cards.find((card) => card.id === cardId))
     .filter((card): card is OrchestrationCard => Boolean(card));
+}
+
+function isCardReady(card: OrchestrationCard) {
+  return Boolean(card.title.trim() && card.prompt.trim());
 }
 
 function formatSyncTime(value: string | null) {
@@ -192,6 +279,10 @@ export function DesignStudio() {
   const [isNavigatingToSimulation, setIsNavigatingToSimulation] = useState(false);
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
+
+  const availableCards = useMemo(() => getAvailableCards(design.customCards), [design.customCards]);
+  const teacherLibraryCards = useMemo(() => getCardsByActor("teacher", design.customCards), [design.customCards]);
+  const aiLibraryCards = useMemo(() => getCardsByActor("ai", design.customCards), [design.customCards]);
 
   const selectedActivity =
     design.activities.find((activity) => activity.id === selectedActivityId) ?? design.activities[0] ?? null;
@@ -298,6 +389,25 @@ export function DesignStudio() {
         activity.id === activityId ? { ...activity, ...patch } : activity,
       ),
     });
+  }
+
+  function updateCustomCard(cardId: string, patch: Partial<OrchestrationCard>) {
+    commitDesign({
+      ...design,
+      customCards: design.customCards.map((card) =>
+        card.id === cardId ? { ...card, ...patch, isCustom: true } : card,
+      ),
+    });
+  }
+
+  function saveCustomCard(cardId: string) {
+    const card = design.customCards.find((item) => item.id === cardId);
+    if (!card || !isCardReady(card)) {
+      setStatusMessage("카드 제목과 질문·행동을 입력해 주세요.");
+      return;
+    }
+
+    setStatusMessage(`'${card.title}' 카드를 저장했습니다.`);
   }
 
   function addActivity() {
@@ -486,8 +596,8 @@ export function DesignStudio() {
             />
             <div className="heroPanelMain">
               <div>
-                <p className="eyebrow">Lesson Design Workspace</p>
-                <h1>수업 설계 스튜디오</h1>
+                <p className="eyebrow">AI ORCHESTRATION LESSON DESIGN</p>
+                <h1>AI 오케스트레이션 수업 설계</h1>
                 <p className="heroCopy">
                   주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
                   카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
@@ -590,8 +700,8 @@ export function DesignStudio() {
                 <tbody>
                   {design.activities.map((activity) => {
                     const isSelected = selectedActivity?.id === activity.id;
-                    const humanCards = findCards(activity.humanCardIds);
-                    const rowAiCards = findCards(activity.aiCardIds);
+                    const humanCards = findCards(activity.humanCardIds, availableCards);
+                    const rowAiCards = findCards(activity.aiCardIds, availableCards);
 
                     return (
                       <tr
@@ -691,8 +801,8 @@ export function DesignStudio() {
             <div className="mobileActivityList" aria-label="모바일 활동 카드 목록">
               {design.activities.map((activity) => {
                 const isSelected = selectedActivity?.id === activity.id;
-                const humanCards = findCards(activity.humanCardIds);
-                const rowAiCards = findCards(activity.aiCardIds);
+                const humanCards = findCards(activity.humanCardIds, availableCards);
+                const rowAiCards = findCards(activity.aiCardIds, availableCards);
 
                 return (
                   <article
@@ -822,21 +932,36 @@ export function DesignStudio() {
                     <p className="sectionMicroTag">Teacher Cards</p>
                     <h3 className="libraryHeading">교사 카드</h3>
                   </div>
-                  <span className="engineBadge">{teacherCards.length}</span>
+                  <span className="engineBadge">{teacherLibraryCards.length}</span>
                 </div>
                 <div className="libraryList">
-                  {teacherCards.map((card) => (
-                    <DraggableCard
-                      key={card.id}
-                      card={card}
-                      disabled={!selectedActivity}
-                      onQuickAdd={(nextCard) => {
-                        if (selectedActivity) {
-                          appendCard(selectedActivity.id, nextCard);
-                        }
-                      }}
-                    />
-                  ))}
+                  {teacherLibraryCards.map((card) =>
+                    card.isCustom ? (
+                      <EditableCustomCard
+                        key={card.id}
+                        card={card}
+                        disabled={!selectedActivity}
+                        onChange={updateCustomCard}
+                        onSave={saveCustomCard}
+                        onQuickAdd={(nextCard) => {
+                          if (selectedActivity) {
+                            appendCard(selectedActivity.id, nextCard);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <DraggableCard
+                        key={card.id}
+                        card={card}
+                        disabled={!selectedActivity}
+                        onQuickAdd={(nextCard) => {
+                          if (selectedActivity) {
+                            appendCard(selectedActivity.id, nextCard);
+                          }
+                        }}
+                      />
+                    )
+                  )}
                 </div>
               </section>
               <section className="libraryColumn">
@@ -845,21 +970,36 @@ export function DesignStudio() {
                     <p className="sectionMicroTag">AI Cards</p>
                     <h3 className="libraryHeading">AI 카드</h3>
                   </div>
-                  <span className="engineBadge">{aiCards.length}</span>
+                  <span className="engineBadge">{aiLibraryCards.length}</span>
                 </div>
                 <div className="libraryList">
-                  {aiCards.map((card) => (
-                    <DraggableCard
-                      key={card.id}
-                      card={card}
-                      disabled={!selectedActivity}
-                      onQuickAdd={(nextCard) => {
-                        if (selectedActivity) {
-                          appendCard(selectedActivity.id, nextCard);
-                        }
-                      }}
-                    />
-                  ))}
+                  {aiLibraryCards.map((card) =>
+                    card.isCustom ? (
+                      <EditableCustomCard
+                        key={card.id}
+                        card={card}
+                        disabled={!selectedActivity}
+                        onChange={updateCustomCard}
+                        onSave={saveCustomCard}
+                        onQuickAdd={(nextCard) => {
+                          if (selectedActivity) {
+                            appendCard(selectedActivity.id, nextCard);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <DraggableCard
+                        key={card.id}
+                        card={card}
+                        disabled={!selectedActivity}
+                        onQuickAdd={(nextCard) => {
+                          if (selectedActivity) {
+                            appendCard(selectedActivity.id, nextCard);
+                          }
+                        }}
+                      />
+                    )
+                  )}
                 </div>
               </section>
             </div>

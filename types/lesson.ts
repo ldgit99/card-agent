@@ -1,4 +1,4 @@
-﻿export type CardActor = "teacher" | "ai";
+export type CardActor = "teacher" | "ai";
 
 export type RiskType =
   | "AI_OVER_RELIANCE"
@@ -26,6 +26,7 @@ export interface OrchestrationCard {
   title: string;
   prompt: string;
   intent: string;
+  isCustom?: boolean;
 }
 
 export interface LessonActivity {
@@ -62,6 +63,7 @@ export interface LessonDesign {
   durationMinutes: number | null;
   achievementStandards: string[];
   learningGoals: string[];
+  customCards: OrchestrationCard[];
   activities: LessonActivity[];
   placements: CardPlacement[];
   createdAt: string;
