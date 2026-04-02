@@ -4822,3 +4822,72 @@ body {
     font-size: 1.56rem;
   }
 }
+
+/* Keep top workspace navigation horizontal */
+.workspaceTopbar {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.workspaceNav {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+
+.workspaceNavLink {
+  flex: 0 0 auto;
+  min-width: 180px;
+  white-space: nowrap;
+}
+
+.workspaceTopbarActions {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
+.workspaceTopbarActions .primaryButton,
+.workspaceTopbarActions .secondaryButton,
+.workspaceTopbarActions .ghostButton {
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  .workspaceTopbar {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .workspaceTopbarActions {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 760px) {
+  .workspaceTopbar {
+    flex-wrap: wrap;
+  }
+
+  .workspaceNav {
+    width: 100%;
+    order: 1;
+  }
+
+  .workspaceTopbarActions {
+    width: 100%;
+    order: 2;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspaceNavLink {
+    min-width: 160px;
+    flex-basis: auto;
+  }
+}
