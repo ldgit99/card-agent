@@ -2705,4 +2705,413 @@ a {
   .promptCardNumber {
     font-size: 1.1rem;
   }
+}/* Dashboard reference theme */
+:root {
+  --bg-top: #f6f2ea;
+  --bg-bottom: #f8f5ef;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-strong: rgba(255, 255, 255, 0.95);
+  --surface-soft: rgba(251, 248, 242, 0.96);
+  --line: rgba(58, 61, 53, 0.08);
+  --line-strong: rgba(58, 61, 53, 0.14);
+  --ink: #1d221d;
+  --muted: #767b73;
+  --accent: #5a9d74;
+  --accent-strong: #45815d;
+  --accent-soft: rgba(90, 157, 116, 0.10);
+  --accent-soft-strong: rgba(90, 157, 116, 0.16);
+  --shadow-xl: 0 18px 40px rgba(58, 61, 53, 0.07), 0 3px 10px rgba(58, 61, 53, 0.04);
+  --shadow-lg: 0 12px 28px rgba(58, 61, 53, 0.08), 0 2px 6px rgba(58, 61, 53, 0.04);
+  --shadow-sm: 0 8px 22px rgba(58, 61, 53, 0.06), 0 1px 3px rgba(58, 61, 53, 0.04);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+}
+
+html {
+  background:
+    radial-gradient(circle at 12px 12px, rgba(120, 124, 112, 0.14) 1.15px, transparent 1.2px),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  background-size: 24px 24px, 100% 100%;
+}
+
+body {
+  background: transparent;
+}
+
+.appShell {
+  width: min(1500px, calc(100% - 40px));
+  padding: 26px 0 44px;
+}
+
+.heroPanel,
+.panel,
+.statusBar,
+.summaryCard,
+.metaTable,
+.tableWrap,
+.analysisGrid article,
+.heroStatCard,
+.stageChip,
+.detailSection,
+.snapshotMetric,
+.riskSummaryCard,
+.personaStripCard,
+.triBoardHeadCell,
+.triColumn,
+.historyCard,
+.metaSupplementCard {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(58, 61, 53, 0.08);
+  box-shadow: var(--shadow-xl);
+}
+
+.heroPanel {
+  padding: 30px 32px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.heroPanel h1 {
+  margin: 10px 0 12px;
+  font-size: clamp(1.9rem, 2.6vw, 2.55rem);
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+}
+
+.heroCopy {
+  max-width: 860px;
+  font-size: 0.96rem;
+  line-height: 1.72;
+  color: #6f746d;
+}
+
+.eyebrow,
+.sectionTag,
+.sectionMicroTag {
+  background: rgba(210, 123, 83, 0.12);
+  border: 1px solid rgba(210, 123, 83, 0.18);
+  color: #c46d49;
+  padding: 7px 12px;
+  letter-spacing: 0.08em;
+}
+
+.panel {
+  padding: 22px 24px;
+  border-radius: 30px;
+}
+
+.panelHeader {
+  margin-bottom: 16px;
+}
+
+.panelHeader h2 {
+  font-size: 1.24rem;
+  letter-spacing: -0.03em;
+}
+
+.panelHint,
+.emptyPanelText,
+.historyCardBody p,
+.historyCardBody span,
+.dropZoneHeader p,
+.dropZoneEmpty,
+.libraryCardPrompt,
+.statusBar span,
+.selectionHero p,
+.detailSectionHeader p,
+.reflectionColumnHeader p,
+.timelineObserverNote p,
+.riskCard p,
+.compactAnalysis p,
+.snapshotList span,
+.overviewLead,
+.storyLead,
+.issueLead,
+.personaStripCard p,
+.personaStripCard small,
+.traceCard p {
+  color: #757a72;
+}
+
+.heroActions,
+.inlineActions {
+  gap: 10px;
+}
+
+.primaryButton,
+.secondaryButton,
+.ghostButton,
+.tableActionButton,
+.iconButton,
+.promptCardButton {
+  border-radius: 16px;
+}
+
+.primaryButton {
+  background: linear-gradient(180deg, #66aa7f 0%, #4f9369 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(90, 157, 116, 0.18);
+}
+
+.primaryButton:hover {
+  background: linear-gradient(180deg, #5ea679 0%, #45815d 100%);
+}
+
+.secondaryButton,
+.ghostButton,
+.tableActionButton,
+.iconButton {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(58, 61, 53, 0.1);
+  color: #232723;
+}
+
+.secondaryButton:hover,
+.ghostButton:hover,
+.tableActionButton:hover,
+.iconButton:hover,
+.promptCardButton:hover {
+  border-color: rgba(90, 157, 116, 0.25);
+  box-shadow: var(--shadow-sm);
+}
+
+.engineBadge {
+  border-color: rgba(90, 157, 116, 0.16);
+  background: rgba(231, 243, 236, 0.9);
+  color: #4c8f67;
+}
+
+.heroStatRack,
+.tableStageBar,
+.simulationOverviewGrid,
+.personaStrip,
+.cardLibraryGrid,
+.analysisGrid,
+.statusBarFull,
+.snapshotMetricGrid,
+.riskSummaryGrid {
+  gap: 18px;
+}
+
+.heroStatCard,
+.stageChip,
+.snapshotMetric,
+.riskSummaryCard {
+  border-radius: 24px;
+  padding: 18px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 247, 241, 0.96));
+}
+
+.heroStatCard span,
+.stageChip span,
+.snapshotMetric span,
+.riskSummaryCard span,
+.statusBar strong,
+.timelineFacts dt,
+.riskHeader span {
+  color: #7b806f;
+}
+
+.heroStatCard strong,
+.stageChip strong,
+.snapshotMetric strong,
+.riskSummaryCard strong,
+.summaryCard strong {
+  font-size: 1.28rem;
+  color: #222621;
+}
+
+.metaTable {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.metaLabel {
+  background: #faf7f1;
+  color: #2a2f29;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.metaValue,
+.lessonTable td {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.metaValue input,
+.metaSupplementCard textarea,
+.lessonTable input,
+.lessonTable textarea,
+.detailForm textarea,
+.reflectionQuestionCard textarea {
+  background: #fcfbf8;
+  border: 1px solid rgba(58, 61, 53, 0.1);
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.lessonTable th {
+  background: #faf7f1;
+  color: #73786f;
+  font-size: 0.77rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.lessonTable tbody tr:hover td {
+  background: #fdfbf7;
+}
+
+.selectedRow td {
+  background: rgba(235, 244, 238, 0.86);
+}
+
+.tableWrap {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.detailSection,
+.personaStripCard,
+.triBoardHeadCell,
+.triColumn,
+.analysisGrid article,
+.historyCard,
+.riskCard,
+.reflectionQuestionCard,
+.storyDialogueCard,
+.traceCard,
+.scenarioContrastCard,
+.artifactCardCompact,
+.interventionCardCompact,
+.reflectionInlineCard {
+  border-radius: 24px;
+}
+
+.detailSection,
+.triColumn,
+.triBoardHeadCell,
+.personaStripCard,
+.analysisGrid article,
+.historyCard {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 247, 241, 0.96));
+}
+
+.detailSectionHeader h3,
+.reflectionColumnHeader h3,
+.triBoardHeadCell h3,
+.triColumn h3,
+.libraryHeading,
+.panelHeader h3 {
+  font-size: 1.02rem;
+  color: #20241f;
+}
+
+.snapshotList strong,
+.riskCard strong,
+.reflectionQuestionCard span,
+.storyDialogueCard strong,
+.traceCard strong,
+.historyCardBody strong {
+  color: #1f241f;
+}
+
+.personaStripHead span,
+.storyDialogueCard span,
+.traceCard strong,
+.triBoardHeadCell p {
+  color: #c46d49;
+}
+
+.personaStripHead span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(210, 123, 83, 0.1);
+}
+
+.simulationTriBoard {
+  gap: 18px;
+}
+
+.triBoardHeader,
+.simulationTriRow {
+  gap: 18px;
+}
+
+.storyDialogueCard,
+.traceCard,
+.riskMetaBlock,
+.missedOpportunityList li {
+  background: #fcfaf6;
+  border: 1px solid rgba(58, 61, 53, 0.08);
+}
+
+.storyDialogueCard-teacher {
+  background: linear-gradient(180deg, rgba(233, 243, 236, 0.92), rgba(255, 255, 255, 0.96));
+}
+
+.storyDialogueCard-student {
+  background: linear-gradient(180deg, rgba(252, 248, 242, 0.98), rgba(255, 255, 255, 0.96));
+}
+
+.storyDialogueCard-ai {
+  background: linear-gradient(180deg, rgba(253, 242, 236, 0.96), rgba(255, 255, 255, 0.96));
+}
+
+.issueLead {
+  background: rgba(248, 245, 238, 0.92);
+  border: 1px solid rgba(210, 123, 83, 0.12);
+}
+
+.linkedCardChip,
+.evidenceChip {
+  background: rgba(231, 243, 236, 0.92);
+  color: #4a8a64;
+}
+
+.linkedCardChip-risk {
+  background: rgba(253, 242, 236, 0.95);
+  color: #c46d49;
+}
+
+.statusBar {
+  border-radius: 28px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+@media (max-width: 860px) {
+  .appShell {
+    width: min(100% - 20px, 1500px);
+    padding: 16px 0 28px;
+  }
+
+  .heroPanel,
+  .panel,
+  .statusBar,
+  .summaryCard {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .heroPanel h1 {
+    font-size: 1.55rem;
+  }
+
+  .heroStatCard,
+  .stageChip,
+  .snapshotMetric,
+  .riskSummaryCard,
+  .detailSection,
+  .personaStripCard,
+  .triBoardHeadCell,
+  .triColumn,
+  .historyCard {
+    border-radius: 20px;
+  }
 }
