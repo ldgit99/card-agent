@@ -3115,3 +3115,55 @@ body {
     border-radius: 20px;
   }
 }
+/* Card library 2-column square layout */
+.cardLibraryBottomGrid .libraryList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cardLibraryBottomGrid .promptCard-library {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  padding: 18px;
+  align-content: start;
+}
+
+.cardLibraryBottomGrid .promptCardQuestion {
+  font-size: clamp(1.42rem, 1.7vw, 1.82rem);
+  line-height: 1.3;
+}
+
+.cardLibraryBottomGrid .promptCardIntent {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.cardLibraryBottomGrid .promptCardBadge {
+  font-size: 0.92rem;
+  padding: 7px 12px;
+}
+
+.cardLibraryBottomGrid .promptCardNumber {
+  font-size: 1.1rem;
+}
+
+.cardLibraryBottomGrid .promptCardBody {
+  min-height: 0;
+}
+
+.cardLibraryBottomGrid .promptCardButton {
+  width: 100%;
+  margin-top: auto;
+}
+
+@media (max-width: 720px) {
+  .cardLibraryBottomGrid .libraryList {
+    grid-template-columns: 1fr;
+  }
+
+  .cardLibraryBottomGrid .promptCard-library {
+    aspect-ratio: auto;
+    min-height: 220px;
+  }
+}
