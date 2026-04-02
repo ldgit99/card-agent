@@ -307,7 +307,7 @@ a {
 }
 
 .metaCell {
-  min-height: 52px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   padding: 10px 14px;
@@ -350,7 +350,7 @@ a {
   border: 1px solid var(--line-strong);
   background: #ffffff;
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 10px 12px;
   font-size: 0.9rem;
   color: var(--ink);
   transition: border-color 160ms ease, box-shadow 160ms ease;
@@ -660,7 +660,7 @@ a {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-top: 12px;
-  padding: 18px 20px;
+  padding: 14px 18px;
   border-radius: 24px;
 }
 
@@ -687,7 +687,7 @@ a {
 }
 
 .summaryCard {
-  padding: 18px 20px;
+  padding: 14px 18px;
   border-radius: var(--radius-xl);
   background: #ffffff;
 }
@@ -853,7 +853,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 18px;
+  padding: 10px 12px;
 }
 
 .historyCardBody {
@@ -950,7 +950,7 @@ a {
 .heroStatCard {
   display: grid;
   gap: 4px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: #f8fafc;
@@ -983,13 +983,13 @@ a {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .stageChip {
   display: grid;
   gap: 8px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(156, 188, 248, 0.32);
   background: rgba(244, 248, 255, 0.88);
@@ -1063,7 +1063,7 @@ a {
 .riskSummaryCard {
   display: grid;
   gap: 8px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(156, 188, 248, 0.26);
   background: rgba(255, 255, 255, 0.88);
@@ -1241,7 +1241,7 @@ a {
 .metaSupplementCard textarea {
   width: 100%;
   resize: vertical;
-  min-height: 100px;
+  min-height: 78px;
   border: 1px solid var(--line-strong);
   background: #ffffff;
   border-radius: 10px;
@@ -1399,7 +1399,7 @@ a {
 }
 
 .panel {
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 14px;
 }
 
@@ -1621,7 +1621,7 @@ a {
 }
 
 .summaryCard {
-  padding: 16px 18px;
+  padding: 10px 12px;
   background: #ffffff;
 }
 
@@ -1747,7 +1747,7 @@ a {
 .scenarioEpisodeCard {
   display: grid;
   gap: 14px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid var(--line);
   background: #fff;
@@ -1941,7 +1941,7 @@ a {
 .reportDetailList li {
   display: grid;
   gap: 6px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 16px;
   background: #f8fbff;
   border: 1px solid rgba(219, 234, 254, 0.88);
@@ -2082,7 +2082,7 @@ a {
 .responseCard {
   display: grid;
   gap: 8px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(156, 188, 248, 0.26);
   background: rgba(255, 255, 255, 0.92);
@@ -2173,7 +2173,7 @@ a {
   display: grid;
   gap: 6px;
   margin: 12px 0;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 16px;
   background: rgba(248, 250, 252, 0.92);
 }
@@ -2227,7 +2227,7 @@ a {
 .personaStripCard {
   display: grid;
   gap: 8px;
-  padding: 16px 18px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(219, 234, 254, 0.96);
   background: #ffffff;
@@ -2451,20 +2451,20 @@ a {
 }
 
 .metaCell {
-  min-height: 82px;
+  min-height: 66px;
   padding: 0;
 }
 
 .metaLabel {
-  padding: 18px 20px;
+  padding: 14px 18px;
 }
 
 .metaValue {
-  padding: 16px 18px;
+  padding: 10px 12px;
 }
 
 .metaValue input {
-  min-height: 52px;
+  min-height: 44px;
 }
 
 .metaSupplementGrid {
@@ -2472,7 +2472,7 @@ a {
 }
 
 .metaSupplementCardWide {
-  min-height: 168px;
+  min-height: 132px;
 }
 
 .lessonTableCards .colFunction {
@@ -2776,7 +2776,7 @@ body {
 
 .appShell {
   width: min(1500px, calc(100% - 40px));
-  padding: 26px 0 44px;
+  padding: 20px 0 30px;
 }
 
 .heroPanel,
@@ -2802,7 +2802,7 @@ body {
 }
 
 .heroPanel {
-  padding: 30px 32px;
+  padding: 24px 26px;
   border-radius: 32px;
   background: rgba(255, 255, 255, 0.9);
 }
@@ -2832,12 +2832,12 @@ body {
 }
 
 .panel {
-  padding: 22px 24px;
+  padding: 14px 18px;
   border-radius: 30px;
 }
 
 .panelHeader {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .panelHeader h2 {
@@ -2934,7 +2934,7 @@ body {
 .snapshotMetric,
 .riskSummaryCard {
   border-radius: 24px;
-  padding: 18px 20px;
+  padding: 14px 18px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 247, 241, 0.96));
 }
 
@@ -2983,7 +2983,7 @@ body {
   background: #fcfbf8;
   border: 1px solid rgba(58, 61, 53, 0.1);
   border-radius: 18px;
-  padding: 12px 14px;
+  padding: 10px 12px;
 }
 
 .lessonTable th {
@@ -3115,7 +3115,7 @@ body {
 
 .statusBar {
   border-radius: 28px;
-  padding: 18px 20px;
+  padding: 14px 18px;
   background: rgba(255, 255, 255, 0.92);
 }
 
@@ -3498,7 +3498,7 @@ body {
   border: 1px solid rgba(58, 61, 53, 0.1);
   background: #fcfbf8;
   border-radius: 18px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   font-size: 0.95rem;
   color: var(--ink);
   transition: border-color 160ms ease, box-shadow 160ms ease;
