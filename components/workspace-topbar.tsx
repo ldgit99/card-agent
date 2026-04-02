@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 
 export type WorkspaceSection = "design" | "simulation" | "report";
 
-const workspaceLinks: Array<{ id: WorkspaceSection; href: string; label: string }> = [
-  { id: "design", href: "/", label: "수업 설계" },
-  { id: "simulation", href: "/simulation", label: "모의 수업 실행 및 성찰" },
-  { id: "report", href: "/report", label: "보고서 출력" },
+const workspaceLinks: Array<{ id: WorkspaceSection; href: string; label: string; step: string }> = [
+  { id: "design", href: "/", label: "수업 설계", step: "1단계" },
+  { id: "simulation", href: "/simulation", label: "모의 수업 실행 및 성찰", step: "2단계" },
+  { id: "report", href: "/report", label: "보고서 출력", step: "3단계" },
 ];
 
 export function WorkspaceTopbar({
@@ -37,7 +37,7 @@ export function WorkspaceTopbar({
                 onClick={() => void handler()}
                 disabled={isDisabled}
               >
-                {item.label}
+                <span className="workspaceNavStep">{item.step}</span><span className="workspaceNavText">{item.label}</span>
               </button>
             );
           }
@@ -49,7 +49,7 @@ export function WorkspaceTopbar({
               className={className}
               aria-disabled={isDisabled ? true : undefined}
             >
-              {item.label}
+              <span className="workspaceNavStep">{item.step}</span><span className="workspaceNavText">{item.label}</span>
             </Link>
           );
         })}
