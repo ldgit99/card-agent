@@ -138,6 +138,20 @@ export function SimulationWorkspace() {
     return new Map((scenario?.studentPersonas ?? []).map((persona) => [persona.id, persona]));
   }, [scenario]);
 
+  const majorActivities = useMemo(() => {
+    if (!design) {
+      return [];
+    }
+
+    return design.activities
+      .map((activity) => {
+        const heading = activity.functionLabel || activity.title || `활동 ${activity.order}`;
+        const detail = activity.learningActivity?.trim();
+        return detail ? `${heading}: ${detail}` : heading;
+      })
+      .filter(Boolean);
+  }, [design]);
+
   function applyStoredSimulationState(state: StoredSimulationState) {
     setAnalysis(state.analysis);
     setScenario(state.scenario);
@@ -593,17 +607,18 @@ export function SimulationWorkspace() {
             <div className="detailSectionHeader">
               <div>
                 <p className="sectionMicroTag">Lesson Snapshot</p>
-                <h3>{design.meta.topic || "제목 미입력"}</h3>
+                <h3>수업 설계 요약</h3>
               </div>
               <span className="engineBadge">v{design.version}</span>
             </div>
             <div className="snapshotMetricGrid">
+              <article className="snapshotMetric"><span>주제</span><strong>{design.meta.topic || "-"}</strong></article>
               <article className="snapshotMetric"><span>교과</span><strong>{design.meta.subject || "-"}</strong></article>
               <article className="snapshotMetric"><span>대상</span><strong>{design.meta.target || "-"}</strong></article>
-              <article className="snapshotMetric"><span>설계 요소</span><strong>{design.placements.length}</strong></article>
             </div>
             <div className="snapshotList">
               <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
+              <div><strong>주요 활동</strong><span>{majorActivities.length ? majorActivities.join(" / ") : "아직 입력된 활동이 없습니다."}</span></div>
             </div>
           </article>
           <article className="detailSection detailSectionSoft">
