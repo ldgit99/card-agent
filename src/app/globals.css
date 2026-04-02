@@ -3232,16 +3232,21 @@ body {
     border-radius: 20px;
   }
 }
-/* Card library compact 4-column layout */
+/* Card library separated teacher/AI columns */
 .cardLibraryBottomGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+  align-items: start;
+}
+
+.cardLibraryBottomGrid .libraryColumn {
+  align-content: start;
 }
 
 .cardLibraryBottomGrid .libraryList {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
