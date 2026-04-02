@@ -20,6 +20,7 @@ import {
   parseMultilineField,
 } from "@/lib/design";
 import { loadStoredDesign, saveStoredDesign } from "@/lib/storage";
+import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { fetchWorkspaceSnapshot, saveDesignToWorkspace } from "@/lib/workspace-client";
 import type {
   CardActor,
@@ -422,41 +423,47 @@ export function DesignStudio() {
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <main className="appShell">
         <section className="heroPanel">
-          <div>
-            <p className="eyebrow">Harness-Based Teacher Agent</p>
-            <h1>수업 설계 스튜디오</h1>
-            <p className="heroCopy">
-              주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
-              카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
-            </p>
-            <div className="heroActions">
-              <button type="button" className="primaryButton" onClick={analyzeDesign}>
-                {isAnalyzing ? "설계 분석 중..." : "설계 분석 실행"}
-              </button>
-              <button type="button" className="secondaryButton" onClick={persistDesign}>
-                {isSyncingWorkspace ? "서버 저장 중..." : "설계 서버 저장"}
-              </button>
-              <button type="button" className="ghostButton" onClick={reloadFromServer}>
-                서버 저장본 불러오기
-              </button>
-              <Link href="/simulation" className="secondaryButton">
-                2페이지로 이동
-              </Link>
+          <div className="heroPanelStack">
+            <WorkspaceTopbar
+              active="design"
+              actions={
+                <>
+                  <button type="button" className="primaryButton" onClick={analyzeDesign}>
+                    {isAnalyzing ? "설계 분석 중..." : "설계 분석 실행"}
+                  </button>
+                  <button type="button" className="secondaryButton" onClick={persistDesign}>
+                    {isSyncingWorkspace ? "서버 저장 중..." : "설계 저장"}
+                  </button>
+                  <button type="button" className="ghostButton" onClick={reloadFromServer}>
+                    저장본 불러오기
+                  </button>
+                </>
+              }
+            />
+            <div className="heroPanelMain">
+              <div>
+                <p className="eyebrow">Lesson Design Workspace</p>
+                <h1>수업 설계 스튜디오</h1>
+                <p className="heroCopy">
+                  주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
+                  카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
+                </p>
+              </div>
+              <div className="heroStatRack">
+                <article className="heroStatCard">
+                  <span>설계 활동</span>
+                  <strong>{design.activities.length}</strong>
+                </article>
+                <article className="heroStatCard">
+                  <span>교사 카드 배치</span>
+                  <strong>{totalHumanAssignments}</strong>
+                </article>
+                <article className="heroStatCard">
+                  <span>AI 카드 배치</span>
+                  <strong>{totalAiAssignments}</strong>
+                </article>
+              </div>
             </div>
-          </div>
-          <div className="heroStatRack">
-            <article className="heroStatCard">
-              <span>설계 활동</span>
-              <strong>{design.activities.length}</strong>
-            </article>
-            <article className="heroStatCard">
-              <span>교사 카드 배치</span>
-              <strong>{totalHumanAssignments}</strong>
-            </article>
-            <article className="heroStatCard">
-              <span>AI 카드 배치</span>
-              <strong>{totalAiAssignments}</strong>
-            </article>
           </div>
         </section>
 
@@ -464,7 +471,7 @@ export function DesignStudio() {
           <section className="panel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Step 1</p>
+                <p className="sectionTag">Lesson Setup</p>
                 <h2>수업 개요 입력</h2>
               </div>
               <p className="panelHint">교과와 대상 아래에 학습 목표를 먼저 정리합니다.</p>
@@ -511,7 +518,7 @@ export function DesignStudio() {
           <section className="panel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Step 2</p>
+                <p className="sectionTag">Activity Design</p>
                 <h2>학습 활동 설계</h2>
               </div>
               <div className="inlineActions">
@@ -796,3 +803,4 @@ export function DesignStudio() {
     </DndContext>
   );
 }
+

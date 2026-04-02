@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { orchestrationCards } from "@/data/cards";
 import { riskLabels } from "@/lib/constants";
 import { buildFallbackReportSnapshot, buildReportHtmlDocument } from "@/lib/report";
+import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { loadStoredDesign, loadStoredReport, loadStoredSimulation } from "@/lib/storage";
 import type { SimulationReportSnapshot } from "@/types/report";
 
@@ -77,7 +78,7 @@ export function ReportViewer() {
           <p className="emptyPanelText">먼저 모의수업 실행 화면에서 `리포트 저장하기`를 눌러 주세요.</p>
           <div className="heroActions">
             <Link href="/simulation" className="primaryButton">시뮬레이션으로 이동</Link>
-            <Link href="/" className="ghostButton">1페이지로 이동</Link>
+            <Link href="/" className="ghostButton">수업 설계로 이동</Link>
           </div>
         </section>
       </main>
@@ -87,16 +88,15 @@ export function ReportViewer() {
   return (
     <main className="reportShell">
       <section className="reportToolbar printHidden">
-        <div>
-          <p className="sectionTag">Report Workspace</p>
-          <h1>{report.reportTitle}</h1>
-          <p className="panelHint">브라우저에서 바로 보고, `PDF로 저장`으로 인쇄 저장할 수 있습니다.</p>
-        </div>
-        <div className="heroActions reportToolbarActions">
-          <button type="button" className="primaryButton" onClick={() => window.print()}>PDF로 저장</button>
-          <button type="button" className="secondaryButton" onClick={() => downloadHtml(report)}>HTML 다운로드</button>
-          <Link href="/simulation" className="ghostButton">시뮬레이션으로 돌아가기</Link>
-        </div>
+        <WorkspaceTopbar
+          active="report"
+          actions={
+            <>
+              <button type="button" className="primaryButton" onClick={() => window.print()}>PDF로 저장</button>
+              <button type="button" className="secondaryButton" onClick={() => downloadHtml(report)}>HTML 다운로드</button>
+            </>
+          }
+        />
       </section>
 
       <section className="reportSection reportHeroSection">

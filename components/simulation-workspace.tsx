@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { normalizeLessonDesignDraft, parseMultilineField } from "@/lib/design";
+import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { riskLabels } from "@/lib/constants";
 import { buildSimulationReportSnapshot } from "@/lib/report";
 import {
@@ -213,7 +214,7 @@ export function SimulationWorkspace() {
               : storedReport
                 ? "저장된 리포트와 설계 상태가 있습니다. 필요하면 리포트를 다시 열어 보세요."
                 : "설계본을 불러왔습니다. 모의 수업을 실행해 보세요."
-            : "저장된 설계가 없습니다. 1페이지에서 수업 설계를 먼저 작성해 주세요.",
+            : "저장된 설계가 없습니다. 수업 설계 화면에서 설계를 먼저 작성해 주세요.",
         );
       } catch {
         if (!active) {
@@ -227,7 +228,7 @@ export function SimulationWorkspace() {
         setMessage(
           storedDesign
             ? "서버 연결 없이 브라우저 저장본을 불러왔습니다."
-            : "저장된 설계가 없습니다. 1페이지에서 수업 설계를 먼저 작성해 주세요.",
+            : "저장된 설계가 없습니다. 수업 설계 화면에서 설계를 먼저 작성해 주세요.",
         );
       }
     }
@@ -519,13 +520,18 @@ export function SimulationWorkspace() {
     return (
       <main className="appShell">
         <section className="heroPanel">
-          <div>
-            <p className="eyebrow">Simulation Workspace</p>
-            <h1>저장된 설계가 없습니다.</h1>
-            <p className="heroCopy">먼저 1페이지에서 수업 설계를 작성해야 모의수업을 실행할 수 있습니다.</p>
-          </div>
-          <div className="heroActions">
-            <Link href="/" className="secondaryButton">1페이지로 이동</Link>
+          <div className="heroPanelStack">
+            <WorkspaceTopbar
+              active="simulation"
+              actions={<Link href="/" className="secondaryButton">수업 설계로 이동</Link>}
+            />
+            <div className="heroPanelMain">
+              <div>
+                <p className="eyebrow">Simulation Workspace</p>
+                <h1>저장된 설계가 없습니다.</h1>
+                <p className="heroCopy">먼저 수업 설계 화면에서 설계를 작성해야 모의수업을 실행할 수 있습니다.</p>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -535,29 +541,37 @@ export function SimulationWorkspace() {
   return (
     <main className="appShell">
       <section className="heroPanel">
-        <div>
-          <p className="eyebrow">Step 2</p>
-          <h1>모의수업 실행과 성찰</h1>
-          <p className="heroCopy">
-            자연스러운 수업 이야기, Human-AI 에이전시 관점의 문제점, 활동별 분석과 성찰을 한 화면에서 나란히 비교합니다.
-          </p>
-          <div className="heroActions">
-            <button type="button" className="primaryButton" onClick={runSimulation}>
-              {isRunning ? "실행 중..." : "모의 수업 실행"}
-            </button>
-            <button type="button" className="secondaryButton" onClick={persistReflectionToServer}>
-              {isSavingReflection ? "저장 중..." : "성찰 서버 저장"}
-            </button>
-            <button type="button" className="secondaryButton" onClick={saveReport}>
-              리포트 저장하기
-            </button>
-            <Link href="/" className="ghostButton">1페이지로 돌아가기</Link>
+        <div className="heroPanelStack">
+          <WorkspaceTopbar
+            active="simulation"
+            actions={
+              <>
+                <button type="button" className="primaryButton" onClick={runSimulation}>
+                  {isRunning ? "실행 중..." : "모의 수업 실행"}
+                </button>
+                <button type="button" className="secondaryButton" onClick={persistReflectionToServer}>
+                  {isSavingReflection ? "저장 중..." : "성찰 저장"}
+                </button>
+                <button type="button" className="secondaryButton" onClick={saveReport}>
+                  리포트 저장하기
+                </button>
+              </>
+            }
+          />
+          <div className="heroPanelMain">
+            <div>
+              <p className="eyebrow">Simulation Workspace</p>
+              <h1>모의수업 실행과 성찰</h1>
+              <p className="heroCopy">
+                자연스러운 수업 이야기, Human-AI 에이전시 관점의 문제점, 활동별 분석과 성찰을 한 화면에서 나란히 비교합니다.
+              </p>
+            </div>
+            <div className="heroStatRack">
+              <article className="heroStatCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
+              <article className="heroStatCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
+              <article className="heroStatCard"><span>위험</span><strong>{risks.length}</strong></article>
+            </div>
           </div>
-        </div>
-        <div className="heroStatRack">
-          <article className="heroStatCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
-          <article className="heroStatCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
-          <article className="heroStatCard"><span>위험</span><strong>{risks.length}</strong></article>
         </div>
       </section>
 
