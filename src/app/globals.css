@@ -4968,3 +4968,22 @@ body {
     flex-basis: auto;
   }
 }
+
+/* Keep select/delete column visible in activity table */
+.narrowCell {
+  width: 136px;
+  min-width: 136px;
+}
+
+.actionCell {
+  min-width: 132px;
+  width: 132px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.actionCell .tableActionButton {
+  width: 100%;
+  justify-content: center;
+}
