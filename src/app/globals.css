@@ -4891,3 +4891,80 @@ body {
     flex-basis: auto;
   }
 }
+
+/* Keep stage buttons left and action buttons right without collapsing */
+.workspaceTopbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+}
+
+.workspaceNav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-width: max-content;
+  flex-wrap: nowrap;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.workspaceNavLink {
+  flex: 0 0 auto;
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+.workspaceTopbarActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.workspaceTopbarActions .primaryButton,
+.workspaceTopbarActions .secondaryButton,
+.workspaceTopbarActions .ghostButton {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  .workspaceTopbar {
+    align-items: center;
+  }
+
+  .workspaceTopbarActions {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 760px) {
+  .workspaceTopbar {
+    flex-wrap: nowrap;
+  }
+
+  .workspaceNavLink {
+    min-width: 144px;
+  }
+
+  .workspaceTopbarActions {
+    margin-left: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspaceNavLink {
+    min-width: 136px;
+    flex-basis: auto;
+  }
+}
