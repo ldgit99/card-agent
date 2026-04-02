@@ -2533,9 +2533,14 @@ a {
   min-height: 150px;
 }
 
+.promptCard-teacher {
+  border-color: #5b9af7;
+  background: linear-gradient(180deg, rgba(237, 245, 255, 0.98), rgba(249, 252, 255, 1));
+}
+
 .promptCard-ai {
-  border-color: #7aa8f7;
-  background: linear-gradient(180deg, rgba(239, 249, 255, 0.98), rgba(249, 252, 255, 1));
+  border-color: #7fc7b8;
+  background: linear-gradient(180deg, rgba(239, 252, 249, 0.98), rgba(249, 255, 253, 1));
 }
 
 .promptCardHeader {
@@ -2577,9 +2582,26 @@ a {
   line-height: 1;
 }
 
+.promptCardIcon-teacher {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(91, 154, 247, 0.18);
+  color: #1f5eb0;
+}
+
+.promptCardIcon-ai {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(127, 199, 184, 0.26);
+  color: #1f7a67;
+}
+
+.promptCardBadge-teacher {
+  background: rgba(91, 154, 247, 0.16);
+  color: #2b67b7;
+}
+
 .promptCardBadge-ai {
-  background: rgba(122, 168, 247, 0.16);
-  color: #2f74b4;
+  background: rgba(127, 199, 184, 0.2);
+  color: #1f7a67;
 }
 
 .promptCardNumber {
@@ -2588,6 +2610,14 @@ a {
   letter-spacing: 0.04em;
   color: #2b67b7;
   line-height: 1;
+}
+
+.promptCard-teacher .promptCardNumber {
+  color: #2b67b7;
+}
+
+.promptCard-ai .promptCardNumber {
+  color: #1f7a67;
 }
 
 .promptCardBody {
@@ -2612,9 +2642,25 @@ a {
   line-height: 1.35;
 }
 
+.promptCard-teacher .promptCardQuestion {
+  color: #174a86;
+}
+
+.promptCard-ai .promptCardQuestion {
+  color: #17685a;
+}
+
 .promptCardDivider {
   height: 1px;
   background: rgba(91, 154, 247, 0.44);
+}
+
+.promptCard-teacher .promptCardDivider {
+  background: rgba(91, 154, 247, 0.44);
+}
+
+.promptCard-ai .promptCardDivider {
+  background: rgba(127, 199, 184, 0.52);
 }
 
 .promptCardIntent {
@@ -2623,6 +2669,14 @@ a {
   font-size: 1.06rem;
   line-height: 1.55;
   font-weight: 600;
+}
+
+.promptCard-teacher .promptCardIntent {
+  color: #2b67b7;
+}
+
+.promptCard-ai .promptCardIntent {
+  color: #1f7a67;
 }
 
 .promptCardIntent-compact {
@@ -2641,9 +2695,23 @@ a {
   font-weight: 700;
 }
 
+.promptCard-teacher .promptCardButton {
+  border-color: rgba(91, 154, 247, 0.34);
+  color: #1f5eb0;
+}
+
+.promptCard-ai .promptCardButton {
+  border-color: rgba(127, 199, 184, 0.42);
+  color: #1f7a67;
+}
+
 .promptCardButton:hover {
   background: rgba(255, 255, 255, 1);
   border-color: rgba(91, 154, 247, 0.54);
+}
+
+.promptCard-ai .promptCardButton:hover {
+  border-color: rgba(127, 199, 184, 0.6);
 }
 
 .promptCardButton:disabled {
@@ -2659,6 +2727,16 @@ a {
   box-shadow: none;
 }
 
+.tableDropZone-teacher {
+  border-color: rgba(91, 154, 247, 0.52);
+  background: rgba(247, 250, 255, 0.92);
+}
+
+.tableDropZone-ai {
+  border-color: rgba(127, 199, 184, 0.56);
+  background: rgba(241, 252, 249, 0.94);
+}
+
 .tableDropZoneEmpty {
   min-height: 126px;
   display: grid;
@@ -2669,9 +2747,14 @@ a {
   color: #5d7395;
 }
 
-.tableDropZoneEmpty strong {
+.tableDropZone-teacher .tableDropZoneEmpty strong {
   font-size: 0.95rem;
   color: #245ca8;
+}
+
+.tableDropZone-ai .tableDropZoneEmpty strong {
+  font-size: 0.95rem;
+  color: #1f7a67;
 }
 
 .tableDropZoneEmpty span {
