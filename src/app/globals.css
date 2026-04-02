@@ -5279,3 +5279,17 @@ body {
     width: 100%;
   }
 }
+
+/* Stack scenario contrast cards vertically */
+.storySceneGrid,
+.reportContrastGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.storySceneGrid > .scenarioContrastCard,
+.reportContrastGrid > .reportMiniBlock,
+.reportContrastGrid > .reportContrastCard {
+  min-height: 0;
+}
