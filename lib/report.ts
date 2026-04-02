@@ -103,19 +103,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     )
     .join("");
 
-  const analysisSection = report.analysis
-    ? `
-      <section class="report-section">
-        <h2>설계 분석</h2>
-        <article class="report-block"><p>${escapeHtml(report.analysis.summary)}</p></article>
-        <div class="report-card-grid report-card-grid-3">
-          <article class="report-block"><h3>강점</h3><ul>${renderList(report.analysis.strengths)}</ul></article>
-          <article class="report-block"><h3>보완점</h3><ul>${renderList(report.analysis.gaps)}</ul></article>
-          <article class="report-block"><h3>권장 수정</h3><ul>${renderList(report.analysis.recommendations)}</ul></article>
-        </div>
-      </section>
-    `
-    : "";
+  const analysisSection = "";
 
   const scenarioSection = report.scenario
     ? `
@@ -132,24 +120,6 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
           <h3>관찰 포인트</h3>
           <p>${escapeHtml(report.scenario.facilitatorBrief)}</p>
         </article>
-        <div class="report-card-grid report-card-grid-2 report-persona-grid">
-          ${report.scenario.studentPersonas
-            .map(
-              (persona) => `
-                <article class="report-block">
-                  <div class="report-block-head"><span>${escapeHtml(persona.name)}</span><strong>${escapeHtml(persona.label)}</strong></div>
-                  <p>${escapeHtml(persona.profile)}</p>
-                  <ul class="report-detail-list">
-                    <li><strong>강점</strong><span>${escapeHtml(persona.strength)}</span></li>
-                    <li><strong>관찰 포인트</strong><span>${escapeHtml(persona.watchPoint)}</span></li>
-                    <li><strong>AI 경향</strong><span>${escapeHtml(persona.aiTendency)}</span></li>
-                    <li><strong>지원 필요</strong><span>${escapeHtml(persona.supportNeed)}</span></li>
-                  </ul>
-                </article>
-              `,
-            )
-            .join("")}
-        </div>
         <div class="report-stack">
           ${report.scenario.episodes
             .map(
