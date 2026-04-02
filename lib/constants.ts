@@ -1,7 +1,8 @@
-﻿import type { RiskType } from "@/types/lesson";
+import type { RiskType } from "@/types/lesson";
 
 export const STORAGE_KEYS = {
   design: "teacher-orchestration-agent:design",
+  designHistory: "teacher-orchestration-agent:design-history",
   simulation: "teacher-orchestration-agent:simulation",
   report: "teacher-orchestration-agent:report",
 } as const;
@@ -19,4 +20,3 @@ export const riskLabels: Record<RiskType, string> = {
 };
 
 export const humanCriticalCards = ["T05", "T06", "T08", "T10", "T13", "T14"];
-

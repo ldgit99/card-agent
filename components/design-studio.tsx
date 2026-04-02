@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 import {
   DndContext,
@@ -20,12 +20,17 @@ import {
   normalizeLessonDesignDraft,
   parseMultilineField,
 } from "@/lib/design";
-import { loadStoredDesign, saveStoredDesign } from "@/lib/storage";
+import {
+  loadStoredDesign,
+  loadStoredDesignHistory,
+  saveStoredDesign,
+  saveStoredDesignHistory,
+  saveStoredDesignVersion,
+} from "@/lib/storage";
 import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { fetchWorkspaceSnapshot, saveDesignToWorkspace } from "@/lib/workspace-client";
 import type {
   CardActor,
-  DesignAnalysis,
   LessonActivity,
   LessonDesign,
   OrchestrationCard,
@@ -182,9 +187,7 @@ export function DesignStudio() {
   const [design, setDesign] = useState<LessonDesign>(getInitialDesign);
   const [learningGoalsInput, setLearningGoalsInput] = useState(() => getInitialDesign().learningGoals.join("\n"));
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<DesignAnalysis | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSyncingWorkspace, setIsSyncingWorkspace] = useState(false);
   const [isNavigatingToSimulation, setIsNavigatingToSimulation] = useState(false);
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
@@ -205,6 +208,11 @@ export function DesignStudio() {
 
   useEffect(() => {
     let active = true;
+    const localHistory = loadStoredDesignHistory();
+
+    if (localHistory.length) {
+      setDesignHistory(localHistory);
+    }
 
     async function hydrateFromWorkspace() {
       try {
@@ -213,21 +221,39 @@ export function DesignStudio() {
           return;
         }
 
-        if (snapshot.currentDesign) {
-          const nextDesign = normalizeLessonDesignDraft(snapshot.currentDesign);
+        const nextHistory = snapshot.designHistory.length ? snapshot.designHistory : localHistory;
+        if (nextHistory.length) {
+          setDesignHistory(saveStoredDesignHistory(nextHistory));
+        }
+
+        const latestSaved = snapshot.designHistory[0] ?? snapshot.currentDesign ?? localHistory[0] ?? null;
+        if (latestSaved) {
+          const nextDesign = normalizeLessonDesignDraft(latestSaved, { version: latestSaved.version });
           setDesign(nextDesign);
           setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
           setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
-          setStatusMessage("서버에 저장된 최신 설계를 불러왔습니다.");
+          saveStoredDesign(nextDesign);
+          setStatusMessage("최신 저장본을 불러왔습니다.");
         } else {
-          setStatusMessage("서버 저장본이 없어 브라우저 임시 저장본으로 시작합니다.");
+          setStatusMessage("저장된 설계가 없어 현재 작업본으로 시작합니다.");
         }
 
-        setDesignHistory(snapshot.designHistory);
         setLastServerSyncAt(snapshot.updatedAt);
       } catch {
-        if (active) {
-          setStatusMessage("서버 저장소에 연결하지 못해 브라우저 임시 저장본으로 시작합니다.");
+        if (!active) {
+          return;
+        }
+
+        const latestLocal = localHistory[0] ?? loadStoredDesign();
+        if (latestLocal) {
+          const nextDesign = normalizeLessonDesignDraft(latestLocal, { version: latestLocal.version });
+          setDesign(nextDesign);
+          setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
+          setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
+          saveStoredDesign(nextDesign);
+          setStatusMessage("브라우저 저장본을 불러왔습니다.");
+        } else {
+          setStatusMessage("저장된 설계가 없어 현재 작업본으로 시작합니다.");
         }
       }
     }
@@ -238,6 +264,16 @@ export function DesignStudio() {
       active = false;
     };
   }, []);
+
+  function applyDesignToEditor(nextDesign: LessonDesign) {
+    setDesign(nextDesign);
+    setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
+    setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
+  }
+
+  function syncHistory(nextHistory: LessonDesign[]) {
+    setDesignHistory(saveStoredDesignHistory(nextHistory));
+  }
 
   function commitDesign(nextDesign: LessonDesign) {
     setDesign(normalizeLessonDesignDraft(nextDesign));
@@ -325,45 +361,22 @@ export function DesignStudio() {
     }
   }
 
-  async function analyzeDesign() {
-    setIsAnalyzing(true);
-    setStatusMessage("");
-
-    try {
-      const response = await fetch("/api/design/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ design }),
-      });
-
-      if (!response.ok) {
-        throw new Error("설계 분석 요청이 실패했습니다.");
-      }
-
-      const payload = (await response.json()) as { analysis: DesignAnalysis };
-      setAnalysis(payload.analysis);
-      setStatusMessage(
-        payload.analysis.engine === "openai"
-          ? "OpenAI 기반 설계 분석이 완료되었습니다."
-          : "휴리스틱 기반 설계 분석이 완료되었습니다.",
-      );
-    } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "설계 분석 중 오류가 발생했습니다.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }
-
   async function persistDesign() {
     setIsSyncingWorkspace(true);
 
+    const nextDesign = normalizeLessonDesignDraft(design, { version: design.version + 1 });
+    applyDesignToEditor(nextDesign);
+    saveStoredDesign(nextDesign);
+    const localHistory = saveStoredDesignVersion(nextDesign);
+    setDesignHistory(localHistory);
+
     try {
-      const response = await saveDesignToWorkspace({ design, persistVersion: true });
-      setDesignHistory(response.designHistory);
+      const response = await saveDesignToWorkspace({ design: nextDesign, persistVersion: true });
+      syncHistory(response.designHistory.length ? response.designHistory : localHistory);
       setLastServerSyncAt(response.updatedAt);
-      setStatusMessage("현재 설계를 서버 저장소에 저장했습니다.");
-    } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "서버 저장 중 오류가 발생했습니다.");
+      setStatusMessage(`v${nextDesign.version} 설계를 저장했습니다.`);
+    } catch {
+      setStatusMessage(`v${nextDesign.version} 설계를 브라우저에 저장했습니다. 서버 저장소 연결이 없으면 이 저장본으로 계속 작업할 수 있습니다.`);
     } finally {
       setIsSyncingWorkspace(false);
     }
@@ -371,29 +384,42 @@ export function DesignStudio() {
 
   async function reloadFromServer() {
     setIsSyncingWorkspace(true);
+    const localHistory = loadStoredDesignHistory();
 
     try {
       const snapshot = await fetchWorkspaceSnapshot();
-      if (!snapshot.currentDesign) {
-        setStatusMessage("서버에 저장된 설계가 없습니다.");
+      const nextHistory = snapshot.designHistory.length ? snapshot.designHistory : localHistory;
+      if (nextHistory.length) {
+        syncHistory(nextHistory);
+      }
+
+      const latestSaved = snapshot.designHistory[0] ?? snapshot.currentDesign ?? localHistory[0] ?? loadStoredDesign();
+      if (!latestSaved) {
+        setStatusMessage("불러올 저장본이 없습니다.");
         return;
       }
 
-      const nextDesign = normalizeLessonDesignDraft(snapshot.currentDesign);
-      setDesign(nextDesign);
-      setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
-      setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
-      setDesignHistory(snapshot.designHistory);
+      const nextDesign = normalizeLessonDesignDraft(latestSaved, { version: latestSaved.version });
+      applyDesignToEditor(nextDesign);
+      saveStoredDesign(nextDesign);
       setLastServerSyncAt(snapshot.updatedAt);
-      setAnalysis(null);
-      setStatusMessage("서버 최신 설계를 다시 불러왔습니다.");
-    } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "서버 저장본을 불러오지 못했습니다.");
+      setStatusMessage(`${formatDesignLabel(latestSaved)} 저장본을 불러왔습니다.`);
+    } catch {
+      const latestLocal = localHistory[0] ?? loadStoredDesign();
+      if (!latestLocal) {
+        setStatusMessage("브라우저에도 저장된 설계가 없습니다.");
+        return;
+      }
+
+      const nextDesign = normalizeLessonDesignDraft(latestLocal, { version: latestLocal.version });
+      applyDesignToEditor(nextDesign);
+      saveStoredDesign(nextDesign);
+      syncHistory(localHistory);
+      setStatusMessage(`${formatDesignLabel(latestLocal)} 브라우저 저장본을 불러왔습니다.`);
     } finally {
       setIsSyncingWorkspace(false);
     }
   }
-
 
   async function navigateToSimulation() {
     if (isNavigatingToSimulation) {
@@ -421,14 +447,13 @@ export function DesignStudio() {
     }
   }
   function loadDesignVersion(versionDesign: LessonDesign) {
-    const nextDesign = normalizeLessonDesignDraft(versionDesign);
-    setDesign(nextDesign);
-    setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
-    setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
-    setAnalysis(null);
+    const nextDesign = normalizeLessonDesignDraft(versionDesign, { version: versionDesign.version });
+    applyDesignToEditor(nextDesign);
+    saveStoredDesign(nextDesign);
     setStatusMessage(`${formatDesignLabel(versionDesign)} 버전을 작업 화면으로 불러왔습니다.`);
   }
 
+  const latestSavedAt = designHistory[0]?.updatedAt ?? lastServerSyncAt;
 
   const totalHumanAssignments = design.activities.reduce(
     (count, activity) => count + activity.humanCardIds.length,
@@ -450,14 +475,11 @@ export function DesignStudio() {
               disabledSection={isNavigatingToSimulation ? "simulation" : null}
               actions={
                 <>
-                  <button type="button" className="primaryButton" onClick={analyzeDesign}>
-                    {isAnalyzing ? "설계 분석 중..." : "설계 분석 실행"}
-                  </button>
-                  <button type="button" className="secondaryButton" onClick={persistDesign}>
-                    {isSyncingWorkspace ? "서버 저장 중..." : "설계 저장"}
+                  <button type="button" className="primaryButton" onClick={persistDesign}>
+                    {isSyncingWorkspace ? "저장 중..." : "설계 저장"}
                   </button>
                   <button type="button" className="ghostButton" onClick={reloadFromServer}>
-                    저장본 불러오기
+                    최신 저장본 불러오기
                   </button>
                 </>
               }
@@ -668,44 +690,6 @@ export function DesignStudio() {
             </div>
           </section>
 
-          {analysis ? (
-            <section className="panel analysisPanel">
-              <div className="panelHeader">
-                <div>
-                  <p className="sectionTag">Step 3</p>
-                  <h2>설계 분석 결과</h2>
-                </div>
-                <p className="panelHint">엔진: {analysis.engine}</p>
-              </div>
-              <p className="analysisSummary">{analysis.summary}</p>
-              <div className="analysisGrid">
-                <article>
-                  <h3>강점</h3>
-                  <ul>
-                    {analysis.strengths.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </article>
-                <article>
-                  <h3>보완점</h3>
-                  <ul>
-                    {analysis.gaps.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </article>
-                <article>
-                  <h3>권장 수정</h3>
-                  <ul>
-                    {analysis.recommendations.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </article>
-              </div>
-            </section>
-          ) : null}
 
           <section className="panel">
             <div className="panelHeader">
@@ -770,10 +754,10 @@ export function DesignStudio() {
           <section className="panel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Server History</p>
+                <p className="sectionTag">Saved Versions</p>
                 <h2>저장된 버전</h2>
               </div>
-              <p className="panelHint">필요한 버전을 작업 화면으로 복원할 수 있습니다.</p>
+              <p className="panelHint">브라우저 또는 서버에 저장된 버전을 작업 화면으로 복원할 수 있습니다.</p>
             </div>
             {designHistory.length ? (
               <div className="historyList">
@@ -793,7 +777,7 @@ export function DesignStudio() {
                 ))}
               </div>
             ) : (
-              <p className="emptyPanelText">아직 서버에 저장된 설계 버전이 없습니다.</p>
+              <p className="emptyPanelText">아직 저장된 설계 버전이 없습니다.</p>
             )}
           </section>
         </section>
@@ -801,15 +785,15 @@ export function DesignStudio() {
         <footer className="statusBar statusBarFull">
           <div>
             <strong>저장 상태</strong>
-            <span>브라우저에는 자동 저장되고, 서버 저장 버튼으로 영속 저장합니다.</span>
+            <span>브라우저에는 자동 저장되고, 설계 저장 버튼으로 버전 이력을 남깁니다.</span>
           </div>
           <div>
-            <strong>서버 설계 버전</strong>
+            <strong>저장된 설계 버전</strong>
             <span>{designHistory.length}개</span>
           </div>
           <div>
-            <strong>마지막 서버 저장</strong>
-            <span>{formatSyncTime(lastServerSyncAt)}</span>
+            <strong>마지막 저장</strong>
+            <span>{formatSyncTime(latestSavedAt)}</span>
           </div>
           <div>
             <strong>상태 메시지</strong>
