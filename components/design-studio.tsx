@@ -171,13 +171,6 @@ function formatDesignLabel(design: LessonDesign) {
   return `${design.meta.topic || "제목 미입력"} · v${design.version}`;
 }
 
-function getActivityHeading(activity: LessonActivity | null) {
-  if (!activity) {
-    return "활동을 선택해 주세요.";
-  }
-
-  return activity.title || activity.functionLabel || `활동 ${activity.order}`;
-}
 
 export function DesignStudio() {
   const router = useRouter();
@@ -436,9 +429,7 @@ export function DesignStudio() {
     setStatusMessage(`${formatDesignLabel(versionDesign)} 버전을 작업 화면으로 불러왔습니다.`);
   }
 
-  const selectedCardTotal = selectedActivity
-    ? selectedActivity.humanCardIds.length + selectedActivity.aiCardIds.length
-    : 0;
+
   const totalHumanAssignments = design.activities.reduce(
     (count, activity) => count + activity.humanCardIds.length,
     0,
@@ -559,24 +550,7 @@ export function DesignStudio() {
                 </button>
               </div>
             </div>
-            <div className="tableStageBar">
-              <article className="stageChip">
-                <span>현재 선택 활동</span>
-                <strong>
-                  {selectedActivity
-                    ? `${selectedActivity.order}차 활동 · ${getActivityHeading(selectedActivity)}`
-                    : "활동을 선택해 주세요."}
-                </strong>
-              </article>
-              <article className="stageChip">
-                <span>선택 활동 카드</span>
-                <strong>{selectedCardTotal}장 배치</strong>
-              </article>
-              <article className="stageChip">
-                <span>설계 분석 상태</span>
-                <strong>{analysis ? "분석 완료" : "작성 중"}</strong>
-              </article>
-            </div>
+
             <div className="tableWrap tableWrapWide">
               <table className="lessonTable lessonTableCards">
                 <thead>
