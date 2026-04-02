@@ -3985,3 +3985,514 @@ body {
     padding-bottom: 24px;
   }
 }
+/* Course reader layout override */
+body {
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #f4f6fb 100%);
+  color: #111827;
+}
+
+.appShell,
+.reportShell {
+  width: min(1680px, calc(100% - 40px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  padding: 20px 0 36px;
+}
+
+.heroPanel {
+  grid-column: 1 / -1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.heroPanelStack {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+}
+
+.workspaceChrome {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.workspaceCoursebar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 20px;
+  border: 1px solid #e4e7ec;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.workspaceCourseIdentity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.workspaceMenuButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #d9dfeb;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 1.35rem;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.workspaceCourseCopy {
+  min-width: 0;
+}
+
+.workspaceCourseCopy strong {
+  display: block;
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #101828;
+}
+
+.workspaceCourseCopy span {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 0.92rem;
+}
+
+.workspaceTopbar {
+  grid-column: 1;
+  display: grid;
+  gap: 0;
+  padding: 0;
+  border: 1px solid #e4e7ec;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  overflow: hidden;
+}
+
+.workspaceSidebarHeading {
+  display: grid;
+  gap: 4px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #eaecf0;
+  background: #fcfcfd;
+}
+
+.workspaceSidebarEyebrow {
+  margin: 0;
+  color: #475467;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.workspaceSidebarHint {
+  margin: 0;
+  color: #667085;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.workspaceNav {
+  display: grid;
+  gap: 0;
+}
+
+.workspaceNavLink {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 82px;
+  padding: 16px 18px;
+  border: 0;
+  border-bottom: 1px solid #f2f4f7;
+  border-radius: 0;
+  background: #ffffff;
+  text-align: left;
+  box-shadow: none;
+}
+
+.workspaceNavLink:last-child {
+  border-bottom: 0;
+}
+
+.workspaceNavLink:hover {
+  background: #f8faff;
+  border-color: #f2f4f7;
+  box-shadow: none;
+}
+
+.workspaceNavLink-active {
+  background: #f5f8ff;
+  color: #111827;
+  box-shadow: inset 3px 0 0 #4f6ff5;
+}
+
+.workspaceNavStep {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3b5bcc;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.workspaceNavLink-active .workspaceNavStep {
+  background: #4f6ff5;
+  color: #ffffff;
+}
+
+.workspaceNavCopy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.workspaceNavText {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #101828;
+}
+
+.workspaceNavMeta {
+  color: #667085;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.workspaceTopbarActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.workspaceTopbarActions .primaryButton,
+.workspaceTopbarActions .secondaryButton,
+.workspaceTopbarActions .ghostButton {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+.heroPanelMain {
+  grid-column: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 220px;
+  padding: 30px 32px;
+  border: 1px solid #e4e7ec;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.heroPanel h1,
+.reportHeroSection h2,
+.reportCard h3,
+.reportEmptyState h1 {
+  color: #101828;
+  font-size: clamp(2rem, 2.7vw, 3.2rem);
+  letter-spacing: -0.045em;
+}
+
+.eyebrow,
+.sectionTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(79, 111, 245, 0.18);
+  background: #eef2ff;
+  color: #3558e5;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.heroCopy,
+.panelHint,
+.overviewLead,
+.snapshotBlockValue,
+.reportDetailList span,
+.reportAnswerBlock,
+.emptyPanelText {
+  color: #667085;
+}
+
+.heroStatRack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: min(380px, 100%);
+}
+
+.heroStatCard,
+.stageChip,
+.snapshotMetric,
+.riskSummaryCard,
+.reportMetricCard {
+  border: 1px solid #e7ebf3;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.heroStatCard span,
+.stageChip span,
+.reportMetricCard span,
+.snapshotBlock strong {
+  color: #475467;
+}
+
+.designStack,
+.appShell > .panel,
+.appShell > .statusBarFull,
+.reportDocument {
+  grid-column: 2;
+}
+
+.panel,
+.statusBarFull,
+.reportSection,
+.reportEmptyState,
+.historyCard,
+.mobileActivityCard,
+.detailSection,
+.triColumn,
+.triBoardHeadCell,
+.personaStripCard,
+.reportCard,
+.reportMiniBlock,
+.reportRiskCard {
+  border: 1px solid #e4e7ec;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.panel {
+  padding: 22px 24px;
+}
+
+.panelHeader {
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.panelHeader h2,
+.panelHeader h3,
+.triBoardHeadCell h3 {
+  color: #101828;
+  letter-spacing: -0.03em;
+}
+
+.metaTableExtended,
+.lessonTable,
+.reportTable {
+  border-color: #e4e7ec;
+}
+
+.lessonTable thead th,
+.reportTable thead th {
+  background: #f8fafc;
+  color: #475467;
+}
+
+.lessonTable td,
+.lessonTable th,
+.reportTable td,
+.reportTable th {
+  border-color: #eaecf0;
+}
+
+.tableDropZone,
+.reportAnswerBlock,
+.storyDialogueCard,
+.scenarioContrastCard,
+.traceCard,
+.artifactCardCompact,
+.interventionCardCompact,
+.reflectionInlineCard {
+  border-color: #e6eaf2;
+  box-shadow: none;
+}
+
+.primaryButton {
+  border-color: #3558e5;
+  background: #3558e5;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.primaryButton:hover {
+  background: #2948c7;
+  border-color: #2948c7;
+}
+
+.secondaryButton,
+.ghostButton {
+  border-color: #d5dbe8;
+  background: #ffffff;
+  color: #344054;
+  box-shadow: none;
+}
+
+.secondaryButton:hover,
+.ghostButton:hover {
+  border-color: #bfc8dc;
+  background: #f8fafc;
+}
+
+.reportShell {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.reportToolbar {
+  grid-column: 1 / -1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.reportToolbar .workspaceChrome {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.reportDocument {
+  display: grid;
+  gap: 20px;
+}
+
+.statusBarFull {
+  padding: 18px 20px;
+}
+
+@media (max-width: 1200px) {
+  .appShell,
+  .reportShell,
+  .heroPanelStack,
+  .workspaceChrome,
+  .reportToolbar .workspaceChrome {
+    grid-template-columns: 1fr;
+  }
+
+  .designStack,
+  .appShell > .panel,
+  .appShell > .statusBarFull,
+  .reportDocument,
+  .heroPanelMain,
+  .workspaceTopbar {
+    grid-column: 1;
+  }
+
+  .workspaceTopbar {
+    order: 2;
+  }
+
+  .heroPanelMain {
+    order: 3;
+  }
+
+  .heroStatRack {
+    width: 100%;
+  }
+}
+
+@media (max-width: 860px) {
+  .appShell,
+  .reportShell {
+    width: min(100% - 20px, 1680px);
+    gap: 18px;
+  }
+
+  .workspaceCoursebar,
+  .heroPanelMain,
+  .panel,
+  .reportSection,
+  .statusBarFull {
+    padding: 18px;
+  }
+
+  .workspaceCoursebar,
+  .heroPanelMain {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workspaceTopbarActions {
+    justify-content: flex-start;
+  }
+
+  .workspaceNavLink {
+    min-height: 74px;
+    padding: 14px 16px;
+  }
+
+  .heroStatRack {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .appShell,
+  .reportShell {
+    width: min(100% - 16px, 1680px);
+    padding: 12px 0 24px;
+  }
+
+  .workspaceCourseCopy strong {
+    font-size: 1rem;
+  }
+
+  .workspaceCourseCopy span,
+  .workspaceNavMeta,
+  .panelHint {
+    font-size: 0.82rem;
+  }
+
+  .heroPanel h1,
+  .reportHeroSection h2,
+  .reportCard h3,
+  .reportEmptyState h1 {
+    font-size: 1.62rem;
+  }
+}
