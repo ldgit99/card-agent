@@ -2475,3 +2475,234 @@ a {
     grid-template-columns: 112px minmax(0, 1fr);
   }
 }
+
+/* Card visualization refresh */
+.promptCard {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  border-radius: 0;
+  border: 1.5px solid #5b9af7;
+  background: linear-gradient(180deg, rgba(237, 245, 255, 0.98), rgba(249, 252, 255, 1));
+  box-shadow: none;
+  color: #174a86;
+}
+
+.promptCard-library {
+  padding: 16px 16px 14px;
+  min-height: 228px;
+  cursor: grab;
+}
+
+.promptCard-compact {
+  padding: 14px 14px 12px;
+  min-height: 150px;
+}
+
+.promptCard-ai {
+  border-color: #7aa8f7;
+  background: linear-gradient(180deg, rgba(239, 249, 255, 0.98), rgba(249, 252, 255, 1));
+}
+
+.promptCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.promptCardIdentity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.promptCardIcon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(91, 154, 247, 0.16);
+  font-size: 1rem;
+  flex: 0 0 auto;
+}
+
+.promptCardBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(91, 154, 247, 0.16);
+  color: #2b67b7;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.promptCardBadge-ai {
+  background: rgba(122, 168, 247, 0.16);
+  color: #2f74b4;
+}
+
+.promptCardNumber {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #2b67b7;
+  line-height: 1;
+}
+
+.promptCardBody {
+  min-height: 72px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.promptCardQuestion {
+  margin: 0;
+  color: #174a86;
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  line-height: 1.28;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  white-space: pre-wrap;
+}
+
+.promptCardQuestion-compact {
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.promptCardDivider {
+  height: 1px;
+  background: rgba(91, 154, 247, 0.44);
+}
+
+.promptCardIntent {
+  margin: 0;
+  color: #2b67b7;
+  font-size: 1.06rem;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.promptCardIntent-compact {
+  font-size: 0.86rem;
+  padding-right: 24px;
+}
+
+.promptCardButton {
+  margin-top: auto;
+  min-height: 40px;
+  border: 1px solid rgba(91, 154, 247, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f5eb0;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.promptCardButton:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(91, 154, 247, 0.54);
+}
+
+.promptCardButton:disabled {
+  opacity: 0.48;
+}
+
+.tableDropZone {
+  min-height: 154px;
+  padding: 12px;
+  border-radius: 22px;
+  border: 1.5px dashed rgba(91, 154, 247, 0.52);
+  background: rgba(247, 250, 255, 0.92);
+  box-shadow: none;
+}
+
+.tableDropZoneEmpty {
+  min-height: 126px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  padding: 14px;
+  text-align: center;
+  color: #5d7395;
+}
+
+.tableDropZoneEmpty strong {
+  font-size: 0.95rem;
+  color: #245ca8;
+}
+
+.tableDropZoneEmpty span {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.tableDropList {
+  gap: 12px;
+}
+
+.tablePlacedCard {
+  padding: 0;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.promptCardRemove {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1f5eb0;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: 0 1px 2px rgba(23, 74, 134, 0.12);
+}
+
+.promptCardRemove:hover {
+  background: #ffffff;
+}
+
+.libraryList {
+  gap: 14px;
+}
+
+.cardColumnCell {
+  min-width: 270px;
+}
+
+@media (max-width: 860px) {
+  .promptCard-library {
+    min-height: 196px;
+  }
+
+  .promptCardQuestion {
+    font-size: 1.48rem;
+  }
+
+  .promptCardQuestion-compact {
+    font-size: 1.08rem;
+  }
+
+  .promptCardBadge {
+    font-size: 0.9rem;
+  }
+
+  .promptCardNumber {
+    font-size: 1.1rem;
+  }
+}

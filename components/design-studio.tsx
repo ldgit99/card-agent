@@ -36,6 +36,50 @@ interface DraggableCardProps {
   disabled?: boolean;
 }
 
+interface CardFaceProps {
+  card: OrchestrationCard;
+  compact?: boolean;
+}
+
+interface RowDropZoneProps {
+  id: string;
+  actor: CardActor;
+  cards: OrchestrationCard[];
+  onRemove: (cardId: string) => void;
+}
+
+function formatCardNumber(cardId: string) {
+  const numeric = cardId.replace(/^[A-Za-z]+/, "");
+  return numeric.padStart(2, "0");
+}
+
+function getCardIcon(actor: CardActor) {
+  return actor === "teacher" ? "🧑‍🏫" : "🤖";
+}
+
+function CardFace({ card, compact = false }: CardFaceProps) {
+  return (
+    <>
+      <div className="promptCardHeader">
+        <div className="promptCardIdentity">
+          <span className={`promptCardIcon promptCardIcon-${card.actor}`} aria-hidden="true">
+            {getCardIcon(card.actor)}
+          </span>
+          <span className={`promptCardBadge promptCardBadge-${card.actor}`}>{card.title}</span>
+        </div>
+        <span className="promptCardNumber">{formatCardNumber(card.id)}</span>
+      </div>
+      <div className="promptCardBody">
+        <p className={`promptCardQuestion ${compact ? "promptCardQuestion-compact" : ""}`}>{card.prompt}</p>
+      </div>
+      <div className="promptCardDivider" />
+      <p className={`promptCardIntent ${compact ? "promptCardIntent-compact" : ""}`}>
+        → {card.intent}
+      </p>
+    </>
+  );
+}
+
 function DraggableCard({ card, onQuickAdd, disabled = false }: DraggableCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `library-${card.id}`,
@@ -47,27 +91,22 @@ function DraggableCard({ card, onQuickAdd, disabled = false }: DraggableCardProp
     <article
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.62 : 1 }}
-      className={`libraryCard libraryCard-${card.actor}`}
+      className={`libraryCard promptCard promptCard-library promptCard-${card.actor}`}
       {...listeners}
       {...attributes}
     >
-      <div>
-        <p className="libraryCardCategory">{card.category}</p>
-        <h4>{card.title}</h4>
-        <p className="libraryCardPrompt">{card.prompt}</p>
-      </div>
-      <button type="button" className="ghostButton" onClick={() => onQuickAdd(card)} disabled={disabled}>
-        배치
+      <CardFace card={card} />
+      <button
+        type="button"
+        className="promptCardButton"
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={() => onQuickAdd(card)}
+        disabled={disabled}
+      >
+        현재 활동에 배치
       </button>
     </article>
   );
-}
-
-interface RowDropZoneProps {
-  id: string;
-  actor: CardActor;
-  cards: OrchestrationCard[];
-  onRemove: (cardId: string) => void;
 }
 
 function RowDropZone({ id, actor, cards, onRemove }: RowDropZoneProps) {
@@ -81,16 +120,27 @@ function RowDropZone({ id, actor, cards, onRemove }: RowDropZoneProps) {
       {cards.length ? (
         <div className="tableDropList">
           {cards.map((card) => (
-            <div key={`${id}-${card.id}`} className={`tablePlacedCard tablePlacedCard-${card.actor}`}>
-              <span>{card.title}</span>
-              <button type="button" className="tableChipRemove" onClick={() => onRemove(card.id)}>
-                x
+            <article
+              key={`${id}-${card.id}`}
+              className={`tablePlacedCard promptCard promptCard-compact promptCard-${card.actor}`}
+            >
+              <button
+                type="button"
+                className="tableChipRemove promptCardRemove"
+                onClick={() => onRemove(card.id)}
+                aria-label={`${card.title} 제거`}
+              >
+                ×
               </button>
-            </div>
+              <CardFace card={card} compact />
+            </article>
           ))}
         </div>
       ) : (
-        <p className="tableDropZoneEmpty">{actor === "teacher" ? "교사 카드" : "AI 카드"}</p>
+        <div className="tableDropZoneEmpty">
+          <strong>{actor === "teacher" ? "교사 카드" : "AI 카드"}</strong>
+          <span>하단 라이브러리에서 드래그해 배치합니다.</span>
+        </div>
       )}
     </div>
   );
