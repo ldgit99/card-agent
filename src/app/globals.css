@@ -3852,3 +3852,22 @@ body {
 .workspaceTopbarActions {
   min-width: 0;
 }
+.snapshotListStacked {
+  gap: 12px;
+}
+
+.snapshotBlock {
+  display: grid;
+  gap: 6px;
+}
+
+.snapshotBlock strong {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.snapshotBlockValue {
+  display: block;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}

@@ -610,16 +610,37 @@ export function SimulationWorkspace() {
                 <p className="sectionMicroTag">Lesson Snapshot</p>
                 <h3>수업 설계 요약</h3>
               </div>
-              <span className="engineBadge">v{design.version}</span>
+                            <span className="engineBadge">v{design.version}</span>
             </div>
-            <div className="snapshotMetricGrid">
-              <article className="snapshotMetric"><span>주제</span><strong>{design.meta.topic || "-"}</strong></article>
-              <article className="snapshotMetric"><span>교과</span><strong>{design.meta.subject || "-"}</strong></article>
-              <article className="snapshotMetric"><span>대상</span><strong>{design.meta.target || "-"}</strong></article>
-            </div>
-            <div className="snapshotList">
-              <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
-              <div><strong>주요 활동</strong><span>{majorActivities.length ? majorActivities.join(" / ") : "아직 입력된 활동이 없습니다."}</span></div>
+            <div className="snapshotList snapshotListStacked">
+              <div className="snapshotBlock">
+                <strong>주제</strong>
+                <span className="snapshotBlockValue">{design.meta.topic || "-"}</span>
+              </div>
+              <div className="snapshotBlock">
+                <strong>교과</strong>
+                <span className="snapshotBlockValue">{design.meta.subject || "-"}</span>
+              </div>
+              <div className="snapshotBlock">
+                <strong>대상</strong>
+                <span className="snapshotBlockValue">{design.meta.target || "-"}</span>
+              </div>
+              <div className="snapshotBlock">
+                <strong>학습 목표</strong>
+                <span className="snapshotBlockValue">
+                  {design.learningGoals.length
+                    ? design.learningGoals.join("\n")
+                    : "아직 입력된 학습 목표가 없습니다."}
+                </span>
+              </div>
+              <div className="snapshotBlock">
+                <strong>주요 활동</strong>
+                <span className="snapshotBlockValue">
+                  {majorActivities.length
+                    ? majorActivities.join("\n")
+                    : "아직 입력된 활동이 없습니다."}
+                </span>
+              </div>
             </div>
           </article>
           <article className="detailSection detailSectionSoft">
