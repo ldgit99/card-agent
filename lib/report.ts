@@ -379,7 +379,14 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
         background: var(--surface-soft);
       }
       .report-contrast-grid {
+        display: flex;
+        gap: 12px;
         margin-top: 14px;
+        overflow-x: auto;
+      }
+      .report-contrast-grid .report-contrast-card {
+        flex: 0 0 320px;
+        min-width: 320px;
       }
       .report-contrast-card-positive {
         background: #eff6ff;
@@ -447,6 +454,15 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
         .report-section,
         .report-block,
         .report-card { box-shadow: none; }
+        .report-contrast-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          overflow: visible;
+        }
+        .report-contrast-grid .report-contrast-card {
+          min-width: 0;
+          flex: initial;
+        }
       }
     </style>
   </head>

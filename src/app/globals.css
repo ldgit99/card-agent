@@ -3167,3 +3167,47 @@ body {
     min-height: 220px;
   }
 }
+
+
+/* Horizontal contrast scenes */
+.storySceneGrid,
+.reportContrastGrid {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-snap-type: x proximity;
+}
+
+.storySceneGrid > .scenarioContrastCard,
+.reportContrastGrid > .reportMiniBlock,
+.reportContrastGrid > .reportContrastCard {
+  flex: 0 0 clamp(260px, 30vw, 360px);
+  min-width: 260px;
+  scroll-snap-align: start;
+}
+
+.storySceneGrid > .scenarioContrastCard {
+  min-height: 100%;
+}
+
+@media (max-width: 1280px) {
+  .storySceneGrid,
+  .reportContrastGrid {
+    grid-template-columns: none;
+  }
+}
+
+@media print {
+  .reportContrastGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .reportContrastGrid > .reportMiniBlock,
+  .reportContrastGrid > .reportContrastCard {
+    min-width: 0;
+    flex: initial;
+  }
+}
