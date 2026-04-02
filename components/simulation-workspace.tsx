@@ -852,7 +852,7 @@ export function SimulationWorkspace() {
                   </div>
                   <div className="reflectionInlineList">
                     {linkedQuestions.length ? (
-                      linkedQuestions.map((question) => (
+                      linkedQuestions.slice(0, 2).map((question) => (
                         <label key={question.id} className="reflectionQuestionCard reflectionInlineCard">
                           <span>{question.prompt}</span>
                           <small>{question.rationale}</small>
@@ -878,53 +878,27 @@ export function SimulationWorkspace() {
         )}
       </section>
 
-      <section className="workspaceGrid simulationSupportGrid">
-        <div className="mainColumn">
-          <section className="panel">
-            <div className="panelHeader">
-              <div>
-                <p className="sectionTag">Next Revision</p>
-                <h2>다음 수정 계획</h2>
-              </div>
-              <p className="panelHint">활동별 성찰을 바탕으로 다음 차시에 반영할 수정 사항만 정리합니다.</p>
-            </div>
-            <label className="reflectionQuestionCard reflectionSummaryCard">
-              <span>다음 수정 체크리스트</span>
-              <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
-              <textarea
-                rows={7}
-                value={nextRevisionText}
-                onChange={(event) => setNextRevisionText(event.target.value)}
-                placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가"
-              />
-            </label>
-          </section>
+      <section className="panel">
+        <div className="panelHeader">
+          <div><p className="sectionTag">Session History</p><h2>저장된 실행 기록</h2></div>
+          <p className="panelHint">이전 세션을 불러와 활동별 성찰을 이어서 수정할 수 있습니다.</p>
         </div>
-
-        <aside className="sideColumn">
-          <section className="panel">
-            <div className="panelHeader">
-              <div><p className="sectionTag">Session History</p><h2>저장된 실행 기록</h2></div>
-              <p className="panelHint">이전 세션을 불러와 활동별 성찰을 이어서 수정할 수 있습니다.</p>
-            </div>
-            {designSessions.length ? (
-              <div className="historyList">
-                {designSessions.map((session) => (
-                  <article key={session.id} className="historyCard">
-                    <div className="historyCardBody">
-                      <strong>{formatSessionLabel(session)}</strong>
-                      <p>페르소나 {session.scenario?.studentPersonas.length ?? 0}명 · 활동 {session.turns.length}개 · 위험 {session.risks.length}개</p>
-                      <span>{formatSyncTime(session.updatedAt)}</span>
-                    </div>
-                    <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>세션 불러오기</button>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="emptyPanelText">아직 서버에 저장된 실행 세션이 없습니다.</p>
-            )}
-          </section>
-        </aside>
+        {designSessions.length ? (
+          <div className="historyList">
+            {designSessions.map((session) => (
+              <article key={session.id} className="historyCard">
+                <div className="historyCardBody">
+                  <strong>{formatSessionLabel(session)}</strong>
+                  <p>페르소나 {session.scenario?.studentPersonas.length ?? 0}명 · 활동 {session.turns.length}개 · 위험 {session.risks.length}개</p>
+                  <span>{formatSyncTime(session.updatedAt)}</span>
+                </div>
+                <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>세션 불러오기</button>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="emptyPanelText">아직 서버에 저장된 실행 세션이 없습니다.</p>
+        )}
       </section>
 
       <footer className="statusBar statusBarFull">

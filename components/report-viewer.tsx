@@ -217,7 +217,6 @@ export function ReportViewer() {
               <div className="reportAnswerBlock">{report.answers[question.id] || "응답 없음"}</div>
             </article>
           )) : <article className="reportCard"><p>생성된 성찰 질문이 없습니다.</p></article>}
-          <article className="reportCard"><h3>다음 수정 체크리스트</h3><ul>{report.nextRevisionNotes.length ? report.nextRevisionNotes.map((note) => <li key={note}>{note}</li>) : <li>없음</li>}</ul></article>
         </div>
       </section>
     </main>

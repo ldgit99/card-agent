@@ -242,10 +242,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
           )
           .join("")}
 
-        <article class="report-block">
-          <h3>다음 수정 체크리스트</h3>
-          <ul>${renderList(report.nextRevisionNotes)}</ul>
-        </article>
+
       </div>
     </section>
   `;

@@ -745,42 +745,74 @@ export function createReflectionQuestions(
 ): ReflectionQuestion[] {
   const severityRank = { high: 0, medium: 1, low: 2 } as const;
 
-  const questions = turns.map((turn) => {
+  const questions = turns.flatMap((turn) => {
     const relatedRisks = risks
       .filter((risk) => risk.evidenceTurnIds.includes(turn.id))
       .sort((left, right) => severityRank[left.severity] - severityRank[right.severity]);
-    const primaryRisk = relatedRisks[0];
+
+    const primaryRisk = relatedRisks[0] ?? null;
+    const secondaryRisk = relatedRisks[1] ?? null;
 
     if (primaryRisk) {
-      return {
-        id: crypto.randomUUID(),
-        simulationRunId: turn.simulationRunId ?? "draft-run",
-        prompt: `${turn.activityTitle}에서 ${riskLabels[primaryRisk.riskType]}가 드러났습니다. 다음 차시에는 선생님의 질문, 학생의 판단, AI의 역할을 어떻게 다시 설계하겠습니까?`,
-        rationale: `${primaryRisk.focusArea} 관점에서 ${primaryRisk.studentImpact}`,
-        linkedTurnIds: [turn.id],
-        linkedRiskIds: [primaryRisk.id],
-      };
+      return [
+        {
+          id: crypto.randomUUID(),
+          simulationRunId: turn.simulationRunId ?? "draft-run",
+          prompt: `${turn.activityTitle}에서 ${riskLabels[primaryRisk.riskType]}가 드러났습니다. 다음 차시에는 선생님의 질문과 학생의 판단 과정을 어떻게 다시 설계하겠습니까?`,
+          rationale: `${primaryRisk.focusArea} 관점에서 ${primaryRisk.studentImpact}`,
+          linkedTurnIds: [turn.id],
+          linkedRiskIds: secondaryRisk ? [primaryRisk.id, secondaryRisk.id] : [primaryRisk.id],
+        },
+        {
+          id: crypto.randomUUID(),
+          simulationRunId: turn.simulationRunId ?? "draft-run",
+          prompt: `${turn.activityTitle}에서 AI는 어느 시점까지 돕고, 마지막 판단은 학생과 교사가 어떻게 확인하게 하겠습니까?`,
+          rationale: "AI의 지원 범위와 인간의 최종 판단 지점을 분명히 해야 Human-AI 에이전시가 선명해집니다.",
+          linkedTurnIds: [turn.id],
+          linkedRiskIds: [primaryRisk.id],
+        },
+      ];
     }
 
-    return {
-      id: crypto.randomUUID(),
-      simulationRunId: turn.simulationRunId ?? "draft-run",
-      prompt: `${turn.activityTitle}에서 유지할 장면 하나와 더 분명히 만들 교사 개입 하나를 적어 보세요.`,
-      rationale: "주요 위험이 크지 않더라도 어떤 질문과 행동이 학습을 지탱했는지 확인해야 다음 설계를 더 정교화할 수 있습니다.",
-      linkedTurnIds: [turn.id],
-      linkedRiskIds: [],
-    };
+    return [
+      {
+        id: crypto.randomUUID(),
+        simulationRunId: turn.simulationRunId ?? "draft-run",
+        prompt: `${turn.activityTitle}에서 유지할 만한 교사 질문 또는 학생 참여 장면은 무엇입니까?`,
+        rationale: "잘 된 장면을 분명히 잡아야 다음 수업에서도 유지할 수 있습니다.",
+        linkedTurnIds: [turn.id],
+        linkedRiskIds: [],
+      },
+      {
+        id: crypto.randomUUID(),
+        simulationRunId: turn.simulationRunId ?? "draft-run",
+        prompt: `${turn.activityTitle}에서 학생이 AI 답을 그대로 받지 않고 근거를 말하게 하려면 어떤 추가 질문이 필요합니까?`,
+        rationale: "위험이 크지 않더라도 학생의 설명, 비교, 판단을 더 선명하게 만드는 질문이 필요합니다.",
+        linkedTurnIds: [turn.id],
+        linkedRiskIds: [],
+      },
+    ];
   });
 
   if (!questions.length) {
-    questions.push({
-      id: crypto.randomUUID(),
-      simulationRunId: "draft-run",
-      prompt: `${design.meta.topic || "이번 수업"}에서 유지할 설계 요소 하나와 더 강하게 만들 교사 개입 하나를 적어 보세요.`,
-      rationale: "주요 위험이 크지 않더라도 무엇이 학습을 지탱했는지와 무엇을 더 정교화할지를 분리해 보는 것이 중요합니다.",
-      linkedTurnIds: turns.map((turn) => turn.id),
-      linkedRiskIds: [],
-    });
+    return [
+      {
+        id: crypto.randomUUID(),
+        simulationRunId: "draft-run",
+        prompt: `${design.meta.topic || "이번 수업"}에서 유지할 설계 요소 하나를 적어 보세요.`,
+        rationale: "먼저 무엇이 잘 작동했는지 분명히 해야 다음 수정이 선명해집니다.",
+        linkedTurnIds: turns.map((turn) => turn.id),
+        linkedRiskIds: [],
+      },
+      {
+        id: crypto.randomUUID(),
+        simulationRunId: "draft-run",
+        prompt: `${design.meta.topic || "이번 수업"}에서 학생 판단과 AI 활용의 경계를 더 분명히 하려면 무엇을 바꾸겠습니까?`,
+        rationale: "교사 질문, 학생 판단, AI 지원의 경계를 분명히 하는 것이 핵심입니다.",
+        linkedTurnIds: turns.map((turn) => turn.id),
+        linkedRiskIds: [],
+      },
+    ];
   }
 
   return questions;
@@ -887,4 +919,3 @@ export function buildReflectionMarkdown(input: {
 
   return sections.join("\n");
 }
-
