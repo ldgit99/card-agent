@@ -5008,3 +5008,117 @@ body {
     min-width: 124px;
   }
 }
+
+/* Three-column hero header: steps left, title center, actions right */
+.heroPanel {
+  padding: 20px 22px;
+}
+
+.heroPanelStack {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: start;
+}
+
+.heroPanelStack > .workspaceTopbar {
+  display: contents;
+}
+
+.heroPanelStack > .workspaceTopbar .workspaceNav {
+  grid-column: 1;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+  overflow: visible;
+}
+
+.heroPanelStack > .workspaceTopbar .workspaceNavLink {
+  min-width: 0;
+  width: 100%;
+}
+
+.heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
+  grid-column: 3;
+  align-self: start;
+  justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 320px;
+  margin-left: 0;
+}
+
+.heroPanelMain {
+  grid-column: 2;
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+.heroPanelMain > div:first-child {
+  min-width: 0;
+}
+
+.heroStatRack {
+  width: 100%;
+  max-width: 420px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1280px) {
+  .heroPanelStack {
+    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  }
+
+  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
+    grid-column: 2;
+    justify-self: start;
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .heroPanelMain {
+    grid-column: 2;
+    margin-top: 72px;
+  }
+}
+
+@media (max-width: 980px) {
+  .heroPanelStack {
+    grid-template-columns: 1fr;
+  }
+
+  .heroPanelStack > .workspaceTopbar .workspaceNav,
+  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions,
+  .heroPanelMain {
+    grid-column: 1;
+    justify-self: stretch;
+    margin-top: 0;
+  }
+
+  .heroPanelStack > .workspaceTopbar .workspaceNav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .heroPanelStack > .workspaceTopbar .workspaceNavLink {
+    width: auto;
+    min-width: 160px;
+  }
+
+  .heroPanelStack > .workspaceTopbar .workspaceTopbarActions {
+    justify-content: flex-start;
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroPanelStack > .workspaceTopbar .workspaceNavLink {
+    min-width: 140px;
+  }
+}
