@@ -51,6 +51,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   background: none;
+  overflow-x: hidden;
 }
 
 a {
@@ -3803,4 +3804,51 @@ body {
   .statusBarFull {
     gap: 10px;
   }
+}
+
+/* Unified section widths */
+.appShell,
+.designStack,
+.heroPanelStack,
+.reportShell,
+.reportDocument,
+.reportStack,
+.historyList,
+.mobileActivityList,
+.statusBarFull {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.appShell > .heroPanel,
+.appShell > .designStack,
+.appShell > .statusBarFull,
+.designStack > .panel,
+.reportShell > .reportToolbar,
+.reportDocument > .reportSection,
+.historyList > .historyCard,
+.mobileActivityList > .mobileActivityCard {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.panel,
+.heroPanel,
+.statusBar,
+.statusBarFull,
+.reportToolbar,
+.reportSection,
+.historyCard,
+.mobileActivityCard {
+  overflow: hidden;
+}
+
+.panelHeader,
+.heroPanelMain,
+.historyCardBody,
+.workspaceTopbar,
+.workspaceTopbarActions {
+  min-width: 0;
 }
