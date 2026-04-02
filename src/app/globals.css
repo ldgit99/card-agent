@@ -3994,29 +3994,25 @@ body {
 
 .appShell,
 .reportShell {
-  width: min(1680px, calc(100% - 40px));
+  width: min(1440px, calc(100% - 32px));
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-  padding: 20px 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 0 28px;
 }
 
 .heroPanel {
-  grid-column: 1 / -1;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid #e4e7ec;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
 }
 
 .heroPanelStack {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   width: 100%;
-  align-items: start;
 }
 
 .workspaceChrome {
@@ -4081,15 +4077,15 @@ body {
 }
 
 .workspaceTopbar {
-  grid-column: 1;
-  display: grid;
-  gap: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0;
-  border: 1px solid #e4e7ec;
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
-  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .workspaceSidebarHeading {
@@ -4115,28 +4111,29 @@ body {
 }
 
 .workspaceNav {
-  display: grid;
-  gap: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .workspaceNavLink {
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 82px;
-  padding: 16px 18px;
-  border: 0;
-  border-bottom: 1px solid #f2f4f7;
-  border-radius: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
   background: #ffffff;
   text-align: left;
   box-shadow: none;
 }
 
 .workspaceNavLink:last-child {
-  border-bottom: 0;
+  border-bottom: 1px solid #e4e7ec;
 }
 
 .workspaceNavLink:hover {
@@ -4148,25 +4145,19 @@ body {
 .workspaceNavLink-active {
   background: #f5f8ff;
   color: #111827;
-  box-shadow: inset 3px 0 0 #4f6ff5;
+  border-color: #4f6ff5;
+  box-shadow: none;
 }
 
 .workspaceNavStep {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #3b5bcc;
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #667085;
+  letter-spacing: 0.04em;
 }
 
 .workspaceNavLink-active .workspaceNavStep {
-  background: #4f6ff5;
-  color: #ffffff;
+  color: #4f6ff5;
 }
 
 .workspaceNavCopy {
@@ -4278,12 +4269,7 @@ body {
   color: #475467;
 }
 
-.designStack,
-.appShell > .panel,
-.appShell > .statusBarFull,
-.reportDocument {
-  grid-column: 2;
-}
+/* grid-column: 2 removed — appShell/reportShell are now flex-column */
 
 .panel,
 .statusBarFull,
@@ -4407,29 +4393,9 @@ body {
 }
 
 @media (max-width: 1200px) {
-  .appShell,
-  .reportShell,
-  .heroPanelStack,
   .workspaceChrome,
   .reportToolbar .workspaceChrome {
     grid-template-columns: 1fr;
-  }
-
-  .designStack,
-  .appShell > .panel,
-  .appShell > .statusBarFull,
-  .reportDocument,
-  .heroPanelMain,
-  .workspaceTopbar {
-    grid-column: 1;
-  }
-
-  .workspaceTopbar {
-    order: 2;
-  }
-
-  .heroPanelMain {
-    order: 3;
   }
 
   .heroStatRack {
@@ -4460,11 +4426,6 @@ body {
 
   .workspaceTopbarActions {
     justify-content: flex-start;
-  }
-
-  .workspaceNavLink {
-    min-height: 74px;
-    padding: 14px 16px;
   }
 
   .heroStatRack {
