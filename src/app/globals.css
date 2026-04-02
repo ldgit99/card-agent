@@ -242,9 +242,9 @@ a {
 
 .workspaceGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.95fr);
-  gap: 22px;
-  margin-top: 22px;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.85fr);
+  gap: 14px;
+  margin-top: 14px;
 }
 
 .simulationGrid {
@@ -255,7 +255,7 @@ a {
 .sideColumn {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 12px;
 }
 
 .panel {
@@ -306,10 +306,10 @@ a {
 }
 
 .metaCell {
-  min-height: 86px;
+  min-height: 52px;
   display: flex;
   align-items: center;
-  padding: 18px 20px;
+  padding: 10px 14px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -657,8 +657,8 @@ a {
 .statusBar {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 12px;
   padding: 18px 20px;
   border-radius: 24px;
 }
@@ -681,8 +681,8 @@ a {
 .statusCards {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .summaryCard {
@@ -942,18 +942,18 @@ a {
 .heroStatRack {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  min-width: min(360px, 100%);
+  gap: 8px;
+  min-width: min(280px, 100%);
 }
 
 .heroStatCard {
   display: grid;
-  gap: 8px;
-  padding: 18px 20px;
-  border-radius: 22px;
-  border: 1px solid rgba(156, 188, 248, 0.34);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 245, 255, 0.9));
-  box-shadow: var(--shadow-sm);
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #f8fafc;
+  box-shadow: none;
 }
 
 .heroStatCard span,
@@ -1210,27 +1210,27 @@ a {
 
 .designStack {
   display: grid;
-  gap: 22px;
-  margin-top: 22px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .metaTableExtended {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .metaSupplementGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
 }
 
 .metaSupplementCard {
   display: grid;
-  gap: 10px;
-  padding: 18px;
-  border-radius: 22px;
-  border: 1px solid rgba(156, 188, 248, 0.28);
-  background: rgba(248, 251, 255, 0.88);
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #ffffff;
 }
 
 .metaSupplementCard span {
@@ -1240,17 +1240,18 @@ a {
 .metaSupplementCard textarea {
   width: 100%;
   resize: vertical;
-  min-height: 120px;
-  border: 1px solid rgba(156, 188, 248, 0.44);
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 16px;
-  padding: 13px 15px;
+  min-height: 100px;
+  border: 1px solid var(--line-strong);
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 12px;
   color: var(--ink);
+  font-size: 0.875rem;
 }
 
 .metaSupplementCard textarea:focus {
-  border-color: rgba(37, 99, 235, 0.62);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px var(--accent-soft);
   outline: none;
 }
 
@@ -1347,8 +1348,8 @@ a {
 }
 
 .appShell {
-  width: min(1440px, calc(100% - 40px));
-  padding: 24px 0 40px;
+  width: min(1440px, calc(100% - 32px));
+  padding: 14px 0 28px;
 }
 
 .heroPanel,
@@ -1362,8 +1363,8 @@ a {
 
 .heroPanel {
   align-items: flex-start;
-  padding: 28px 30px;
-  border-radius: 24px;
+  padding: 20px 24px;
+  border-radius: 18px;
   background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
 }
 
@@ -1397,12 +1398,12 @@ a {
 }
 
 .panel {
-  padding: 20px;
-  border-radius: 20px;
+  padding: 16px 18px;
+  border-radius: 14px;
 }
 
 .panelHeader {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .panelHeader h2 {
