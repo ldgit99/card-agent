@@ -688,6 +688,120 @@ export function DesignStudio() {
                 </tbody>
               </table>
             </div>
+            <div className="mobileActivityList" aria-label="모바일 활동 카드 목록">
+              {design.activities.map((activity) => {
+                const isSelected = selectedActivity?.id === activity.id;
+                const humanCards = findCards(activity.humanCardIds);
+                const rowAiCards = findCards(activity.aiCardIds);
+
+                return (
+                  <article
+                    key={`mobile-${activity.id}`}
+                    className={`mobileActivityCard ${isSelected ? "mobileActivityCard-selected" : ""}`}
+                    onClick={() => setSelectedActivityId(activity.id)}
+                  >
+                    <div className="mobileActivityHeader">
+                      <div>
+                        <p className="sectionMicroTag">Activity {activity.order}</p>
+                        <h3>{activity.functionLabel || `활동 ${activity.order}`}</h3>
+                      </div>
+                      <div className="mobileActivityActions">
+                        <button
+                          type="button"
+                          className="tableActionButton"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedActivityId(activity.id);
+                          }}
+                        >
+                          선택
+                        </button>
+                        <button
+                          type="button"
+                          className="tableActionButton tableActionDanger"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            removeActivity(activity.id);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mobileActivityFields">
+                      <label className="mobileActivityField">
+                        <span>기능</span>
+                        <input
+                          value={activity.functionLabel}
+                          onFocus={() => setSelectedActivityId(activity.id)}
+                          onChange={(event) => updateActivity(activity.id, { functionLabel: event.target.value })}
+                          placeholder="예: 조사하기"
+                        />
+                      </label>
+                      <label className="mobileActivityField">
+                        <span>교과</span>
+                        <input
+                          value={activity.subjectLabel}
+                          onFocus={() => setSelectedActivityId(activity.id)}
+                          onChange={(event) => updateActivity(activity.id, { subjectLabel: event.target.value })}
+                          placeholder="예: 과학"
+                        />
+                      </label>
+                      <label className="mobileActivityField mobileActivityField-wide">
+                        <span>학습활동</span>
+                        <textarea
+                          rows={4}
+                          value={activity.learningActivity}
+                          onFocus={() => setSelectedActivityId(activity.id)}
+                          onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
+                          placeholder="예: 생성형 AI를 활용해 자료를 조사하고 비교합니다."
+                        />
+                      </label>
+                      <label className="mobileActivityField">
+                        <span>AI도구</span>
+                        <textarea
+                          rows={3}
+                          value={activity.tools.join(", ")}
+                          onFocus={() => setSelectedActivityId(activity.id)}
+                          onChange={(event) => updateActivity(activity.id, { tools: parseMultilineField(event.target.value) })}
+                          placeholder="예: ChatGPT, NotebookLM"
+                        />
+                      </label>
+                      <label className="mobileActivityField">
+                        <span>평가 방법</span>
+                        <textarea
+                          rows={3}
+                          value={activity.assessmentMethod}
+                          onFocus={() => setSelectedActivityId(activity.id)}
+                          onChange={(event) => updateActivity(activity.id, { assessmentMethod: event.target.value })}
+                          placeholder="예: 보고서 평가, 토론 참여 관찰"
+                        />
+                      </label>
+                    </div>
+                    <div className="mobileDropGrid">
+                      <div className="mobileDropColumn">
+                        <span className="mobileDropLabel">교사 카드</span>
+                        <RowDropZone
+                          id={`human-slot-${activity.id}`}
+                          actor="teacher"
+                          cards={humanCards}
+                          onRemove={(cardId) => removeCard(activity.id, "teacher", cardId)}
+                        />
+                      </div>
+                      <div className="mobileDropColumn">
+                        <span className="mobileDropLabel">AI 카드</span>
+                        <RowDropZone
+                          id={`ai-slot-${activity.id}`}
+                          actor="ai"
+                          cards={rowAiCards}
+                          onRemove={(cardId) => removeCard(activity.id, "ai", cardId)}
+                        />
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           </section>
 
 
@@ -804,4 +918,3 @@ export function DesignStudio() {
     </DndContext>
   );
 }
-

@@ -1,7 +1,13 @@
-﻿import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f6f2ea",
+};
 export const metadata: Metadata = {
   title: "\uC218\uC5C5 \uC124\uACC4 \uC2A4\uD29C\uB514\uC624",
   description:
@@ -27,3 +33,4 @@ export default function RootLayout({
     </html>
   );
 }
+
