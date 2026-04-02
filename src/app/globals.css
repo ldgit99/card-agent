@@ -1256,7 +1256,7 @@ a {
 }
 
 .tableWrapWide .lessonTableCards {
-  min-width: 1460px;
+  min-width: 1540px;
 }
 
 .cardColumnCell {
@@ -2446,28 +2446,32 @@ a {
 }
 
 .lessonTableCards .colFunction {
-  width: 10%;
+  width: 9%;
 }
 
 .lessonTableCards .colSubject {
-  width: 13%;
+  width: 11%;
 }
 
 .lessonTableCards .colLearningActivity {
-  width: 31%;
+  width: 24%;
+}
+
+.lessonTableCards .colAiTools {
+  width: 13%;
 }
 
 .lessonTableCards .colAssessment {
-  width: 18%;
+  width: 14%;
 }
 
 .lessonTableCards .colTeacherCards,
 .lessonTableCards .colAiCards {
-  width: 14%;
+  width: 13%;
 }
 
 .tableWrapWide .lessonTableCards {
-  min-width: 1400px;
+  min-width: 1540px;
 }
 
 @media (max-width: 860px) {

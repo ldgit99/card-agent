@@ -95,6 +95,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
           <td>${escapeHtml(activity.functionLabel || `활동 ${activity.order}`)}</td>
           <td>${escapeHtml(activity.subjectLabel || report.design.meta.subject || "-")}</td>
           <td>${escapeHtml(activity.learningActivity || activity.title || "-")}</td>
+          <td>${renderChips(activity.tools)}</td>
           <td>${escapeHtml(activity.assessmentMethod || "-")}</td>
           <td>${renderChips(activity.humanCardIds.map(cardTitle))}</td>
           <td>${renderChips(activity.aiCardIds.map(cardTitle))}</td>
@@ -483,6 +484,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
               <th>기능</th>
               <th>교과</th>
               <th>학습활동</th>
+              <th>AI도구</th>
               <th>평가 방법</th>
               <th>교사 질문·행동</th>
               <th>AI 질문·행동</th>

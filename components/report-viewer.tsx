@@ -124,6 +124,7 @@ export function ReportViewer() {
                 <th>기능</th>
                 <th>교과</th>
                 <th>학습활동</th>
+                <th>AI도구</th>
                 <th>평가 방법</th>
                 <th>교사 질문·행동</th>
                 <th>AI 질문·행동</th>
@@ -137,6 +138,11 @@ export function ReportViewer() {
                     <td>{activity.functionLabel || `활동 ${activity.order}`}</td>
                     <td>{activity.subjectLabel || report.design.meta.subject || "-"}</td>
                     <td>{activity.learningActivity || activity.title || "-"}</td>
+                    <td>
+                      <div className="reportChipWrap">
+                        {activity.tools.length ? activity.tools.map((item) => <span key={`${activity.id}-tool-${item}`} className="reportChip">{item}</span>) : <span className="reportChip reportChipMuted">없음</span>}
+                      </div>
+                    </td>
                     <td>{activity.assessmentMethod || "-"}</td>
                     <td><div className="reportChipWrap">{cards.teacher.length ? cards.teacher.map((item) => <span key={`${activity.id}-${item}`} className="reportChip">{item}</span>) : <span className="reportChip reportChipMuted">없음</span>}</div></td>
                     <td><div className="reportChipWrap">{cards.ai.length ? cards.ai.map((item) => <span key={`${activity.id}-${item}`} className="reportChip">{item}</span>) : <span className="reportChip reportChipMuted">없음</span>}</div></td>

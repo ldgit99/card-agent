@@ -553,7 +553,7 @@ export function DesignStudio() {
                 <h2>학습 활동 설계</h2>
               </div>
               <div className="inlineActions">
-                <span className="panelHint">평가 방법 옆에서 카드 드래그앤드롭을 바로 배치합니다.</span>
+                <span className="panelHint">AI도구와 평가 방법을 적고, 오른쪽 카드 칸에 드래그앤드롭으로 바로 배치합니다.</span>
                 <button type="button" className="ghostButton" onClick={addActivity}>
                   활동 추가
                 </button>
@@ -584,6 +584,7 @@ export function DesignStudio() {
                     <th className="colFunction">기능</th>
                     <th className="colSubject">교과</th>
                     <th className="colLearningActivity">학습활동</th>
+                    <th className="colAiTools">AI도구</th>
                     <th className="colAssessment">평가 방법</th>
                     <th className="colTeacherCards">교사 카드</th>
                     <th className="colAiCards">AI 카드</th>
@@ -625,6 +626,17 @@ export function DesignStudio() {
                             onFocus={() => setSelectedActivityId(activity.id)}
                             onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
                             placeholder="예: 지구온난화의 원인과 영향을 조사하고 AI 설명과 비교한다."
+                          />
+                        </td>
+                        <td>
+                          <textarea
+                            rows={3}
+                            value={activity.tools.join(", ")}
+                            onFocus={() => setSelectedActivityId(activity.id)}
+                            onChange={(event) =>
+                              updateActivity(activity.id, { tools: parseMultilineField(event.target.value) })
+                            }
+                            placeholder="예: ChatGPT, NotebookLM"
                           />
                         </td>
                         <td>
