@@ -184,6 +184,7 @@ export function DesignStudio() {
   );
 
   const [design, setDesign] = useState<LessonDesign>(getInitialDesign);
+  const [learningGoalsInput, setLearningGoalsInput] = useState(() => getInitialDesign().learningGoals.join("\n"));
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<DesignAnalysis | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
@@ -218,6 +219,7 @@ export function DesignStudio() {
         if (snapshot.currentDesign) {
           const nextDesign = normalizeLessonDesignDraft(snapshot.currentDesign);
           setDesign(nextDesign);
+          setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
           setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
           setStatusMessage("서버에 저장된 최신 설계를 불러왔습니다.");
         } else {
@@ -249,6 +251,7 @@ export function DesignStudio() {
   }
 
   function updateLearningGoals(value: string) {
+    setLearningGoalsInput(value);
     commitDesign({
       ...design,
       learningGoals: parseMultilineField(value),
@@ -381,6 +384,7 @@ export function DesignStudio() {
 
       const nextDesign = normalizeLessonDesignDraft(snapshot.currentDesign);
       setDesign(nextDesign);
+      setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
       setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
       setDesignHistory(snapshot.designHistory);
       setLastServerSyncAt(snapshot.updatedAt);
@@ -396,6 +400,7 @@ export function DesignStudio() {
   function loadDesignVersion(versionDesign: LessonDesign) {
     const nextDesign = normalizeLessonDesignDraft(versionDesign);
     setDesign(nextDesign);
+    setLearningGoalsInput(nextDesign.learningGoals.join("\n"));
     setSelectedActivityId(nextDesign.activities[0]?.id ?? null);
     setAnalysis(null);
     setStatusMessage(`${formatDesignLabel(versionDesign)} 버전을 작업 화면으로 불러왔습니다.`);
@@ -495,7 +500,7 @@ export function DesignStudio() {
                 <span>학습 목표</span>
                 <textarea
                   rows={4}
-                  value={design.learningGoals.join("\n")}
+                  value={learningGoalsInput}
                   onChange={(event) => updateLearningGoals(event.target.value)}
                   placeholder="한 줄에 하나씩 입력해 주세요."
                 />
