@@ -1,4 +1,4 @@
-﻿import { orchestrationCards } from "@/data/cards";
+import { orchestrationCards } from "@/data/cards";
 import { riskLabels } from "@/lib/constants";
 import type { LessonDesign } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
@@ -270,10 +270,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
             `,
           )
           .join("")}
-        <article class="report-block">
-          <h3>종합 메모</h3>
-          <div class="report-answer">${escapeHtml(report.summary || "입력 없음")}</div>
-        </article>
+
         <article class="report-block">
           <h3>다음 수정 체크리스트</h3>
           <ul>${renderList(report.nextRevisionNotes)}</ul>
@@ -498,8 +495,7 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
       </section>
       <section class="report-section">
         <h2>수업 설계 내용</h2>
-        <div class="report-card-grid report-card-grid-3">
-          <article class="report-block"><h3>성취기준</h3><ul>${renderList(report.design.achievementStandards)}</ul></article>
+        <div class="report-card-grid report-card-grid-2">
           <article class="report-block"><h3>학습 목표</h3><ul>${renderList(report.design.learningGoals)}</ul></article>
           <article class="report-block"><h3>설계 메타</h3><ul>${renderList([
             `버전: ${report.design.version}`,

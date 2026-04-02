@@ -198,10 +198,10 @@ export function DesignStudio() {
     commitDesign({ ...design, meta: { ...design.meta, [field]: value } });
   }
 
-  function updateDesignList(field: "achievementStandards" | "learningGoals", value: string) {
+  function updateLearningGoals(value: string) {
     commitDesign({
       ...design,
-      [field]: parseMultilineField(value),
+      learningGoals: parseMultilineField(value),
     });
   }
 
@@ -371,7 +371,7 @@ export function DesignStudio() {
             <p className="eyebrow">Harness-Based Teacher Agent</p>
             <h1>수업 설계 스튜디오</h1>
             <p className="heroCopy">
-              주제, 교과, 대상, 성취기준, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
+              주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 카드와 AI 카드를 배치합니다.
               카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
             </p>
             <div className="heroActions">
@@ -412,7 +412,7 @@ export function DesignStudio() {
                 <p className="sectionTag">Step 1</p>
                 <h2>수업 개요 입력</h2>
               </div>
-              <p className="panelHint">교과와 대상 아래에 성취기준과 학습 목표를 연결합니다.</p>
+              <p className="panelHint">교과와 대상 아래에 학습 목표를 먼저 정리합니다.</p>
             </div>
             <div className="metaTable metaTableExtended">
               <div className="metaCell metaLabel">주제</div>
@@ -441,22 +441,13 @@ export function DesignStudio() {
               </div>
             </div>
             <div className="metaSupplementGrid">
-              <label className="metaSupplementCard">
-                <span>성취기준</span>
-                <textarea
-                  rows={4}
-                  value={design.achievementStandards.join("\n")}
-                  onChange={(event) => updateDesignList("achievementStandards", event.target.value)}
-                  placeholder="한 줄에 하나씩 입력하세요."
-                />
-              </label>
-              <label className="metaSupplementCard">
+              <label className="metaSupplementCard metaSupplementCardWide">
                 <span>학습 목표</span>
                 <textarea
                   rows={4}
                   value={design.learningGoals.join("\n")}
-                  onChange={(event) => updateDesignList("learningGoals", event.target.value)}
-                  placeholder="한 줄에 하나씩 입력하세요."
+                  onChange={(event) => updateLearningGoals(event.target.value)}
+                  placeholder="한 줄에 하나씩 입력해 주세요."
                 />
               </label>
             </div>

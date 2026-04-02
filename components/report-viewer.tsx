@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -113,8 +113,7 @@ export function ReportViewer() {
 
       <section className="reportSection">
         <div className="panelHeader"><div><p className="sectionTag">Lesson Design</p><h2>수업 설계 내용</h2></div></div>
-        <div className="reportGrid reportGridThree">
-          <article className="reportCard"><h3>성취기준</h3><ul>{report.design.achievementStandards.length ? report.design.achievementStandards.map((item) => <li key={item}>{item}</li>) : <li>없음</li>}</ul></article>
+        <div className="reportGrid reportGridTwo">
           <article className="reportCard"><h3>학습 목표</h3><ul>{report.design.learningGoals.length ? report.design.learningGoals.map((item) => <li key={item}>{item}</li>) : <li>없음</li>}</ul></article>
           <article className="reportCard"><h3>설계 정보</h3><ul><li>버전 {report.design.version}</li><li>생성 {formatDateTime(report.design.createdAt)}</li><li>수정 {formatDateTime(report.design.updatedAt)}</li></ul></article>
         </div>
@@ -276,7 +275,6 @@ export function ReportViewer() {
               <div className="reportAnswerBlock">{report.answers[question.id] || "응답 없음"}</div>
             </article>
           )) : <article className="reportCard"><p>생성된 성찰 질문이 없습니다.</p></article>}
-          <article className="reportCard"><h3>종합 메모</h3><div className="reportAnswerBlock">{report.summary || "입력 없음"}</div></article>
           <article className="reportCard"><h3>다음 수정 체크리스트</h3><ul>{report.nextRevisionNotes.length ? report.nextRevisionNotes.map((note) => <li key={note}>{note}</li>) : <li>없음</li>}</ul></article>
         </div>
       </section>

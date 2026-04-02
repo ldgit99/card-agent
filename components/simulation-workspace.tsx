@@ -590,7 +590,6 @@ export function SimulationWorkspace() {
             </div>
             <div className="snapshotList">
               <div><strong>학습 목표</strong><span>{design.learningGoals.length ? design.learningGoals.join(" / ") : "아직 입력된 학습 목표가 없습니다."}</span></div>
-              <div><strong>성취기준</strong><span>{design.achievementStandards.length ? design.achievementStandards.join(" / ") : "아직 입력된 성취기준이 없습니다."}</span></div>
             </div>
           </article>
           <article className="detailSection detailSectionSoft">
@@ -825,33 +824,21 @@ export function SimulationWorkspace() {
           <section className="panel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Synthesis</p>
-                <h2>종합 성찰과 다음 수정 계획</h2>
+                <p className="sectionTag">Next Revision</p>
+                <h2>다음 수정 계획</h2>
               </div>
-              <p className="panelHint">브라우저에 자동 저장되며 서버 저장 버튼으로 세션 이력에 반영할 수 있습니다.</p>
+              <p className="panelHint">활동별 성찰을 바탕으로 다음 차시에 반영할 수정 사항만 정리합니다.</p>
             </div>
-            <div className="reflectionSplit">
-              <label className="reflectionQuestionCard reflectionSummaryCard">
-                <span>종합 메모</span>
-                <small>이번 설계에서 유지할 점과 수정이 필요한 지점을 요약합니다.</small>
-                <textarea
-                  rows={7}
-                  value={summary}
-                  onChange={(event) => setSummary(event.target.value)}
-                  placeholder="예: AI는 초안 생성에 유용했지만, 최종 판단과 근거 토론은 교사 질문으로 더 분명히 해야 했다."
-                />
-              </label>
-              <label className="reflectionQuestionCard reflectionSummaryCard">
-                <span>다음 수정 체크리스트</span>
-                <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
-                <textarea
-                  rows={7}
-                  value={nextRevisionText}
-                  onChange={(event) => setNextRevisionText(event.target.value)}
-                  placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가"
-                />
-              </label>
-            </div>
+            <label className="reflectionQuestionCard reflectionSummaryCard">
+              <span>다음 수정 체크리스트</span>
+              <small>한 줄에 하나씩 적으면 리포트에 그대로 반영됩니다.</small>
+              <textarea
+                rows={7}
+                value={nextRevisionText}
+                onChange={(event) => setNextRevisionText(event.target.value)}
+                placeholder="예: 탐구 활동에서 AI 신뢰를 묻는 질문 추가"
+              />
+            </label>
           </section>
         </div>
 

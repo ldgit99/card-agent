@@ -2415,3 +2415,63 @@ a {
     padding: 16px;
   }
 }
+/* Lesson planner simplification */
+.metaTableExtended {
+  grid-template-columns: 160px minmax(0, 1fr) 160px minmax(0, 1fr);
+}
+
+.metaCell {
+  min-height: 82px;
+  padding: 0;
+}
+
+.metaLabel {
+  padding: 18px 20px;
+}
+
+.metaValue {
+  padding: 16px 18px;
+}
+
+.metaValue input {
+  min-height: 52px;
+}
+
+.metaSupplementGrid {
+  grid-template-columns: 1fr;
+}
+
+.metaSupplementCardWide {
+  min-height: 168px;
+}
+
+.lessonTableCards .colFunction {
+  width: 10%;
+}
+
+.lessonTableCards .colSubject {
+  width: 13%;
+}
+
+.lessonTableCards .colLearningActivity {
+  width: 31%;
+}
+
+.lessonTableCards .colAssessment {
+  width: 18%;
+}
+
+.lessonTableCards .colTeacherCards,
+.lessonTableCards .colAiCards {
+  width: 14%;
+}
+
+.tableWrapWide .lessonTableCards {
+  min-width: 1400px;
+}
+
+@media (max-width: 860px) {
+  .metaTableExtended {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+}
