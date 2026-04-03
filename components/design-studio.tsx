@@ -108,8 +108,8 @@ function getCardTone(card: OrchestrationCard) {
   return `promptCardGroup-${card.libraryGroup}`;
 }
 
-function getGroupDropHint(label: string) {
-  return `${label} 칸으로 드래그하거나 클릭해 배치합니다.`;
+function getGroupDropHint(_label: string) {
+  return "클릭해 배치하거나 하단의 카드를 드래그 앤 드롭 합니다.";
 }
 
 function CardFace({ card, numberLabel, compact = false }: CardFaceProps) {
