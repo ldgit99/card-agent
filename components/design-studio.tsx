@@ -29,7 +29,6 @@ import {
 import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { fetchWorkspaceSnapshot, saveDesignToWorkspace } from "@/lib/workspace-client";
 import type {
-  CardActor,
   CardLibraryGroup,
   LessonActivity,
   LessonDesign,
@@ -85,8 +84,12 @@ function formatCardNumber(value: number | string) {
   return String(numeric).padStart(2, "0");
 }
 
-function getCardIcon(actor: CardActor) {
-  return actor === "teacher" ? "🧑‍🏫" : "🤖";
+function getCardIcon(group: CardLibraryGroup) {
+  if (group === "function") return "🧩";
+  if (group === "ai_edutech") return "🛠️";
+  if (group === "assessment") return "📝";
+  if (group === "teacher_intervention") return "🧑‍🏫";
+  return "🤖";
 }
 
 function getCardTone(card: OrchestrationCard) {
@@ -102,10 +105,10 @@ function CardFace({ card, numberLabel, compact = false }: CardFaceProps) {
     <>
       <div className="promptCardHeader">
         <div className="promptCardIdentity">
-          <span className={`promptCardIcon promptCardIcon-${card.actor}`} aria-hidden="true">
-            {getCardIcon(card.actor)}
+          <span className={`promptCardIcon promptCardIcon-${card.libraryGroup}`} aria-hidden="true">
+            {getCardIcon(card.libraryGroup)}
           </span>
-          <span className={`promptCardBadge promptCardBadge-${card.actor}`}>{card.title}</span>
+          <span className={`promptCardBadge promptCardBadge-${card.libraryGroup}`}>{card.title}</span>
         </div>
         <span className="promptCardNumber">{numberLabel}</span>
       </div>
@@ -167,10 +170,10 @@ function EditableCustomCard({
     <article className={`libraryCard promptCard promptCard-library promptCard-${card.actor} ${getCardTone(card)} promptCard-custom`}>
       <div className="promptCardHeader">
         <div className="promptCardIdentity">
-          <span className={`promptCardIcon promptCardIcon-${card.actor}`} aria-hidden="true">
-            {getCardIcon(card.actor)}
+          <span className={`promptCardIcon promptCardIcon-${card.libraryGroup}`} aria-hidden="true">
+            {getCardIcon(card.libraryGroup)}
           </span>
-          <span className={`promptCardBadge promptCardBadge-${card.actor}`}>사용자 정의</span>
+          <span className={`promptCardBadge promptCardBadge-${card.libraryGroup}`}>사용자 정의</span>
         </div>
         <span className="promptCardNumber">{numberLabel}</span>
       </div>
