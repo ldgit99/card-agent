@@ -705,7 +705,11 @@ export function DesignStudio() {
                       <tr
                         key={activity.id}
                         className={isSelected ? "selectedRow" : ""}
-                        onClick={() => setSelectedActivityId(activity.id)}
+                        onClick={(event) => {
+                          const tag = (event.target as HTMLElement).tagName;
+                          if (tag === "INPUT" || tag === "TEXTAREA") return;
+                          setSelectedActivityId(activity.id);
+                        }}
                       >
                         <td>
                           <input
