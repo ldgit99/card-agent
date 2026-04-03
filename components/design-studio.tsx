@@ -65,6 +65,18 @@ interface RowDropZoneProps {
   cards: OrchestrationCard[];
   numberByCardId: Record<string, string>;
   onRemove: (cardId: string) => void;
+  onSlotClick: () => void;
+}
+
+interface CardPickerPopupProps {
+  group: CardLibraryGroup;
+  groupLabel: string;
+  cards: OrchestrationCard[];
+  numberByCardId: Record<string, string>;
+  placedCardIds: string[];
+  isSingleSlot: boolean;
+  onSelect: (card: OrchestrationCard) => void;
+  onClose: () => void;
 }
 
 const libraryColumns: Array<{
@@ -232,13 +244,18 @@ function EditableCustomCard({
     </article>
   );
 }
-function RowDropZone({ id, label, tone, cards, numberByCardId, onRemove }: RowDropZoneProps) {
+function RowDropZone({ id, label, tone, cards, numberByCardId, onRemove, onSlotClick }: RowDropZoneProps) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { tone } });
 
   return (
     <div
       ref={setNodeRef}
       className={`tableDropZone tableDropZone-${tone} ${isOver ? "tableDropZone-over" : ""}`}
+      onClick={onSlotClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSlotClick(); } }}
+      aria-label={`${label} 선택 팝업 열기`}
     >
       {cards.length ? (
         <div className="tableDropList">
@@ -250,7 +267,7 @@ function RowDropZone({ id, label, tone, cards, numberByCardId, onRemove }: RowDr
               <button
                 type="button"
                 className="tableChipRemove promptCardRemove"
-                onClick={() => onRemove(card.id)}
+                onClick={(e) => { e.stopPropagation(); onRemove(card.id); }}
                 aria-label={`${card.title} 제거`}
               >
                 ×
@@ -269,6 +286,48 @@ function RowDropZone({ id, label, tone, cards, numberByCardId, onRemove }: RowDr
           <span>{getGroupDropHint(label)}</span>
         </div>
       )}
+    </div>
+  );
+}
+
+function CardPickerPopup({ group, groupLabel, cards, numberByCardId, placedCardIds, isSingleSlot, onSelect, onClose }: CardPickerPopupProps) {
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+    <div className="cardPickerOverlay" onClick={onClose} role="dialog" aria-modal="true" aria-label={`${groupLabel} 카드 선택`}>
+      <div className="cardPickerModal" onClick={(e) => e.stopPropagation()}>
+        <div className="cardPickerHeader">
+          <h3 className={`cardPickerTitle cardPickerTitle-${group}`}>{groupLabel}</h3>
+          <button type="button" className="cardPickerClose" onClick={onClose} aria-label="닫기">×</button>
+        </div>
+        {isSingleSlot && placedCardIds.length > 0 && (
+          <p className="cardPickerHint">새 카드를 선택하면 기존 카드가 교체됩니다.</p>
+        )}
+        <div className="cardPickerList">
+          {cards.map((card) => {
+            const alreadyPlaced = placedCardIds.includes(card.id);
+            return (
+              <button
+                key={card.id}
+                type="button"
+                className={`cardPickerItem promptCard promptCard-${card.actor} ${getCardTone(card)} ${alreadyPlaced ? "cardPickerItem-placed" : ""}`}
+                onClick={() => { if (!alreadyPlaced) { onSelect(card); onClose(); } }}
+                disabled={alreadyPlaced}
+                aria-pressed={alreadyPlaced}
+              >
+                <CardFace card={card} numberLabel={numberByCardId[card.id] ?? formatCardNumber(card.id)} />
+                {alreadyPlaced && <span className="cardPickerItemBadge">배치됨</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -335,6 +394,7 @@ export function DesignStudio() {
   const [isNavigatingToSimulation, setIsNavigatingToSimulation] = useState(false);
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
+  const [pickerState, setPickerState] = useState<{ activityId: string; group: CardLibraryGroup } | null>(null);
   const availableCards = useMemo(() => getAvailableCards(design.customCards), [design.customCards]);
   const libraryCardsByGroup = useMemo(
     () =>
@@ -831,6 +891,7 @@ export function DesignStudio() {
                             cards={functionCards}
                             numberByCardId={cardNumberById}
                             onRemove={(cardId) => removeCard(activity.id, "function", cardId)}
+                            onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "function" }); }}
                           />
                         </td>
                         <td>
@@ -858,6 +919,7 @@ export function DesignStudio() {
                             cards={aiEdutechCards}
                             numberByCardId={cardNumberById}
                             onRemove={(cardId) => removeCard(activity.id, "ai_edutech", cardId)}
+                            onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "ai_edutech" }); }}
                           />
                         </td>
                         <td className="cardColumnCell">
@@ -868,6 +930,7 @@ export function DesignStudio() {
                             cards={assessmentCards}
                             numberByCardId={cardNumberById}
                             onRemove={(cardId) => removeCard(activity.id, "assessment", cardId)}
+                            onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "assessment" }); }}
                           />
                         </td>
                         <td className="cardColumnCell">
@@ -878,6 +941,7 @@ export function DesignStudio() {
                             cards={teacherInterventionCards}
                             numberByCardId={cardNumberById}
                             onRemove={(cardId) => removeCard(activity.id, "teacher_intervention", cardId)}
+                            onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "teacher_intervention" }); }}
                           />
                         </td>
                         <td className="cardColumnCell">
@@ -888,6 +952,7 @@ export function DesignStudio() {
                             cards={rowAiCards}
                             numberByCardId={cardNumberById}
                             onRemove={(cardId) => removeCard(activity.id, "ai_role", cardId)}
+                            onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "ai_role" }); }}
                           />
                         </td>
                         <td className="actionCell">
@@ -971,6 +1036,7 @@ export function DesignStudio() {
                           cards={functionCards}
                           numberByCardId={cardNumberById}
                           onRemove={(cardId) => removeCard(activity.id, "function", cardId)}
+                          onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "function" }); }}
                         />
                       </label>
                       <label className="mobileActivityField">
@@ -1001,6 +1067,7 @@ export function DesignStudio() {
                           cards={aiEdutechCards}
                           numberByCardId={cardNumberById}
                           onRemove={(cardId) => removeCard(activity.id, "ai_edutech", cardId)}
+                          onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "ai_edutech" }); }}
                         />
                       </label>
                       <label className="mobileActivityField">
@@ -1012,6 +1079,7 @@ export function DesignStudio() {
                           cards={assessmentCards}
                           numberByCardId={cardNumberById}
                           onRemove={(cardId) => removeCard(activity.id, "assessment", cardId)}
+                          onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "assessment" }); }}
                         />
                       </label>
                     </div>
@@ -1025,6 +1093,7 @@ export function DesignStudio() {
                           cards={teacherInterventionCards}
                           numberByCardId={cardNumberById}
                           onRemove={(cardId) => removeCard(activity.id, "teacher_intervention", cardId)}
+                          onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "teacher_intervention" }); }}
                         />
                       </div>
                       <div className="mobileDropColumn">
@@ -1036,6 +1105,7 @@ export function DesignStudio() {
                           cards={rowAiCards}
                           numberByCardId={cardNumberById}
                           onRemove={(cardId) => removeCard(activity.id, "ai_role", cardId)}
+                          onSlotClick={() => { setSelectedActivityId(activity.id); setPickerState({ activityId: activity.id, group: "ai_role" }); }}
                         />
                       </div>
                     </div>
@@ -1155,6 +1225,34 @@ export function DesignStudio() {
           </div>
         </footer>
       </main>
+      {pickerState && (() => {
+        const pickerActivity = design.activities.find((a) => a.id === pickerState.activityId) ?? null;
+        const col = libraryColumns.find((c) => c.group === pickerState.group);
+        const isSingle = pickerState.group === "function" || pickerState.group === "assessment";
+        const placedIds = pickerActivity
+          ? pickerState.group === "function"
+            ? pickerActivity.functionCardId ? [pickerActivity.functionCardId] : []
+            : pickerState.group === "ai_edutech"
+            ? pickerActivity.aiToolCardIds
+            : pickerState.group === "assessment"
+            ? pickerActivity.assessmentCardId ? [pickerActivity.assessmentCardId] : []
+            : pickerState.group === "teacher_intervention"
+            ? pickerActivity.humanCardIds
+            : pickerActivity.aiCardIds
+          : [];
+        return (
+          <CardPickerPopup
+            group={pickerState.group}
+            groupLabel={col?.heading ?? pickerState.group}
+            cards={libraryCardsByGroup[pickerState.group] ?? []}
+            numberByCardId={cardNumberById}
+            placedCardIds={placedIds}
+            isSingleSlot={isSingle}
+            onSelect={(card) => appendCard(pickerState.activityId, card)}
+            onClose={() => setPickerState(null)}
+          />
+        );
+      })()}
     </DndContext>
   );
 }

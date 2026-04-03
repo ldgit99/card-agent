@@ -5509,6 +5509,127 @@ body:has(.designStudioPage) {
   color: #be123c;
 }
 
+/* Card Picker Popup */
+.cardPickerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.cardPickerModal {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.18), 0 4px 16px rgba(15, 23, 42, 0.08);
+  width: min(780px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cardPickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e8edf4;
+  flex-shrink: 0;
+}
+
+.cardPickerTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.cardPickerTitle-function { color: #3656d4; }
+.cardPickerTitle-ai_edutech { color: #0f766e; }
+.cardPickerTitle-assessment { color: #b45309; }
+.cardPickerTitle-teacher_intervention { color: #7e22ce; }
+.cardPickerTitle-ai_role { color: #be123c; }
+
+.cardPickerClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 140ms;
+}
+.cardPickerClose:hover { background: #e2e8f0; color: #1e293b; }
+
+.cardPickerHint {
+  margin: 0;
+  padding: 8px 24px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  background: #f8fafc;
+  border-bottom: 1px solid #e8edf4;
+}
+
+.cardPickerList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.cardPickerItem {
+  position: relative;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  background: none;
+  border-radius: 16px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.cardPickerItem:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+.cardPickerItem:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.cardPickerItem-placed {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.cardPickerItemBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  pointer-events: none;
+}
+
+/* Slot clickable cursor */
+.tableDropZone {
+  cursor: pointer;
+}
+
 .designStudioPage .promptCard,
 .designStudioPage .mobileActivityCard,
 .designStudioPage .historyCard {
