@@ -277,6 +277,9 @@ export function DesignStudio() {
   const [isNavigatingToSimulation, setIsNavigatingToSimulation] = useState(false);
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
+  const [toolsRaw, setToolsRaw] = useState<Record<string, string>>(() =>
+    Object.fromEntries(getInitialDesign().activities.map((a) => [a.id, a.tools.join(", ")]))
+  );
 
   const availableCards = useMemo(() => getAvailableCards(design.customCards), [design.customCards]);
   const teacherLibraryCards = useMemo(() => getCardsByActor("teacher", design.customCards), [design.customCards]);
@@ -412,6 +415,7 @@ export function DesignStudio() {
     const nextActivity = createEmptyActivity(design.activities.length + 1);
     commitDesign({ ...design, activities: [...design.activities, nextActivity] });
     setSelectedActivityId(nextActivity.id);
+    setToolsRaw((prev) => ({ ...prev, [nextActivity.id]: "" }));
   }
 
   function removeActivity(activityId: string) {
@@ -739,11 +743,15 @@ export function DesignStudio() {
                         <td>
                           <textarea
                             rows={3}
-                            value={activity.tools.join(", ")}
+                            value={toolsRaw[activity.id] ?? activity.tools.join(", ")}
                             onFocus={() => setSelectedActivityId(activity.id)}
                             onChange={(event) =>
-                              updateActivity(activity.id, { tools: parseMultilineField(event.target.value) })
+                              setToolsRaw((prev) => ({ ...prev, [activity.id]: event.target.value }))
                             }
+                            onBlur={(event) => {
+                              updateActivity(activity.id, { tools: parseMultilineField(event.target.value) });
+                              setToolsRaw((prev) => ({ ...prev, [activity.id]: parseMultilineField(event.target.value).join(", ") }));
+                            }}
                             placeholder="예: ChatGPT, NotebookLM"
                           />
                         </td>
