@@ -107,7 +107,7 @@ function CardFace({ card, numberLabel, compact = false }: CardFaceProps) {
           </span>
           <span className={`promptCardBadge promptCardBadge-${card.actor}`}>{card.title}</span>
         </div>
-        {compact ? null : <span className="promptCardNumber">{numberLabel}</span>}
+        <span className="promptCardNumber">{numberLabel}</span>
       </div>
       <div className="promptCardBody">
         <p className={`promptCardQuestion ${compact ? "promptCardQuestion-compact" : ""}`}>{card.prompt}</p>
