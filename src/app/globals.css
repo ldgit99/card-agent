@@ -5377,18 +5377,18 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTableCards .colSubject {
-  width: 14%;
+  width: 13%;
 }
 
 .designStudioPage .lessonTableCards .colLearningActivity {
-  width: 31%;
+  width: 29%;
 }
 
 .designStudioPage .lessonTableCards .colAiTools,
 .designStudioPage .lessonTableCards .colAssessment,
 .designStudioPage .lessonTableCards .colTeacherCards,
 .designStudioPage .lessonTableCards .colAiCards {
-  width: 11%;
+  width: 11.5%;
 }
 
 .designStudioPage .narrowCell {
@@ -5413,11 +5413,11 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTableCards input {
-  min-width: 130px;
+  min-width: 122px;
 }
 
 .designStudioPage .lessonTableCards textarea {
-  min-width: 280px;
+  min-width: 256px;
   min-height: 136px;
 }
 
