@@ -109,7 +109,7 @@ function getCardTone(card: OrchestrationCard) {
 }
 
 function getGroupDropHint(_label: string) {
-  return "클릭해 배치하거나 하단의 카드를 드래그 앤 드롭 합니다.";
+  return "클릭 또는 하단의 카드를 드래그 앤 드롭합니다.";
 }
 
 function CardFace({ card, numberLabel, compact = false }: CardFaceProps) {
