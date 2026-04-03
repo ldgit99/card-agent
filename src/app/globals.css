@@ -5625,6 +5625,43 @@ body:has(.designStudioPage) {
   pointer-events: none;
 }
 
+/* Scale down card typography inside the picker */
+.cardPickerItem .promptCardHeader {
+  gap: 6px;
+  padding-bottom: 2px;
+}
+.cardPickerItem .promptCardIdentity {
+  gap: 6px;
+}
+.cardPickerItem .promptCardIcon {
+  width: 20px;
+  height: 20px;
+  font-size: 0.72rem;
+}
+.cardPickerItem .promptCardBadge {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  min-height: 20px;
+}
+.cardPickerItem .promptCardNumber {
+  font-size: 0.8rem;
+}
+.cardPickerItem .promptCardBody {
+  min-height: 0;
+}
+.cardPickerItem .promptCardQuestion {
+  font-size: 0.88rem;
+  line-height: 1.38;
+  letter-spacing: -0.02em;
+}
+.cardPickerItem .promptCardIntent {
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.cardPickerItem .promptCardDivider {
+  margin: 6px 0;
+}
+
 /* Slot clickable cursor */
 .tableDropZone {
   cursor: pointer;
