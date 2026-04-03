@@ -559,7 +559,7 @@ export function SimulationWorkspace() {
 
   if (!design) {
     return (
-      <main className="appShell">
+      <main className="appShell simulationPage">
         <section className="heroPanel">
           <div className="heroPanelStack">
             <WorkspaceTopbar
@@ -580,7 +580,7 @@ export function SimulationWorkspace() {
   }
 
   return (
-    <main className="appShell">
+    <main className="appShell simulationPage">
       <section className="heroPanel">
         <div className="heroPanelStack">
           <WorkspaceTopbar

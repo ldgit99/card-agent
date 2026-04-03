@@ -41,12 +41,15 @@ export interface LessonActivity {
   id: string;
   order: number;
   title: string;
+  functionCardId: string | null;
   functionLabel: string;
   subjectLabel: string;
   learningObjective: string;
   learningActivity: string;
+  assessmentCardId: string | null;
   assessmentMethod: string;
   teacherMove: string;
+  aiToolCardIds: string[];
   tools: string[];
   humanCardIds: string[];
   aiCardIds: string[];

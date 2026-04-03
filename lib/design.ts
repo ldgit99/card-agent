@@ -11,12 +11,15 @@ export function createEmptyActivity(order: number): LessonActivity {
     id: crypto.randomUUID(),
     order,
     title: "",
+    functionCardId: null,
     functionLabel: "",
     subjectLabel: "",
     learningObjective: "",
     learningActivity: "",
+    assessmentCardId: null,
     assessmentMethod: "",
     teacherMove: "",
+    aiToolCardIds: [],
     tools: [],
     humanCardIds: [],
     aiCardIds: [],
@@ -62,6 +65,9 @@ export function createLessonDesign(
   const normalizedActivities = activities.map((activity, index) => ({
     ...activity,
     order: index + 1,
+    functionCardId: activity.functionCardId ?? null,
+    assessmentCardId: activity.assessmentCardId ?? null,
+    aiToolCardIds: activity.aiToolCardIds ?? [],
     title: activity.title.trim() || activity.functionLabel.trim() || `활동 ${index + 1}`,
   }));
 
@@ -96,6 +102,9 @@ export function normalizeLessonDesignDraft(
   const normalizedActivities = draft.activities.map((activity, index) => ({
     ...activity,
     order: index + 1,
+    functionCardId: activity.functionCardId ?? null,
+    assessmentCardId: activity.assessmentCardId ?? null,
+    aiToolCardIds: activity.aiToolCardIds ?? [],
     title: activity.title.trim() || activity.functionLabel.trim() || `활동 ${index + 1}`,
   }));
 

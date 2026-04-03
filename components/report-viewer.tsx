@@ -147,7 +147,7 @@ export function ReportViewer() {
 
   if (!report) {
     return (
-      <main className="appShell">
+      <main className="appShell reportPage">
         <section className="panel reportEmptyState">
           <p className="sectionTag">Report</p>
           <h1>저장된 보고서가 없습니다.</h1>
@@ -166,7 +166,7 @@ export function ReportViewer() {
   }
 
   return (
-    <main className="reportShell">
+    <main className="reportShell reportPage">
       <section className="heroPanel printHidden">
         <div className="heroPanelStack">
           <WorkspaceTopbar
