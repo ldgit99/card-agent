@@ -5466,6 +5466,38 @@ body:has(.designStudioPage) {
   text-transform: uppercase;
 }
 
+.designStudioPage .lessonTableCards .colFunction {
+  width: 10%;
+}
+
+.designStudioPage .lessonTableCards .colSubject {
+  width: 16%;
+}
+
+.designStudioPage .lessonTableCards .colLearningActivity {
+  width: 34%;
+}
+
+.designStudioPage .lessonTableCards .colAiTools,
+.designStudioPage .lessonTableCards .colAssessment,
+.designStudioPage .lessonTableCards .colTeacherCards,
+.designStudioPage .lessonTableCards .colAiCards {
+  width: 10%;
+}
+
+.designStudioPage .lessonTableCards td {
+  vertical-align: top;
+}
+
+.designStudioPage .lessonTableCards input {
+  min-width: 130px;
+}
+
+.designStudioPage .lessonTableCards textarea {
+  min-width: 280px;
+  min-height: 136px;
+}
+
 .designStudioPage .lessonTable tbody tr {
   transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
@@ -5482,6 +5514,8 @@ body:has(.designStudioPage) {
 .designStudioPage .tableDropZone {
   border: 1px dashed rgba(148, 163, 184, 0.55);
   border-radius: 18px;
+  min-height: 88px;
+  padding: 8px;
   background: linear-gradient(180deg, rgba(250, 252, 255, 0.96), rgba(247, 249, 252, 0.96));
 }
 
@@ -5492,6 +5526,8 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .tableDropZoneEmpty {
+  min-height: 70px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.74);
 }
 
@@ -5577,6 +5613,63 @@ body:has(.designStudioPage) {
   background: linear-gradient(135deg, #4f6ff5, #6580f6);
 }
 
+.designStudioPage .tableDropList {
+  gap: 8px;
+}
+
+.designStudioPage .cardColumnCell {
+  min-width: 170px;
+}
+
+.designStudioPage .tablePlacedCard {
+  padding: 0;
+}
+
+.designStudioPage .tablePlacedCard .promptCardHeader {
+  gap: 6px;
+}
+
+.designStudioPage .tablePlacedCard .promptCardIdentity {
+  gap: 8px;
+}
+
+.designStudioPage .tablePlacedCard .promptCardIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+}
+
+.designStudioPage .tablePlacedCard .promptCardBadge {
+  min-height: 22px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+}
+
+.designStudioPage .tablePlacedCard .promptCardBody {
+  min-height: 0;
+}
+
+.designStudioPage .tablePlacedCard .promptCardQuestion {
+  font-size: 0.84rem;
+  line-height: 1.38;
+}
+
+.designStudioPage .tablePlacedCard.promptCard-compact {
+  gap: 6px;
+  padding: 8px 10px;
+  min-height: 0;
+  border-radius: 14px;
+}
+
+.designStudioPage .tablePlacedCard .promptCardRemove {
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  font-size: 0.78rem;
+}
+
 .designStudioPage .promptCardButton:hover {
   background: linear-gradient(135deg, #4060e7, #5c76ef);
 }
@@ -5601,10 +5694,6 @@ body:has(.designStudioPage) {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
   align-items: start;
-}
-
-.designStudioPage .cardLibraryBottomGrid > .libraryColumn:nth-last-child(-n + 2) {
-  display: none;
 }
 
 .designStudioPage .libraryColumn {

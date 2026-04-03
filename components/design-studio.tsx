@@ -107,15 +107,19 @@ function CardFace({ card, numberLabel, compact = false }: CardFaceProps) {
           </span>
           <span className={`promptCardBadge promptCardBadge-${card.actor}`}>{card.title}</span>
         </div>
-        <span className="promptCardNumber">{numberLabel}</span>
+        {compact ? null : <span className="promptCardNumber">{numberLabel}</span>}
       </div>
       <div className="promptCardBody">
         <p className={`promptCardQuestion ${compact ? "promptCardQuestion-compact" : ""}`}>{card.prompt}</p>
       </div>
-      <div className="promptCardDivider" />
-      <p className={`promptCardIntent ${compact ? "promptCardIntent-compact" : ""}`}>
-        → {card.intent}
-      </p>
+      {compact ? null : (
+        <>
+          <div className="promptCardDivider" />
+          <p className={`promptCardIntent ${compact ? "promptCardIntent-compact" : ""}`}>
+            → {card.intent}
+          </p>
+        </>
+      )}
     </>
   );
 }
@@ -885,7 +889,7 @@ export function DesignStudio() {
                         </td>
                         <td>
                           <textarea
-                            rows={3}
+                            rows={5}
                             value={activity.learningActivity}
                             onFocus={() => setSelectedActivityId(activity.id)}
                             onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
@@ -1027,7 +1031,7 @@ export function DesignStudio() {
                       <label className="mobileActivityField mobileActivityField-wide">
                         <span>학습활동</span>
                         <textarea
-                          rows={4}
+                          rows={5}
                           value={activity.learningActivity}
                           onFocus={() => setSelectedActivityId(activity.id)}
                           onChange={(event) => updateActivity(activity.id, { learningActivity: event.target.value })}
