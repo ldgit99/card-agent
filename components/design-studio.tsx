@@ -12,7 +12,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { getAvailableCards, getCardsByActor } from "@/lib/card-registry";
+import { getAvailableCards, getCardsByActor, getCardsByLibraryGroup } from "@/lib/card-registry";
 import {
   createDefaultLessonDesign,
   createEmptyActivity,
@@ -30,6 +30,7 @@ import { WorkspaceTopbar } from "@/components/workspace-topbar";
 import { fetchWorkspaceSnapshot, saveDesignToWorkspace } from "@/lib/workspace-client";
 import type {
   CardActor,
+  CardLibraryGroup,
   LessonActivity,
   LessonDesign,
   OrchestrationCard,
@@ -61,6 +62,18 @@ interface RowDropZoneProps {
   cards: OrchestrationCard[];
   onRemove: (cardId: string) => void;
 }
+
+const libraryColumns: Array<{
+  group: CardLibraryGroup;
+  eyebrow: string;
+  heading: string;
+}> = [
+  { group: "function", eyebrow: "Function", heading: "기능카드" },
+  { group: "ai_edutech", eyebrow: "AI Edutech", heading: "AI에듀테크카드" },
+  { group: "assessment", eyebrow: "Assessment", heading: "평가카드" },
+  { group: "teacher_intervention", eyebrow: "Teacher Move", heading: "교사개입카드" },
+  { group: "ai_role", eyebrow: "AI Role", heading: "AI역할카드" },
+];
 
 function formatCardNumber(cardId: string) {
   const numeric = cardId.replace(/^[A-Za-z]+/, "");
@@ -284,6 +297,13 @@ export function DesignStudio() {
   const availableCards = useMemo(() => getAvailableCards(design.customCards), [design.customCards]);
   const teacherLibraryCards = useMemo(() => getCardsByActor("teacher", design.customCards), [design.customCards]);
   const aiLibraryCards = useMemo(() => getCardsByActor("ai", design.customCards), [design.customCards]);
+  const libraryCardsByGroup = useMemo(
+    () =>
+      Object.fromEntries(
+        libraryColumns.map(({ group }) => [group, getCardsByLibraryGroup(group, design.customCards)]),
+      ) as Record<CardLibraryGroup, OrchestrationCard[]>,
+    [design.customCards],
+  );
 
   const selectedActivity =
     design.activities.find((activity) => activity.id === selectedActivityId) ?? design.activities[0] ?? null;
@@ -962,6 +982,50 @@ export function DesignStudio() {
               </p>
             </div>
             <div className="cardLibraryGrid cardLibraryBottomGrid">
+              {libraryColumns.map((column) => {
+                const cards = libraryCardsByGroup[column.group];
+
+                return (
+                  <section key={`group-${column.group}`} className="libraryColumn libraryColumnGrouped">
+                    <div className="libraryColumnHeader">
+                      <div>
+                        <p className="sectionMicroTag">{column.eyebrow}</p>
+                        <h3 className="libraryHeading">{column.heading}</h3>
+                      </div>
+                      <span className="engineBadge">{cards.length}</span>
+                    </div>
+                    <div className="libraryList">
+                      {cards.map((card) =>
+                        card.isCustom ? (
+                          <EditableCustomCard
+                            key={card.id}
+                            card={card}
+                            disabled={!selectedActivity}
+                            onChange={updateCustomCard}
+                            onSave={saveCustomCard}
+                            onQuickAdd={(nextCard) => {
+                              if (selectedActivity) {
+                                appendCard(selectedActivity.id, nextCard);
+                              }
+                            }}
+                          />
+                        ) : (
+                          <DraggableCard
+                            key={card.id}
+                            card={card}
+                            disabled={!selectedActivity}
+                            onQuickAdd={(nextCard) => {
+                              if (selectedActivity) {
+                                appendCard(selectedActivity.id, nextCard);
+                              }
+                            }}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </section>
+                );
+              })}
               <section className="libraryColumn">
                 <div className="libraryColumnHeader">
                   <div>

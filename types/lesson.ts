@@ -1,5 +1,12 @@
 export type CardActor = "teacher" | "ai";
 
+export type CardLibraryGroup =
+  | "function"
+  | "ai_edutech"
+  | "assessment"
+  | "teacher_intervention"
+  | "ai_role";
+
 export type RiskType =
   | "AI_OVER_RELIANCE"
   | "SHALLOW_LEARNING"
@@ -22,6 +29,7 @@ export interface LessonDesignMeta {
 export interface OrchestrationCard {
   id: string;
   actor: CardActor;
+  libraryGroup: CardLibraryGroup;
   category: string;
   title: string;
   prompt: string;

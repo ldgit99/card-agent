@@ -5060,9 +5060,9 @@ body {
 
 body:has(.designStudioPage) {
   background:
-    radial-gradient(circle at top left, rgba(84, 157, 149, 0.16), transparent 30%),
-    radial-gradient(circle at top right, rgba(235, 159, 107, 0.14), transparent 28%),
-    linear-gradient(180deg, #f6f4ee 0%, #eef4ef 52%, #f8faf8 100%);
+    radial-gradient(circle at top left, rgba(117, 155, 255, 0.10), transparent 28%),
+    radial-gradient(circle at top right, rgba(182, 199, 255, 0.10), transparent 24%),
+    linear-gradient(180deg, #f7f9fe 0%, #f4f7fc 52%, #f8fafc 100%);
 }
 
 .designStudioPage {
@@ -5075,13 +5075,13 @@ body:has(.designStudioPage) {
 .designStudioPage .designHeroPanel {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(104, 137, 128, 0.16);
+  border: 1px solid rgba(203, 213, 225, 0.95);
   border-radius: 32px;
   background:
-    linear-gradient(135deg, rgba(246, 250, 247, 0.96), rgba(255, 248, 241, 0.96)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98)),
     #ffffff;
   box-shadow:
-    0 24px 54px rgba(47, 79, 79, 0.10),
+    0 18px 40px rgba(15, 23, 42, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -5091,7 +5091,7 @@ body:has(.designStudioPage) {
   width: 340px;
   height: 340px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(120, 198, 186, 0.28), transparent 68%);
+  background: radial-gradient(circle, rgba(99, 126, 255, 0.16), transparent 68%);
   pointer-events: none;
 }
 
@@ -5103,7 +5103,7 @@ body:has(.designStudioPage) {
   width: 380px;
   height: 380px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 205, 173, 0.34), transparent 70%);
+  background: radial-gradient(circle, rgba(191, 219, 254, 0.36), transparent 70%);
   pointer-events: none;
 }
 
@@ -5119,9 +5119,9 @@ body:has(.designStudioPage) {
 
 .designStudioPage .workspaceTopbar {
   padding: 14px;
-  border: 1px solid rgba(106, 126, 119, 0.12);
+  border: 1px solid #d8deea;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(14px);
 }
@@ -5134,10 +5134,10 @@ body:has(.designStudioPage) {
   min-width: 170px;
   min-height: 70px;
   padding: 14px 18px;
-  border: 1px solid rgba(82, 114, 107, 0.12);
+  border: 1px solid #d6ddeb;
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 249, 247, 0.94));
-  color: #24413e;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
+  color: #1f2937;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -5147,20 +5147,20 @@ body:has(.designStudioPage) {
 
 .designStudioPage .workspaceNavLink:hover {
   transform: translateY(-1px);
-  border-color: rgba(72, 154, 143, 0.36);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 249, 246, 0.98));
-  box-shadow: 0 14px 28px rgba(66, 109, 101, 0.08);
+  border-color: #c1ccf5;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(244, 247, 255, 1));
+  box-shadow: 0 10px 22px rgba(79, 111, 245, 0.08);
 }
 
 .designStudioPage .workspaceNavLink-active {
-  border-color: rgba(61, 137, 129, 0.56);
-  background: linear-gradient(135deg, #2f7e76, #4b988c);
+  border-color: #4f6ff5;
+  background: linear-gradient(135deg, #4f6ff5, #6580f6);
   color: #ffffff;
-  box-shadow: 0 18px 32px rgba(47, 126, 118, 0.22);
+  box-shadow: 0 16px 28px rgba(79, 111, 245, 0.22);
 }
 
 .designStudioPage .workspaceNavStep {
-  color: rgba(36, 65, 62, 0.68);
+  color: #667085;
 }
 
 .designStudioPage .workspaceNavLink-active .workspaceNavStep {
@@ -5180,31 +5180,31 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .primaryButton {
-  border-color: #327a72;
-  background: linear-gradient(135deg, #327a72, #4f958b);
-  box-shadow: 0 14px 28px rgba(50, 122, 114, 0.22);
+  border-color: #4f6ff5;
+  background: linear-gradient(135deg, #4f6ff5, #6580f6);
+  box-shadow: 0 12px 24px rgba(79, 111, 245, 0.18);
 }
 
 .designStudioPage .primaryButton:hover {
-  border-color: #2c6b64;
-  background: linear-gradient(135deg, #2c6b64, #45867d);
+  border-color: #4060e7;
+  background: linear-gradient(135deg, #4060e7, #5c76ef);
 }
 
 .designStudioPage .ghostButton,
 .designStudioPage .secondaryButton,
 .designStudioPage .tableActionButton,
 .designStudioPage .iconButton {
-  border-color: rgba(83, 113, 108, 0.16);
-  background: rgba(255, 255, 255, 0.88);
-  color: #24413e;
+  border-color: #d6ddeb;
+  background: rgba(255, 255, 255, 0.94);
+  color: #344054;
 }
 
 .designStudioPage .ghostButton:hover,
 .designStudioPage .secondaryButton:hover,
 .designStudioPage .tableActionButton:hover,
 .designStudioPage .iconButton:hover {
-  border-color: rgba(72, 154, 143, 0.32);
-  background: rgba(243, 250, 247, 0.96);
+  border-color: #c1ccf5;
+  background: rgba(248, 250, 255, 1);
 }
 
 .designStudioPage .designHeroMain {
@@ -5224,16 +5224,16 @@ body:has(.designStudioPage) {
 .designStudioPage .sectionTag,
 .designStudioPage .sectionMicroTag {
   width: fit-content;
-  border: 1px solid rgba(69, 132, 124, 0.14);
-  background: rgba(255, 255, 255, 0.74);
-  color: #327a72;
+  border: 1px solid rgba(79, 111, 245, 0.18);
+  background: #eef2ff;
+  color: #4263eb;
   letter-spacing: 0.08em;
 }
 
 .designStudioPage .heroPanel h1 {
   margin: 0;
   max-width: 11ch;
-  color: #173532;
+  color: #101828;
   font-size: clamp(2.4rem, 4vw, 4.3rem);
   line-height: 1.03;
 }
@@ -5241,7 +5241,7 @@ body:has(.designStudioPage) {
 .designStudioPage .heroCopy {
   max-width: 780px;
   margin: 0;
-  color: #506763;
+  color: #667085;
   font-size: 1rem;
   line-height: 1.8;
 }
@@ -5259,18 +5259,18 @@ body:has(.designStudioPage) {
 
 .designStudioPage .heroStatCard {
   padding: 16px 18px;
-  border: 1px solid rgba(74, 113, 104, 0.12);
+  border: 1px solid #e4e7ec;
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(242, 248, 245, 0.94));
-  box-shadow: 0 12px 24px rgba(46, 79, 74, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 .designStudioPage .heroStatCard span {
-  color: #5d746f;
+  color: #667085;
 }
 
 .designStudioPage .heroStatCard strong {
-  color: #173532;
+  color: #101828;
   font-size: clamp(1.8rem, 2.4vw, 2.35rem);
 }
 
@@ -5278,13 +5278,13 @@ body:has(.designStudioPage) {
   display: grid;
   gap: 14px;
   padding: 22px;
-  border: 1px solid rgba(74, 113, 104, 0.14);
+  border: 1px solid #dbe4ff;
   border-radius: 26px;
   background:
-    linear-gradient(135deg, rgba(41, 84, 80, 0.95), rgba(64, 120, 112, 0.90)),
-    #2f615b;
-  color: #f8fffc;
-  box-shadow: 0 22px 36px rgba(31, 63, 59, 0.22);
+    linear-gradient(180deg, rgba(246, 248, 255, 0.98), rgba(255, 255, 255, 0.98)),
+    #ffffff;
+  color: #101828;
+  box-shadow: 0 12px 24px rgba(79, 111, 245, 0.08);
 }
 
 .designStudioPage .designHeroSpotlightHeader,
@@ -5301,8 +5301,8 @@ body:has(.designStudioPage) {
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.92);
+  background: #eef2ff;
+  color: #4263eb;
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -5310,12 +5310,13 @@ body:has(.designStudioPage) {
 .designStudioPage .designHeroSpotlight strong {
   font-size: 1.3rem;
   line-height: 1.35;
+  color: #101828;
 }
 
 .designStudioPage .designHeroSpotlight p,
 .designStudioPage .designHeroStatusRow span {
   margin: 0;
-  color: rgba(240, 250, 247, 0.78);
+  color: #667085;
 }
 
 .designStudioPage .designHeroStatusRow {
@@ -5329,7 +5330,8 @@ body:has(.designStudioPage) {
   gap: 4px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.10);
+  background: #ffffff;
+  border: 1px solid #e4e7ec;
 }
 
 .designStudioPage .designHeroStatusRow strong {
@@ -5348,12 +5350,12 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .designPanel {
-  border: 1px solid rgba(110, 132, 123, 0.14);
+  border: 1px solid #e4e7ec;
   border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 251, 248, 0.96)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 250, 252, 0.98)),
     #ffffff;
-  box-shadow: 0 22px 42px rgba(60, 83, 74, 0.08);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
 }
 
 .designStudioPage .panelHeader {
@@ -5366,7 +5368,7 @@ body:has(.designStudioPage) {
 .designStudioPage .libraryHeading,
 .designStudioPage .mobileActivityHeader h3 {
   margin-top: 10px;
-  color: #173532;
+  color: #101828;
   font-size: clamp(1.34rem, 2vw, 1.72rem);
 }
 
@@ -5374,7 +5376,7 @@ body:has(.designStudioPage) {
 .designStudioPage .emptyPanelText,
 .designStudioPage .historyCardBody p,
 .designStudioPage .historyCardBody span {
-  color: #657a75;
+  color: #667085;
 }
 
 .designStudioPage .metaTable,
@@ -5383,7 +5385,7 @@ body:has(.designStudioPage) {
 .designStudioPage .historyCard,
 .designStudioPage .libraryColumn,
 .designStudioPage .statusBarFull {
-  border-color: rgba(110, 132, 123, 0.14);
+  border-color: #e4e7ec;
 }
 
 .designStudioPage .metaTable {
@@ -5393,8 +5395,8 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .metaLabel {
-  background: linear-gradient(180deg, #f3f8f5, #eef5f1);
-  color: #24413e;
+  background: linear-gradient(180deg, #f8fafc, #f2f4f7);
+  color: #344054;
   font-weight: 800;
 }
 
@@ -5421,7 +5423,7 @@ body:has(.designStudioPage) {
 .designStudioPage .mobileActivityField span,
 .designStudioPage .mobileDropLabel,
 .designStudioPage .promptCardField span {
-  color: #4f6661;
+  color: #475467;
   font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -5431,10 +5433,10 @@ body:has(.designStudioPage) {
 .designStudioPage input,
 .designStudioPage textarea,
 .designStudioPage select {
-  border: 1px solid rgba(96, 128, 120, 0.16);
+  border: 1px solid #d5dbe8;
   border-radius: 16px;
-  background: rgba(250, 252, 251, 0.96);
-  color: #173532;
+  background: rgba(255, 255, 255, 0.98);
+  color: #101828;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -5445,9 +5447,9 @@ body:has(.designStudioPage) {
 .designStudioPage input:focus,
 .designStudioPage textarea:focus,
 .designStudioPage select:focus {
-  border-color: rgba(67, 146, 136, 0.58);
+  border-color: #93a7ff;
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(73, 152, 143, 0.12);
+  box-shadow: 0 0 0 4px rgba(79, 111, 245, 0.12);
 }
 
 .designStudioPage .tableWrap {
@@ -5457,8 +5459,8 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTable thead th {
-  background: linear-gradient(180deg, #eff6f2, #eaf3ef);
-  color: #4d625d;
+  background: linear-gradient(180deg, #f8fafc, #f2f4f7);
+  color: #475467;
   font-size: 0.86rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -5469,24 +5471,24 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTable tbody tr:hover td {
-  background: rgba(243, 249, 246, 0.88);
+  background: rgba(245, 247, 255, 0.84);
 }
 
 .designStudioPage .selectedRow td {
   background:
-    linear-gradient(180deg, rgba(227, 244, 240, 0.88), rgba(243, 249, 246, 0.94));
+    linear-gradient(180deg, rgba(238, 242, 255, 0.92), rgba(246, 248, 255, 0.96));
 }
 
 .designStudioPage .tableDropZone {
-  border: 1px dashed rgba(74, 143, 134, 0.28);
+  border: 1px dashed rgba(148, 163, 184, 0.55);
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(247, 252, 249, 0.92), rgba(242, 248, 245, 0.92));
+  background: linear-gradient(180deg, rgba(250, 252, 255, 0.96), rgba(247, 249, 252, 0.96));
 }
 
 .designStudioPage .tableDropZone-over,
 .designStudioPage .tableDropZone:hover {
-  border-color: rgba(63, 143, 132, 0.5);
-  background: linear-gradient(180deg, rgba(236, 248, 244, 0.96), rgba(244, 250, 247, 0.96));
+  border-color: rgba(79, 111, 245, 0.42);
+  background: linear-gradient(180deg, rgba(242, 246, 255, 0.98), rgba(247, 249, 255, 0.98));
 }
 
 .designStudioPage .tableDropZoneEmpty {
@@ -5497,10 +5499,10 @@ body:has(.designStudioPage) {
 .designStudioPage .mobileActivityCard,
 .designStudioPage .historyCard {
   border-radius: 22px;
-  border: 1px solid rgba(110, 132, 123, 0.14);
+  border: 1px solid #e4e7ec;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 249, 247, 0.98));
-  box-shadow: 0 18px 30px rgba(59, 84, 74, 0.07);
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 250, 252, 1));
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -5511,17 +5513,17 @@ body:has(.designStudioPage) {
 .designStudioPage .mobileActivityCard:hover,
 .designStudioPage .historyCard:hover {
   transform: translateY(-3px);
-  border-color: rgba(72, 154, 143, 0.22);
-  box-shadow: 0 22px 34px rgba(59, 84, 74, 0.11);
+  border-color: rgba(79, 111, 245, 0.20);
+  box-shadow: 0 18px 28px rgba(79, 111, 245, 0.09);
 }
 
 .designStudioPage .promptCardButton {
   border-radius: 14px;
-  background: linear-gradient(135deg, #327a72, #4f958b);
+  background: linear-gradient(135deg, #4f6ff5, #6580f6);
 }
 
 .designStudioPage .promptCardButton:hover {
-  background: linear-gradient(135deg, #2c6b64, #46857d);
+  background: linear-gradient(135deg, #4060e7, #5c76ef);
 }
 
 .designStudioPage .promptCardBadge-teacher,
@@ -5531,24 +5533,84 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .engineBadge {
-  border: 1px solid rgba(74, 143, 134, 0.18);
-  background: rgba(237, 247, 243, 0.92);
-  color: #327a72;
+  border: 1px solid rgba(79, 111, 245, 0.18);
+  background: rgba(238, 242, 255, 0.96);
+  color: #4263eb;
 }
 
 .designStudioPage .cardLibraryGrid {
   gap: 20px;
 }
 
+.designStudioPage .cardLibraryBottomGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.designStudioPage .cardLibraryBottomGrid > .libraryColumn:nth-last-child(-n + 2) {
+  display: none;
+}
+
 .designStudioPage .libraryColumn {
   padding: 18px;
   border-radius: 24px;
-  background: rgba(252, 253, 252, 0.82);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.designStudioPage .libraryColumnGrouped {
+  min-width: 0;
 }
 
 .designStudioPage .libraryColumnHeader {
   align-items: center;
   margin-bottom: 16px;
+}
+
+.designStudioPage .cardLibraryBottomGrid .libraryList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCard-library {
+  aspect-ratio: auto;
+  min-height: 154px;
+  padding: 12px 12px 10px;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCard-custom {
+  min-height: 240px;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCardBody {
+  min-height: 34px;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCardQuestion {
+  font-size: 0.92rem;
+  line-height: 1.32;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCardIntent {
+  font-size: 0.74rem;
+  line-height: 1.36;
+}
+
+.designStudioPage .cardLibraryBottomGrid .promptCardButton {
+  min-height: 32px;
+  font-size: 0.76rem;
+}
+
+.simulationProgressCopy {
+  margin: -4px 0 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(79, 111, 245, 0.16);
+  border-radius: 14px;
+  background: rgba(238, 242, 255, 0.82);
+  color: #4263eb;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .designStudioPage .historyList {
@@ -5560,7 +5622,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .historyCardBody strong {
-  color: #173532;
+  color: #101828;
 }
 
 .designStudioPage .statusBarFull {
@@ -5570,18 +5632,18 @@ body:has(.designStudioPage) {
   padding: 18px;
   border-radius: 26px;
   background:
-    linear-gradient(135deg, rgba(28, 60, 56, 0.95), rgba(54, 96, 90, 0.92)),
-    #24413e;
-  box-shadow: 0 24px 42px rgba(31, 54, 50, 0.18);
+    linear-gradient(135deg, #eef2ff, #f8faff),
+    #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
 }
 
 .designStudioPage .statusBarFull strong,
 .designStudioPage .statusBarFull span {
-  color: #f5fffb;
+  color: #344054;
 }
 
 .designStudioPage .statusBarFull strong {
-  opacity: 0.76;
+  opacity: 1;
 }
 
 .designStudioPage .statusBarFull > div {
@@ -5589,7 +5651,8 @@ body:has(.designStudioPage) {
   gap: 8px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dbe4ff;
 }
 
 @media (max-width: 1180px) {
@@ -5602,6 +5665,10 @@ body:has(.designStudioPage) {
   .designStudioPage .designHeroStats,
   .designStudioPage .cardLibraryGrid {
     grid-template-columns: 1fr;
+  }
+
+  .designStudioPage .cardLibraryBottomGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -5632,6 +5699,10 @@ body:has(.designStudioPage) {
     width: 100%;
     margin-left: 0;
   }
+
+  .designStudioPage .cardLibraryBottomGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
@@ -5656,5 +5727,9 @@ body:has(.designStudioPage) {
   .designStudioPage .historyCard,
   .designStudioPage .statusBarFull > div {
     padding: 16px;
+  }
+
+  .designStudioPage .cardLibraryBottomGrid {
+    grid-template-columns: 1fr;
   }
 }

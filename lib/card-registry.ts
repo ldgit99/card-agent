@@ -1,57 +1,93 @@
 import { aiCards, orchestrationCards, teacherCards } from "@/data/cards";
-import type { CardActor, OrchestrationCard } from "@/types/lesson";
+import type { CardActor, CardLibraryGroup, OrchestrationCard } from "@/types/lesson";
 
 const customCardSeeds: OrchestrationCard[] = [
   {
-    id: "TC01",
+    id: "CF01",
     actor: "teacher",
+    libraryGroup: "function",
     category: "사용자 정의",
-    title: "교사 빈 카드 1",
+    title: "기능카드 사용자 정의 1",
     prompt: "",
     intent: "",
     isCustom: true,
   },
   {
-    id: "TC02",
+    id: "CF02",
     actor: "teacher",
+    libraryGroup: "function",
     category: "사용자 정의",
-    title: "교사 빈 카드 2",
+    title: "기능카드 사용자 정의 2",
     prompt: "",
     intent: "",
     isCustom: true,
   },
   {
-    id: "TC03",
+    id: "CF03",
     actor: "teacher",
+    libraryGroup: "function",
     category: "사용자 정의",
-    title: "교사 빈 카드 3",
+    title: "기능카드 사용자 정의 3",
     prompt: "",
     intent: "",
     isCustom: true,
   },
   {
-    id: "AC01",
+    id: "CE01",
     actor: "ai",
+    libraryGroup: "ai_edutech",
     category: "사용자 정의",
-    title: "AI 빈 카드 1",
+    title: "AI에듀테크 사용자 정의 1",
     prompt: "",
     intent: "",
     isCustom: true,
   },
   {
-    id: "AC02",
+    id: "CE02",
     actor: "ai",
+    libraryGroup: "ai_edutech",
     category: "사용자 정의",
-    title: "AI 빈 카드 2",
+    title: "AI에듀테크 사용자 정의 2",
     prompt: "",
     intent: "",
     isCustom: true,
   },
   {
-    id: "AC03",
+    id: "CE03",
     actor: "ai",
+    libraryGroup: "ai_edutech",
     category: "사용자 정의",
-    title: "AI 빈 카드 3",
+    title: "AI에듀테크 사용자 정의 3",
+    prompt: "",
+    intent: "",
+    isCustom: true,
+  },
+  {
+    id: "CA01",
+    actor: "teacher",
+    libraryGroup: "assessment",
+    category: "사용자 정의",
+    title: "평가카드 사용자 정의 1",
+    prompt: "",
+    intent: "",
+    isCustom: true,
+  },
+  {
+    id: "CA02",
+    actor: "teacher",
+    libraryGroup: "assessment",
+    category: "사용자 정의",
+    title: "평가카드 사용자 정의 2",
+    prompt: "",
+    intent: "",
+    isCustom: true,
+  },
+  {
+    id: "CA03",
+    actor: "teacher",
+    libraryGroup: "assessment",
+    category: "사용자 정의",
+    title: "평가카드 사용자 정의 3",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -72,6 +108,7 @@ export function ensureCustomCards(cards?: OrchestrationCard[]): OrchestrationCar
           ...found,
           id: seed.id,
           actor: seed.actor,
+          libraryGroup: seed.libraryGroup,
           isCustom: true,
           category: found.category?.trim() || seed.category,
         }
@@ -97,4 +134,11 @@ export function getCardsByActor(actor: CardActor, customCards?: OrchestrationCar
   const baseCards = actor === "teacher" ? teacherCards : aiCards;
   const customByActor = ensureCustomCards(customCards).filter((card) => card.actor === actor);
   return [...baseCards, ...customByActor];
+}
+
+export function getCardsByLibraryGroup(
+  group: CardLibraryGroup,
+  customCards?: OrchestrationCard[],
+): OrchestrationCard[] {
+  return getAvailableCards(customCards).filter((card) => card.libraryGroup === group);
 }

@@ -134,6 +134,7 @@ export function SimulationWorkspace() {
   const [nextRevisionText, setNextRevisionText] = useState("");
   const [simulationRunId, setSimulationRunId] = useState<string | null>(null);
   const [message, setMessage] = useState("설계본을 불러오는 중입니다.");
+  const [runProgressLabel, setRunProgressLabel] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [isSavingReflection, setIsSavingReflection] = useState(false);
   const [serverSessions, setServerSessions] = useState<SimulationSessionRecord[]>([]);
@@ -287,6 +288,7 @@ export function SimulationWorkspace() {
     }
 
     setIsRunning(true);
+    setRunProgressLabel("실행 준비 중...");
     setMessage("설계본을 기준으로 시뮬레이션을 준비합니다.");
 
     try {
@@ -308,6 +310,7 @@ export function SimulationWorkspace() {
         setMessage("서버 저장 없이 시뮬레이션을 계속 진행합니다.");
       }
 
+      setRunProgressLabel("설계 분석 중...");
       const analysisResponse = await fetch("/api/design/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -322,6 +325,7 @@ export function SimulationWorkspace() {
 
       const runId = crypto.randomUUID();
       setSimulationRunId(runId);
+      setRunProgressLabel("시나리오 작성 중...");
       setMessage("수업 시나리오와 학생 페르소나를 생성하고 있습니다.");
 
       const scenarioResponse = await fetch("/api/simulation/scenario", {
@@ -342,6 +346,7 @@ export function SimulationWorkspace() {
 
       const generatedTurns: SimulationTurn[] = [];
       for (const activity of nextDesign.activities) {
+        setRunProgressLabel(`${activity.order}차시 수업 전개 작성 중...`);
         setMessage(`${activity.order}차 활동의 실행 장면을 생성하고 있습니다.`);
 
         const response = await fetch("/api/simulation/step", {
@@ -367,6 +372,7 @@ export function SimulationWorkspace() {
 
       setMessage("활동별 위험과 성찰 질문을 생성하고 있습니다.");
 
+      setRunProgressLabel("문제점 작성 중...");
       const riskResponse = await fetch("/api/simulation/risks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -379,6 +385,7 @@ export function SimulationWorkspace() {
       const riskPayload = (await riskResponse.json()) as { risks: DetectedRisk[] };
       setRisks(riskPayload.risks);
 
+      setRunProgressLabel("성찰 질문 작성 중...");
       const questionResponse = await fetch("/api/reflection/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -410,6 +417,7 @@ export function SimulationWorkspace() {
       });
 
       if (session) {
+        setRunProgressLabel("결과 저장 중...");
         try {
           const savedSession = await saveSimulationSessionToWorkspace(session);
           setServerSessions(savedSession.sessions);
@@ -420,7 +428,9 @@ export function SimulationWorkspace() {
       }
 
       setMessage("모의수업 시나리오, 실행 로그, 위험, 성찰 질문 생성이 완료됐습니다.");
+      setRunProgressLabel("실행 완료");
     } catch (error) {
+      setRunProgressLabel("실행 중 오류 발생");
       setMessage(error instanceof Error ? error.message : "모의수업 실행 중 오류가 발생했습니다.");
     } finally {
       setIsRunning(false);
@@ -589,6 +599,7 @@ export function SimulationWorkspace() {
               </>
             }
           />
+          {runProgressLabel ? <p className="heroCopy simulationProgressCopy">{runProgressLabel}</p> : null}
           <div className="heroPanelMain">
             <div>
               <p className="eyebrow">Simulation Workspace</p>
