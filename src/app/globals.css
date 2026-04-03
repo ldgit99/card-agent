@@ -5829,6 +5829,15 @@ body:has(.reportPage) {
   padding: 20px 0 32px;
 }
 
+.reportPage.reportShell {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: min(1540px, calc(100% - 40px));
+  margin: 0 auto;
+  gap: 20px;
+  padding: 20px 0 32px;
+}
+
 .simulationPage .heroPanel,
 .simulationPage .panel,
 .simulationPage .statusBarFull,
@@ -6085,7 +6094,9 @@ body:has(.reportPage) {
 }
 
 .reportPage .reportDocument {
+  display: grid;
   gap: 18px;
+  width: 100%;
 }
 
 .reportPage .reportSection {
@@ -6120,6 +6131,12 @@ body:has(.reportPage) {
     padding: 18px 0 28px;
   }
 
+  .reportPage.reportShell {
+    width: min(100% - 20px, 1540px);
+    gap: 20px;
+    padding: 18px 0 28px;
+  }
+
   .simulationPage .heroPanel,
   .simulationPage .panel,
   .simulationPage .statusBarFull,
@@ -6144,6 +6161,10 @@ body:has(.reportPage) {
 @media (max-width: 640px) {
   .simulationPage,
   .reportPage {
+    width: min(100% - 16px, 1540px);
+  }
+
+  .reportPage.reportShell {
     width: min(100% - 16px, 1540px);
   }
 
