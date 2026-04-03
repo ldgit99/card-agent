@@ -578,9 +578,10 @@ export function DesignStudio() {
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <main className="appShell">
-        <section className="heroPanel">
-          <div className="heroPanelStack">
+      <main className="appShell designStudioPage">
+        <section className="heroPanel designHeroPanel">
+          <div className="designHeroGlow" aria-hidden="true" />
+          <div className="heroPanelStack designHeroStack">
             <WorkspaceTopbar
               active="design"
               navigationHandlers={{ simulation: navigateToSimulation }}
@@ -596,8 +597,8 @@ export function DesignStudio() {
                 </>
               }
             />
-            <div className="heroPanelMain">
-              <div>
+            <div className="heroPanelMain designHeroMain">
+              <div className="designHeroCopyBlock">
                 <p className="eyebrow">AI ORCHESTRATION LESSON DESIGN</p>
                 <h1>AI 오케스트레이션 수업 설계</h1>
                 <p className="heroCopy">
@@ -605,26 +606,50 @@ export function DesignStudio() {
                   카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
                 </p>
               </div>
-              <div className="heroStatRack">
-                <article className="heroStatCard">
+              <div className="designHeroAside">
+                <div className="heroStatRack designHeroStats">
+                  <article className="heroStatCard">
                   <span>설계 활동</span>
                   <strong>{design.activities.length}</strong>
                 </article>
-                <article className="heroStatCard">
+                  <article className="heroStatCard">
                   <span>교사 카드 배치</span>
                   <strong>{totalHumanAssignments}</strong>
                 </article>
-                <article className="heroStatCard">
+                  <article className="heroStatCard">
                   <span>AI 카드 배치</span>
                   <strong>{totalAiAssignments}</strong>
-                </article>
+                  </article>
+                </div>
+                <aside className="designHeroSpotlight">
+                  <div className="designHeroSpotlightHeader">
+                    <p className="sectionMicroTag">Live Focus</p>
+                    <span className="designHeroSpotlightPill">Design Planner</span>
+                  </div>
+                  <strong>{selectedActivity?.functionLabel || design.meta.topic || "Current lesson focus"}</strong>
+                  <p>
+                    {selectedActivity?.learningActivity ||
+                      "?섏뾽 ?쒕룞???좏깮?섏뿬 移대뱶 諛곗튂??諛⑹떇, AI ?꾧뎄, ?됯? 諛⑸쾿???쒖꽑?쇱쐞濡??뺣━?댁슂."}
+                  </p>
+                  <div className="designHeroStatusRow">
+                    <div>
+                      <span>Latest Sync</span>
+                      <strong>{formatSyncTime(latestSavedAt)}</strong>
+                    </div>
+                    <div>
+                      <span>Status</span>
+                      <strong>{statusMessage || "Ready"}</strong>
+                    </div>
+                  </div>
+                </aside>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="designStack">
-          <section className="panel">
+        <section className="designStack designPageSections">
+          <div className="designPrimaryGrid">
+          <section className="panel designPanel designSetupPanel">
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Lesson Setup</p>
@@ -671,7 +696,7 @@ export function DesignStudio() {
             </div>
           </section>
 
-          <section className="panel">
+          <section className="panel designPanel designActivitiesPanel">
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Activity Design</p>
@@ -923,9 +948,10 @@ export function DesignStudio() {
               })}
             </div>
           </section>
+          </div>
 
 
-          <section className="panel">
+          <section className="panel designPanel designLibraryPanel">
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Card Library</p>
@@ -1015,7 +1041,7 @@ export function DesignStudio() {
             </div>
           </section>
 
-          <section className="panel">
+          <section className="panel designPanel designHistoryPanel">
             <div className="panelHeader">
               <div>
                 <p className="sectionTag">Saved Versions</p>
