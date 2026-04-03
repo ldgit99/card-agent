@@ -5918,6 +5918,10 @@ body:has(.reportPage) {
   gap: 22px;
 }
 
+.reportPage .heroPanelMain {
+  display: block;
+}
+
 .simulationPage .primaryButton,
 .simulationPage .secondaryButton,
 .simulationPage .ghostButton,

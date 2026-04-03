@@ -188,24 +188,6 @@ export function ReportViewer() {
               <h1>{report.reportTitle}</h1>
               <p className="heroCopy">생성 시각: {formatDateTime(report.generatedAt)}</p>
             </div>
-            <div className="heroStatRack">
-              <article className="heroStatCard">
-                <span>주제</span>
-                <strong>{report.design.meta.topic || "미입력"}</strong>
-              </article>
-              <article className="heroStatCard">
-                <span>교과</span>
-                <strong>{report.design.meta.subject || "미입력"}</strong>
-              </article>
-              <article className="heroStatCard">
-                <span>대상</span>
-                <strong>{report.design.meta.target || "미입력"}</strong>
-              </article>
-              <article className="heroStatCard">
-                <span>활동 수</span>
-                <strong>{report.design.activities.length}개</strong>
-              </article>
-            </div>
           </div>
         </div>
       </section>
