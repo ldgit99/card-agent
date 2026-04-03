@@ -4,7 +4,6 @@
 import { useRouter } from "next/navigation";
 import {
   DndContext,
-  KeyboardSensor,
   PointerSensor,
   useDraggable,
   useDroppable,
@@ -268,7 +267,6 @@ export function DesignStudio() {
   const router = useRouter();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor),
   );
 
   const [design, setDesign] = useState<LessonDesign>(getInitialDesign);
