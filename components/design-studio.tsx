@@ -716,8 +716,7 @@ export function DesignStudio() {
             />
             <div className="heroPanelMain designHeroMain">
               <div className="designHeroCopyBlock">
-                <p className="eyebrow">AI ORCHESTRATION LESSON DESIGN</p>
-                <h1>AI 오케스트레이션 수업 설계</h1>
+                                <h1>AI 오케스트레이션 수업 설계</h1>
                 <p className="heroCopy">
                   주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 개입과 AI 역할을 배치합니다.
                   카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
@@ -732,8 +731,7 @@ export function DesignStudio() {
           <section className="panel designPanel designSetupPanel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Lesson Setup</p>
-                <h2>수업 개요 입력</h2>
+                                <h2>수업 개요 입력</h2>
               </div>
               <p className="panelHint">교과와 대상 아래에 학습 목표를 먼저 정리합니다.</p>
             </div>
@@ -779,8 +777,7 @@ export function DesignStudio() {
           <section className="panel designPanel designActivitiesPanel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Activity Design</p>
-                <h2>학습 활동 설계</h2>
+                                <h2>학습 활동 설계</h2>
               </div>
               <div className="inlineActions">
                 <span className="panelHint">기능 카드, AI에듀테크, 평가 방법, 교사 개입, AI 역할을 클릭 또는 드래그앤드롭으로 바로 배치합니다.</span>
@@ -1050,8 +1047,7 @@ export function DesignStudio() {
           <section className="panel designPanel designLibraryPanel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Card Library</p>
-                <h2>하단 카드 라이브러리</h2>
+                                <h2>하단 카드 라이브러리</h2>
               </div>
               <p className="panelHint">
                 필요한 활동의 카드 칸으로 직접 드래그하거나, 현재 선택한 활동에 빠르게 배치할 수 있습니다.
@@ -1110,8 +1106,7 @@ export function DesignStudio() {
           <section className="panel designPanel designHistoryPanel">
             <div className="panelHeader">
               <div>
-                <p className="sectionTag">Saved Versions</p>
-                <h2>저장된 버전</h2>
+                                <h2>저장된 버전</h2>
               </div>
               <p className="panelHint">브라우저 또는 서버에 저장된 버전을 작업 화면으로 복원할 수 있습니다.</p>
             </div>
