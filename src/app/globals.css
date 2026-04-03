@@ -1257,11 +1257,11 @@ a {
 }
 
 .tableWrapWide .lessonTableCards {
-  min-width: 1540px;
+  min-width: 1420px;
 }
 
 .cardColumnCell {
-  min-width: 230px;
+  min-width: 190px;
   background: rgba(248, 251, 255, 0.7);
 }
 
@@ -5539,7 +5539,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .cardColumnCell {
-  min-width: 170px;
+  min-width: 150px;
 }
 
 .designStudioPage .tablePlacedCard {
@@ -5627,8 +5627,8 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .cardLibraryBottomGrid {
-  grid-template-columns: repeat(5, minmax(220px, 1fr));
-  min-width: 1220px;
+  grid-template-columns: repeat(5, minmax(190px, 1fr));
+  min-width: 1080px;
   gap: 16px;
   align-items: start;
 }
