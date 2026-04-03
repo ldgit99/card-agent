@@ -5229,7 +5229,6 @@ body:has(.designStudioPage) {
 
 .designStudioPage .heroPanel h1 {
   margin: 0;
-  max-width: 11ch;
   color: #101828;
   font-size: clamp(2.4rem, 4vw, 4.3rem);
   line-height: 1.03;
@@ -5532,6 +5531,8 @@ body:has(.designStudioPage) {
 .designStudioPage .promptCardButton {
   border-radius: 14px;
   background: linear-gradient(135deg, #4f6ff5, #6580f6);
+  color: #ffffff;
+  font-weight: 800;
 }
 
 .designStudioPage .tableDropList {
@@ -5621,8 +5622,14 @@ body:has(.designStudioPage) {
   gap: 20px;
 }
 
+.designStudioPage .designLibraryPanel {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
 .designStudioPage .cardLibraryBottomGrid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
+  min-width: 1220px;
   gap: 16px;
   align-items: start;
 }

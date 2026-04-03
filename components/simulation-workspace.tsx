@@ -608,11 +608,6 @@ export function SimulationWorkspace() {
                 자연스러운 수업 이야기, Human-AI 에이전시 관점의 문제점, 활동별 분석과 성찰을 한 화면에서 나란히 비교합니다.
               </p>
             </div>
-            <div className="heroStatRack">
-              <article className="heroStatCard"><span>활동 수</span><strong>{design.activities.length}</strong></article>
-              <article className="heroStatCard"><span>학생 페르소나</span><strong>{scenario?.studentPersonas.length ?? 0}</strong></article>
-              <article className="heroStatCard"><span>위험</span><strong>{risks.length}</strong></article>
-            </div>
           </div>
         </div>
       </section>
