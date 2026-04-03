@@ -5208,10 +5208,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .designHeroMain {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.92fr);
-  gap: 22px;
-  align-items: stretch;
+  display: block;
 }
 
 .designStudioPage .designHeroCopyBlock {
@@ -5244,99 +5241,6 @@ body:has(.designStudioPage) {
   color: #667085;
   font-size: 1rem;
   line-height: 1.8;
-}
-
-.designStudioPage .designHeroAside {
-  display: grid;
-  gap: 14px;
-}
-
-.designStudioPage .designHeroStats {
-  width: 100%;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.designStudioPage .heroStatCard {
-  padding: 16px 18px;
-  border: 1px solid #e4e7ec;
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-}
-
-.designStudioPage .heroStatCard span {
-  color: #667085;
-}
-
-.designStudioPage .heroStatCard strong {
-  color: #101828;
-  font-size: clamp(1.8rem, 2.4vw, 2.35rem);
-}
-
-.designStudioPage .designHeroSpotlight {
-  display: grid;
-  gap: 12px;
-  padding: 18px;
-  border: 1px solid #dbe4ff;
-  border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(246, 248, 255, 0.98), rgba(255, 255, 255, 0.98)),
-    #ffffff;
-  color: #101828;
-  box-shadow: 0 12px 24px rgba(79, 111, 245, 0.08);
-}
-
-.designStudioPage .designHeroSpotlightHeader,
-.designStudioPage .designHeroStatusRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.designStudioPage .designHeroSpotlightPill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #4263eb;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.designStudioPage .designHeroSpotlight strong {
-  font-size: 1.3rem;
-  line-height: 1.35;
-  color: #101828;
-}
-
-.designStudioPage .designHeroSpotlight p,
-.designStudioPage .designHeroStatusRow span {
-  margin: 0;
-  color: #667085;
-}
-
-.designStudioPage .designHeroStatusRow {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.designStudioPage .designHeroStatusRow div {
-  display: grid;
-  gap: 4px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid #e4e7ec;
-}
-
-.designStudioPage .designHeroStatusRow strong {
-  font-size: 0.94rem;
-  line-height: 1.5;
 }
 
 .designStudioPage .designPageSections {
@@ -5892,8 +5796,6 @@ body:has(.designStudioPage) {
     padding: 12px 14px;
   }
 
-  .designStudioPage .heroStatCard,
-  .designStudioPage .designHeroSpotlight,
   .designStudioPage .libraryColumn,
   .designStudioPage .historyCard,
   .designStudioPage .statusBarFull > div {

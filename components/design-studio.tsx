@@ -693,15 +693,6 @@ export function DesignStudio() {
 
   const latestSavedAt = designHistory[0]?.updatedAt ?? lastServerSyncAt;
 
-  const totalHumanAssignments = design.activities.reduce(
-    (count, activity) => count + activity.humanCardIds.length,
-    0,
-  );
-  const totalAiAssignments = design.activities.reduce(
-    (count, activity) => count + activity.aiCardIds.length,
-    0,
-  );
-
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <main className="appShell designStudioPage">
@@ -731,43 +722,6 @@ export function DesignStudio() {
                   주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 개입과 AI 역할을 배치합니다.
                   카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
                 </p>
-              </div>
-              <div className="designHeroAside">
-                <div className="heroStatRack designHeroStats">
-                  <article className="heroStatCard">
-                  <span>설계 활동</span>
-                  <strong>{design.activities.length}</strong>
-                </article>
-                  <article className="heroStatCard">
-                  <span>교사 개입 배치</span>
-                  <strong>{totalHumanAssignments}</strong>
-                </article>
-                  <article className="heroStatCard">
-                  <span>AI 역할 배치</span>
-                  <strong>{totalAiAssignments}</strong>
-                  </article>
-                </div>
-                <aside className="designHeroSpotlight">
-                  <div className="designHeroSpotlightHeader">
-                    <p className="sectionMicroTag">현재 초점</p>
-                    <span className="designHeroSpotlightPill">설계 플래너</span>
-                  </div>
-                  <strong>{selectedActivity?.functionLabel || design.meta.topic || "현재 수업 초점"}</strong>
-                  <p>
-                    {selectedActivity?.learningActivity ||
-                      "??? ??? ?? ????. ??? ??? ?? ??, AI ??, ?? ??? ?? ??? ??? ?????."}
-                  </p>
-                  <div className="designHeroStatusRow">
-                    <div>
-                      <span>?? ???</span>
-                      <strong>{formatSyncTime(latestSavedAt)}</strong>
-                    </div>
-                    <div>
-                      <span>??</span>
-                      <strong>{statusMessage || "???"}</strong>
-                    </div>
-                  </div>
-                </aside>
               </div>
             </div>
           </div>
