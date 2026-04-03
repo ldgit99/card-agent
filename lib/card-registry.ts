@@ -6,8 +6,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CF01",
     actor: "teacher",
     libraryGroup: "function",
-    category: "사용자 정의",
-    title: "기능카드 사용자 정의 1",
+    category: "??? ??",
+    title: "???? ??? ?? 1",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -16,8 +16,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CF02",
     actor: "teacher",
     libraryGroup: "function",
-    category: "사용자 정의",
-    title: "기능카드 사용자 정의 2",
+    category: "??? ??",
+    title: "???? ??? ?? 2",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -26,8 +26,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CF03",
     actor: "teacher",
     libraryGroup: "function",
-    category: "사용자 정의",
-    title: "기능카드 사용자 정의 3",
+    category: "??? ??",
+    title: "???? ??? ?? 3",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -36,8 +36,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CE01",
     actor: "ai",
     libraryGroup: "ai_edutech",
-    category: "사용자 정의",
-    title: "AI에듀테크 사용자 정의 1",
+    category: "??? ??",
+    title: "AI???? ??? ?? 1",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -46,8 +46,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CE02",
     actor: "ai",
     libraryGroup: "ai_edutech",
-    category: "사용자 정의",
-    title: "AI에듀테크 사용자 정의 2",
+    category: "??? ??",
+    title: "AI???? ??? ?? 2",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -56,8 +56,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CE03",
     actor: "ai",
     libraryGroup: "ai_edutech",
-    category: "사용자 정의",
-    title: "AI에듀테크 사용자 정의 3",
+    category: "??? ??",
+    title: "AI???? ??? ?? 3",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -66,8 +66,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CA01",
     actor: "teacher",
     libraryGroup: "assessment",
-    category: "사용자 정의",
-    title: "평가카드 사용자 정의 1",
+    category: "??? ??",
+    title: "???? ??? ?? 1",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -76,8 +76,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CA02",
     actor: "teacher",
     libraryGroup: "assessment",
-    category: "사용자 정의",
-    title: "평가카드 사용자 정의 2",
+    category: "??? ??",
+    title: "???? ??? ?? 2",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -86,8 +86,8 @@ const customCardSeeds: OrchestrationCard[] = [
     id: "CA03",
     actor: "teacher",
     libraryGroup: "assessment",
-    category: "사용자 정의",
-    title: "평가카드 사용자 정의 3",
+    category: "??? ??",
+    title: "???? ??? ?? 3",
     prompt: "",
     intent: "",
     isCustom: true,
@@ -158,6 +158,11 @@ function cloneCard(card: OrchestrationCard): OrchestrationCard {
   return { ...card };
 }
 
+function isBrokenSeedText(value?: string | null) {
+  if (!value) return true;
+  return /\?{2,}/.test(value);
+}
+
 export function ensureCustomCards(cards?: OrchestrationCard[]): OrchestrationCard[] {
   const existing = cards ?? [];
   const merged = customCardSeeds.map((seed) => {
@@ -170,7 +175,8 @@ export function ensureCustomCards(cards?: OrchestrationCard[]): OrchestrationCar
           actor: seed.actor,
           libraryGroup: seed.libraryGroup,
           isCustom: true,
-          category: found.category?.trim() || seed.category,
+          category: !isBrokenSeedText(found.category?.trim()) ? found.category!.trim() : seed.category,
+          title: !isBrokenSeedText(found.title?.trim()) ? found.title!.trim() : seed.title,
         }
       : cloneCard(seed);
   });
