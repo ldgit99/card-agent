@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: light;
   --bg-top: #f7f9fc;
   --bg-bottom: #eef4ff;
@@ -52,6 +52,77 @@ body {
   font-family: var(--font-body);
   background: none;
   overflow-x: hidden;
+}
+.unlockShell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+}
+
+.unlockCard {
+  width: min(520px, 100%);
+  padding: 32px 30px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  box-shadow: var(--shadow-xl);
+}
+
+.unlockCard h1 {
+  margin: 14px 0 12px;
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+}
+
+.unlockDescription {
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+
+.unlockForm {
+  display: grid;
+  gap: 12px;
+}
+
+.fieldLabel {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.textInput {
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.textInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(21, 93, 252, 0.08);
+  outline: none;
+}
+
+.unlockSubmit {
+  width: 100%;
+  justify-content: center;
+}
+
+.formError {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(228, 0, 20, 0.16);
+  background: rgba(228, 0, 20, 0.06);
+  color: #9f1239;
+  font-weight: 600;
 }
 
 a {
@@ -1981,7 +2052,7 @@ a {
   display: flex;
 }
 
-/* ─── Report: Redesigned compact layout ──────────────────────────── */
+/* ??? Report: Redesigned compact layout ???????????????????????????? */
 
 .reportSectionTitle {
   margin: 0 0 16px;
@@ -1992,7 +2063,7 @@ a {
   color: var(--accent-strong);
 }
 
-/* Section ① Overview */
+/* Section ??Overview */
 .reportOverviewCard {
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
@@ -2139,7 +2210,7 @@ a {
   margin-top: 4px;
 }
 
-/* Section ② Scene cards */
+/* Section ??Scene cards */
 .reportSceneCard {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -2273,7 +2344,7 @@ a {
   font-size: 0.9rem;
 }
 
-/* Section ③ Risk groups */
+/* Section ??Risk groups */
 .reportRiskGroup {
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -2337,7 +2408,7 @@ a {
   color: var(--muted);
 }
 
-/* Section ④ Reflection */
+/* Section ??Reflection */
 .reportReflectionCard {
   padding: 18px;
   border-radius: var(--radius-lg);
@@ -3885,7 +3956,7 @@ body {
   }
 }
 
-/* ─── Simulation Step Indicator ─────────────────────────────────── */
+/* ??? Simulation Step Indicator ??????????????????????????????????? */
 
 .simStepIndicator {
   display: flex;
@@ -3971,7 +4042,7 @@ body {
   animation: simSpin 0.7s linear infinite;
 }
 
-/* ─── History Tab Bar ─────────────────────────────────────────────── */
+/* ??? History Tab Bar ??????????????????????????????????????????????? */
 
 .historyTabBar {
   display: flex;
@@ -4042,7 +4113,7 @@ body {
   outline: none;
 }
 
-/* ─── Report TOC ──────────────────────────────────────────────────── */
+/* ??? Report TOC ???????????????????????????????????????????????????? */
 
 .reportToc {
   position: fixed;
@@ -4104,7 +4175,7 @@ body {
   }
 }
 
-/* ─── Topbar status ───────────────────────────────────────────────── */
+/* ??? Topbar status ????????????????????????????????????????????????? */
 
 .workspaceNavLink[disabled],
 .workspaceNavLink[aria-disabled="true"] {
@@ -4942,7 +5013,7 @@ body {
   color: #475467;
 }
 
-/* grid-column: 2 removed — appShell/reportShell are now flex-column */
+/* grid-column: 2 removed ??appShell/reportShell are now flex-column */
 
 .panel,
 .statusBarFull,
@@ -7209,3 +7280,4 @@ body:has(.reportPage) {
     text-decoration: none !important;
   }
 }
+
