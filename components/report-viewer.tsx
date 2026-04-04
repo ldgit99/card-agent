@@ -60,8 +60,7 @@ async function downloadPdf(report: SimulationReportSnapshot, rootElement: HTMLEl
   const pageHeight = pdf.internal.pageSize.getHeight();
   const printableWidth = pageWidth - PDF_MARGIN_MM * 2;
   const printableHeight = pageHeight - PDF_MARGIN_MM * 2;
-  const captureTargets = Array.from(rootElement.querySelectorAll<HTMLElement>("[data-report-section]"));
-  const sections = captureTargets.length ? captureTargets : [rootElement];
+  const sections = [rootElement];
 
   for (let index = 0; index < sections.length; index += 1) {
     const section = sections[index];

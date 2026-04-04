@@ -395,6 +395,7 @@ export function DesignStudio() {
   const [designHistory, setDesignHistory] = useState<LessonDesign[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
   const [pickerState, setPickerState] = useState<{ activityId: string; group: CardLibraryGroup } | null>(null);
+  const [showVersionPicker, setShowVersionPicker] = useState(false);
   const availableCards = useMemo(() => getAvailableCards(design.customCards), [design.customCards]);
   const libraryCardsByGroup = useMemo(
     () =>
@@ -775,8 +776,8 @@ export function DesignStudio() {
                   <button type="button" className="primaryButton" onClick={persistDesign}>
                     {isSyncingWorkspace ? "저장 중..." : "설계 저장"}
                   </button>
-                  <button type="button" className="ghostButton" onClick={reloadFromServer}>
-                    최신 저장본 불러오기
+                  <button type="button" className="ghostButton" onClick={() => { void reloadFromServer(); setShowVersionPicker(true); }}>
+                    저장본 불러오기
                   </button>
                 </>
               }
@@ -1176,34 +1177,6 @@ export function DesignStudio() {
             </div>
           </section>
 
-          <section className="panel designPanel designHistoryPanel">
-            <div className="panelHeader">
-              <div>
-                                <h2>저장된 버전</h2>
-              </div>
-              <p className="panelHint">브라우저 또는 서버에 저장된 버전을 작업 화면으로 복원할 수 있습니다.</p>
-            </div>
-            {designHistory.length ? (
-              <div className="historyList">
-                {designHistory.map((historyItem) => (
-                  <article key={`${historyItem.id}-${historyItem.version}`} className="historyCard">
-                    <div className="historyCardBody">
-                      <strong>{formatDesignLabel(historyItem)}</strong>
-                      <p>
-                        활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개
-                      </p>
-                      <span>{formatSyncTime(historyItem.updatedAt)}</span>
-                    </div>
-                    <button type="button" className="tableActionButton" onClick={() => loadDesignVersion(historyItem)}>
-                      이 버전 불러오기
-                    </button>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="emptyPanelText">아직 저장된 설계 버전이 없습니다.</p>
-            )}
-          </section>
         </section>
 
         <footer className="statusBar statusBarFull">
@@ -1225,6 +1198,38 @@ export function DesignStudio() {
           </div>
         </footer>
       </main>
+      {showVersionPicker && (
+        <div className="versionPickerOverlay" onClick={() => setShowVersionPicker(false)}>
+          <div className="versionPickerModal" onClick={(e) => e.stopPropagation()}>
+            <div className="versionPickerHeader">
+              <h2>저장된 버전</h2>
+              <button type="button" className="iconButton" onClick={() => setShowVersionPicker(false)} aria-label="닫기">✕</button>
+            </div>
+            {designHistory.length ? (
+              <div className="versionPickerList">
+                {designHistory.map((historyItem) => (
+                  <article key={`${historyItem.id}-${historyItem.version}`} className="versionPickerItem">
+                    <div className="versionPickerItemBody">
+                      <strong>{formatDesignLabel(historyItem)}</strong>
+                      <p>활동 {historyItem.activities.length}개 · 카드 배치 {historyItem.placements.length}개</p>
+                      <span>{formatSyncTime(historyItem.updatedAt)}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="primaryButton"
+                      onClick={() => { loadDesignVersion(historyItem); setShowVersionPicker(false); }}
+                    >
+                      불러오기
+                    </button>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="emptyPanelText">아직 저장된 설계 버전이 없습니다.</p>
+            )}
+          </div>
+        </div>
+      )}
       {pickerState && (() => {
         const pickerActivity = design.activities.find((a) => a.id === pickerState.activityId) ?? null;
         const col = libraryColumns.find((c) => c.group === pickerState.group);

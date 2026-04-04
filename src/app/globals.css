@@ -5923,6 +5923,8 @@ body:has(.designStudioPage) {
 .designStudioPage .ghostButton,
 .designStudioPage .tableActionButton,
 .designStudioPage .iconButton {
+  min-height: 52px;
+  padding: 0 18px;
   border-radius: 16px;
 }
 
@@ -7336,5 +7338,89 @@ body:has(.reportPage) {
   .workspaceTopbar {
     --workspace-topbar-button-height: 62px;
   }
+}
+
+/* Version picker modal */
+.versionPickerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.versionPickerModal {
+  width: min(560px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xl);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+}
+
+.versionPickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.versionPickerHeader h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.versionPickerList {
+  overflow-y: auto;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.versionPickerItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.versionPickerItem:hover {
+  border-color: var(--line-strong);
+  background: #fff;
+}
+
+.versionPickerItemBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.versionPickerItemBody strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.versionPickerItemBody p {
+  margin: 2px 0 0;
+  font-size: 0.83rem;
+  color: var(--muted);
+}
+
+.versionPickerItemBody span {
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
