@@ -208,7 +208,7 @@ export function ReportViewer() {
         <section id="section-design" className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
-              <h2>수업 설계 내용</h2>
+              <h2><span className="reportSectionCircle">①</span>수업 설계 내용</h2>
             </div>
           </div>
           <div className="reportGrid reportGridTwo">
@@ -225,8 +225,8 @@ export function ReportViewer() {
             <article className="reportCard">
               <h3>수업 정보</h3>
               <ul className="reportInfoList">
-                <li><span className="reportInfoCircle">①</span><span className="reportInfoLabel">교과</span>{report.design.meta.subject || "-"}</li>
-                <li><span className="reportInfoCircle">②</span><span className="reportInfoLabel">대상</span>{report.design.meta.target || "-"}</li>
+                <li><span className="reportInfoLabel">교과</span>{report.design.meta.subject || "-"}</li>
+                <li><span className="reportInfoLabel">대상</span>{report.design.meta.target || "-"}</li>
               </ul>
             </article>
           </div>
