@@ -4955,25 +4955,29 @@ body {
 
 /* heroPanel: flat topbar layout */
 .heroPanel {
-  padding: 14px 18px 10px;
+  padding: 10px 16px;
 }
 
 .heroPanelStack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .heroPanelMain {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   min-width: 0;
 }
 
+.heroPanel .heroCopy {
+  display: none;
+}
+
 .heroPanel h1 {
-  margin: 4px 0 6px;
-  font-size: clamp(1.9rem, 2.8vw, 3rem);
-  line-height: 1.1;
+  margin: 2px 0 0;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.2;
 }
 
 .heroCopy {
@@ -5230,7 +5234,7 @@ body:has(.designStudioPage) {
 .designStudioPage .heroPanel h1 {
   margin: 0;
   color: #101828;
-  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   line-height: 1.03;
 }
 
@@ -6010,7 +6014,7 @@ body:has(.designStudioPage) {
 
   .designStudioPage .heroPanel h1 {
     max-width: none;
-    font-size: clamp(1.4rem, 6vw, 1.9rem);
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
   }
 
   .designStudioPage .workspaceNavLink {
@@ -6224,7 +6228,7 @@ body:has(.reportPage) {
 .reportPage .heroPanel h1 {
   margin: 0;
   color: #101828;
-  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   line-height: 1.03;
 }
 
@@ -6387,7 +6391,7 @@ body:has(.reportPage) {
 
   .simulationPage .heroPanel h1,
   .reportPage .heroPanel h1 {
-    font-size: clamp(1.4rem, 6vw, 1.9rem);
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
   }
 
   .simulationPage .workspaceNavLink,
