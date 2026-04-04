@@ -686,55 +686,28 @@ export function SimulationWorkspace() {
           </div>
           <p className="panelHint">{message}</p>
         </div>
-        <div className="tableStageBar simulationStageBar">
-          <article className="stageChip"><span>현재 세션</span><strong>{simulationRunId ? simulationRunId.slice(0, 8) : "실행 전"}</strong></article>
-          <article className="stageChip"><span>분석 엔진</span><strong>{analysis?.engine ?? "대기 중"}</strong></article>
-          <article className="stageChip"><span>마지막 서버 동기화</span><strong>{formatSyncTime(lastServerSyncAt)}</strong></article>
-        </div>
         <div className="simulationOverviewGrid">
           <article className="detailSection detailSectionSoft">
             <div className="detailSectionHeader">
               <div>
-                <p className="sectionMicroTag">Lesson Snapshot</p>
                 <h3>수업 설계 요약</h3>
               </div>
-                            <span className="engineBadge">v{design.version}</span>
             </div>
-            <div className="snapshotList snapshotListStacked">
-              <div className="snapshotBlock">
-                <strong>주제</strong>
-                <span className="snapshotBlockValue">{design.meta.topic || "-"}</span>
-              </div>
-              <div className="snapshotBlock">
-                <strong>교과</strong>
-                <span className="snapshotBlockValue">{design.meta.subject || "-"}</span>
-              </div>
-              <div className="snapshotBlock">
-                <strong>대상</strong>
-                <span className="snapshotBlockValue">{design.meta.target || "-"}</span>
-              </div>
-              <div className="snapshotBlock">
+            <div className="snapshotMetaRow">
+              <span><strong>주제</strong>{design.meta.topic || "-"}</span>
+              <span><strong>교과</strong>{design.meta.subject || "-"}</span>
+              <span><strong>대상</strong>{design.meta.target || "-"}</span>
+            </div>
+            {design.learningGoals.length > 0 && (
+              <div className="snapshotBlock" style={{ marginTop: 10 }}>
                 <strong>학습 목표</strong>
-                <span className="snapshotBlockValue">
-                  {design.learningGoals.length
-                    ? design.learningGoals.join("\n")
-                    : "아직 입력된 학습 목표가 없습니다."}
-                </span>
+                <span className="snapshotBlockValue">{design.learningGoals.join(" · ")}</span>
               </div>
-              <div className="snapshotBlock">
-                <strong>주요 활동</strong>
-                <span className="snapshotBlockValue">
-                  {majorActivities.length
-                    ? majorActivities.join("\n")
-                    : "아직 입력된 활동이 없습니다."}
-                </span>
-              </div>
-            </div>
+            )}
           </article>
           <article className="detailSection detailSectionSoft">
             <div className="detailSectionHeader">
               <div>
-                <p className="sectionMicroTag">Storyline</p>
                 <h3>수업 배경과 관찰 포인트</h3>
               </div>
             </div>
@@ -747,15 +720,14 @@ export function SimulationWorkspace() {
           <article className="detailSection detailSectionSoft">
             <div className="detailSectionHeader">
               <div>
-                <p className="sectionMicroTag">Analysis</p>
-                <h3>설계 분석과 위험 분포</h3>
+                <h3>위험 분석 요약</h3>
               </div>
             </div>
             <p className="overviewLead">{analysis?.summary ?? "설계 분석은 모의 수업 실행 뒤 생성됩니다."}</p>
             <div className="riskSummaryGrid">
-              <article className="riskSummaryCard riskSummaryCard-high"><span>High</span><strong>{highRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-medium"><span>Medium</span><strong>{mediumRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-low"><span>Low</span><strong>{lowRiskCount}</strong></article>
+              <article className="riskSummaryCard riskSummaryCard-high"><span>높음</span><strong>{highRiskCount}</strong></article>
+              <article className="riskSummaryCard riskSummaryCard-medium"><span>중간</span><strong>{mediumRiskCount}</strong></article>
+              <article className="riskSummaryCard riskSummaryCard-low"><span>낮음</span><strong>{lowRiskCount}</strong></article>
             </div>
           </article>
         </div>
@@ -788,16 +760,13 @@ export function SimulationWorkspace() {
           <div className="simulationTriBoard">
             <div className="triBoardHeader">
               <div className="triBoardHeadCell">
-                <p className="sectionMicroTag">Lesson Story</p>
                 <h3>모의 수업 실행 결과</h3>
               </div>
               <div className="triBoardHeadCell">
-                <p className="sectionMicroTag">Agency Issues</p>
-                <h3>Human-AI 에이전시 관점 문제점</h3>
+                <h3>문제점과 위험 신호</h3>
               </div>
               <div className="triBoardHeadCell">
-                <p className="sectionMicroTag">Analysis & Reflection</p>
-                <h3>분석 및 성찰 쓰기</h3>
+                <h3>성찰 쓰기</h3>
               </div>
             </div>
 
@@ -814,10 +783,9 @@ export function SimulationWorkspace() {
                 <section className="triColumn triColumn-story">
                   <div className="triColumnHeader">
                     <div className="timelineTitleBlock">
-                      <span className="scenarioEpisodeIndex">Activity {turn.turnIndex}</span>
+                      <span className="scenarioEpisodeIndex">활동 {turn.turnIndex}</span>
                       {episode ? <span className="scenarioLensBadge">{episode.lens}</span> : null}
                     </div>
-                    <span className="engineBadge">{turn.engine}</span>
                   </div>
                   <h3>{turn.activityTitle}</h3>
                   <p className="storyLead">{episode?.narrative ?? turn.expectedStudentResponse}</p>
@@ -860,7 +828,6 @@ export function SimulationWorkspace() {
                 <section className="triColumn triColumn-issues">
                   <div className="triColumnHeader">
                     <div>
-                      <p className="sectionMicroTag">Issue Reading</p>
                       <h3>문제점과 위험 신호</h3>
                     </div>
                   </div>
@@ -912,52 +879,13 @@ export function SimulationWorkspace() {
                   ) : (
                     <p className="emptyPanelText">이 활동에서는 큰 위험보다 안정적으로 유지할 설계 포인트가 더 두드러집니다.</p>
                   )}
-                  {turn.cardOutcomeLinks.length ? (
-                    <section className="detailSection detailSectionSoft compactTraceSection">
-                      <div className="detailSectionHeader">
-                        <div>
-                          <p className="sectionMicroTag">Design Trace</p>
-                          <h3>설계와 실행의 연결</h3>
-                        </div>
-                      </div>
-                      <div className="compactTraceList">
-                        {turn.cardOutcomeLinks.slice(0, 3).map((link) => (
-                          <article key={`${turn.id}-${link.cardId}`} className="traceCard">
-                            <strong>{link.actor === "teacher" ? "교사 질문·행동" : "AI 질문·행동"} · {link.cardTitle}</strong>
-                            <p>{link.resultingChange}</p>
-                          </article>
-                        ))}
-                      </div>
-                    </section>
-                  ) : null}
                 </section>
 
                 <section className="triColumn triColumn-reflection">
                   <div className="triColumnHeader">
                     <div>
-                      <p className="sectionMicroTag">Evidence & Writing</p>
-                      <h3>분석 근거와 성찰 쓰기</h3>
+                      <h3>성찰 쓰기</h3>
                     </div>
-                  </div>
-                  <div className="reflectionEvidenceList">
-                    {(turn.sampleArtifacts ?? []).slice(0, 2).map((artifact) => (
-                      <article key={artifact.id} className={`artifactCard artifactCard-${artifact.quality} artifactCardCompact`}>
-                        <div className="artifactHead">
-                          <strong>{artifact.title}</strong>
-                          <span>{qualityLabel(artifact.quality)}</span>
-                        </div>
-                        <p>{artifact.content}</p>
-                        <small>{artifact.insight}</small>
-                      </article>
-                    ))}
-                    {(turn.teacherInterventions ?? []).slice(0, 2).map((item) => (
-                      <article key={item.id} className="interventionCard interventionCardCompact">
-                        <strong>{item.title}</strong>
-                        <span>{item.timing}</span>
-                        <p>{item.move}</p>
-                        <small>{item.expectedImpact}</small>
-                      </article>
-                    ))}
                   </div>
                   <div className="reflectionInlineList">
                     {linkedQuestions.length ? (
@@ -1071,10 +999,7 @@ export function SimulationWorkspace() {
       </section>
 
       <footer className="statusBar statusBarFull">
-        <div><strong>현재 세션</strong><span>{simulationRunId ?? "아직 실행 전"}</span></div>
-        <div><strong>실행 활동</strong><span>{simulationRows.length}개</span></div>
-        <div><strong>서버 저장 세션</strong><span>{designSessions.length}개</span></div>
-        <div><strong>상태 메시지</strong><span>{message}</span></div>
+        <div><strong>상태</strong><span>{message}</span></div>
       </footer>
     </main>
   );

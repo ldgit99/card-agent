@@ -4737,6 +4737,28 @@ body {
   white-space: pre-wrap;
   line-height: 1.7;
 }
+
+.snapshotMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 4px;
+}
+
+.snapshotMetaRow span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.snapshotMetaRow strong {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
 /* Shared page shell width */
 .appShell,
 .reportShell {
