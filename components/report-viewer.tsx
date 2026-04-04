@@ -295,7 +295,11 @@ export function ReportViewer() {
 
         {/* ② 활동별 수업 장면 */}
         <section id="section-simulation" className="reportSection" data-report-section>
-          <h2 className="reportSectionTitle">② 활동별 수업 장면</h2>
+          <div className="panelHeader">
+            <div>
+              <h2><span className="reportSectionCircle">②</span>활동별 수업 장면</h2>
+            </div>
+          </div>
 
           {report.turns.length ? (
             <div className="reportStack">
@@ -355,7 +359,11 @@ export function ReportViewer() {
 
         {/* ③ 위험 신호 */}
         <section id="section-risks" className="reportSection" data-report-section>
-          <h2 className="reportSectionTitle">③ 위험 신호</h2>
+          <div className="panelHeader">
+            <div>
+              <h2><span className="reportSectionCircle">③</span>위험 신호</h2>
+            </div>
+          </div>
 
           {report.risks.length ? (
             <div className="reportStack">
@@ -384,7 +392,11 @@ export function ReportViewer() {
 
         {/* ④ 교사 성찰 */}
         <section id="section-reflection" className="reportSection" data-report-section>
-          <h2 className="reportSectionTitle">④ 교사 성찰</h2>
+          <div className="panelHeader">
+            <div>
+              <h2><span className="reportSectionCircle">④</span>교사 성찰</h2>
+            </div>
+          </div>
 
           {report.summary ? (
             <div className="reportReflectionCard">
