@@ -34,11 +34,7 @@ function LockIcon() {
 
 function StatusIcon({ status }: { status: SectionStatus }) {
   if (status === "done") {
-    return (
-      <span className="workspaceNavStatusIcon workspaceNavStatusIcon-done" aria-label="완료">
-        ✓
-      </span>
-    );
+    return null;
   }
   if (status === "locked") {
     return (
