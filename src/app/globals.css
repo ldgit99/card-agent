@@ -1981,6 +1981,379 @@ a {
   display: flex;
 }
 
+/* ─── Report: Redesigned compact layout ──────────────────────────── */
+
+.reportSectionTitle {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+/* Section ① Overview */
+.reportOverviewCard {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.reportOverviewMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.reportMetaChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.reportMetaChipMuted {
+  background: #f4f4f5;
+  border-color: #e4e4e7;
+  color: var(--muted);
+}
+
+.reportOverviewGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 0;
+}
+
+.reportOverviewBlock {
+  padding: 20px;
+}
+
+.reportOverviewBlock:first-child {
+  border-right: 1px solid var(--line);
+}
+
+.reportBlockLabel {
+  margin: 0 0 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.reportGoalList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.reportGoalList li {
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.reportMutedText {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.reportActivityFlow {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.reportActivityFlowItem {
+  display: grid;
+  gap: 4px;
+}
+
+.reportActivityFlowLabel {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.reportActivityFlowDesc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.reportActivityFlowCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* Section ② Scene cards */
+.reportSceneCard {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.reportSceneHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--line);
+}
+
+.reportSceneIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.reportSceneTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.reportSceneBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 0;
+}
+
+.reportSceneCol {
+  padding: 16px 18px;
+}
+
+.reportSceneCol:first-child {
+  border-right: 1px solid var(--line);
+}
+
+.reportRoleBlock {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.reportRoleRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.reportRoleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.reportRoleBadge-teacher {
+  background: rgba(20, 71, 230, 0.08);
+  color: var(--teacher);
+}
+
+.reportRoleBadge-ai {
+  background: rgba(0, 163, 163, 0.1);
+  color: var(--ai);
+}
+
+.reportRoleRow p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.58;
+  color: var(--ink);
+}
+
+.reportCardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reportChip-teacher {
+  background: rgba(20, 71, 230, 0.07);
+  color: var(--teacher);
+}
+
+.reportChip-ai {
+  background: rgba(0, 163, 163, 0.08);
+  color: var(--ai);
+}
+
+.reportObserverNote {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  line-height: 1.62;
+  color: var(--ink);
+}
+
+.reportSignalChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(249, 156, 0, 0.1);
+  border: 1px solid rgba(249, 156, 0, 0.24);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.reportSignalIcon {
+  font-size: 0.9rem;
+}
+
+/* Section ③ Risk groups */
+.reportRiskGroup {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.reportRiskGroup-high {
+  border-left: 4px solid var(--risk-high);
+}
+
+.reportRiskGroup-medium {
+  border-left: 4px solid var(--risk-medium);
+}
+
+.reportRiskGroup-low {
+  border-left: 4px solid var(--risk-low);
+}
+
+.reportRiskGroupLabel {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.reportRiskGroupLabel-high {
+  background: rgba(254, 242, 242, 0.9);
+  color: var(--risk-high);
+}
+
+.reportRiskGroupLabel-medium {
+  background: rgba(255, 251, 235, 0.9);
+  color: #b45309;
+}
+
+.reportRiskGroupLabel-low {
+  background: rgba(239, 246, 255, 0.9);
+  color: var(--risk-low);
+}
+
+.reportRiskRow {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.reportRiskType {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.reportRiskIntervention {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.58;
+  color: var(--muted);
+}
+
+/* Section ④ Reflection */
+.reportReflectionCard {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: #f8fbff;
+}
+
+.reportReflectionText {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.reportReflectionQA {
+  display: grid;
+  gap: 8px;
+}
+
+.reportReflectionQ {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.reportRevisionList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.reportRevisionList li {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+@media (max-width: 780px) {
+  .reportOverviewGrid,
+  .reportSceneBody {
+    grid-template-columns: 1fr;
+  }
+
+  .reportOverviewBlock:first-child,
+  .reportSceneCol:first-child {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
 @media (max-width: 980px) {
   .reportToolbar,
   .reportToolbarActions {
@@ -6566,6 +6939,7 @@ body:has(.reportPage) {
 .reportPage .reportCard h3,
 .reportPage .reportEmptyState h1 {
   margin-top: 10px;
+  font-size: 1rem;
   color: #101828;
 }
 

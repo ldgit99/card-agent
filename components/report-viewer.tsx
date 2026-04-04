@@ -11,10 +11,10 @@ import type { OrchestrationCard } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
 
 const TOC_ITEMS = [
-  { id: "section-design", label: "① 수업 설계" },
-  { id: "section-simulation", label: "② 모의 수업" },
-  { id: "section-risks", label: "③ 위험 관찰" },
-  { id: "section-reflection", label: "④ 성찰 일지" },
+  { id: "section-design", label: "① 수업 개요" },
+  { id: "section-simulation", label: "② 활동별 수업 장면" },
+  { id: "section-risks", label: "③ 위험 신호" },
+  { id: "section-reflection", label: "④ 교사 성찰" },
 ];
 
 function ReportToc({ activeId }: { activeId: string }) {
@@ -125,6 +125,12 @@ async function downloadPdf(report: SimulationReportSnapshot, rootElement: HTMLEl
   pdf.save(`${sanitizeFilename(report.design.meta.topic || report.reportTitle)}-report.pdf`);
 }
 
+const SEVERITY_LABEL: Record<string, string> = {
+  high: "HIGH",
+  medium: "MEDIUM",
+  low: "LOW",
+};
+
 export function ReportViewer() {
   const [report, setReport] = useState<SimulationReportSnapshot | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
@@ -184,6 +190,10 @@ export function ReportViewer() {
     );
   }, [report]);
 
+  const highRisks = useMemo(() => report?.risks.filter((r) => r.severity === "high") ?? [], [report]);
+  const mediumRisks = useMemo(() => report?.risks.filter((r) => r.severity === "medium") ?? [], [report]);
+  const lowRisks = useMemo(() => report?.risks.filter((r) => r.severity === "low") ?? [], [report]);
+
   async function handleDownloadPdf() {
     if (!report || !reportDocumentRef.current || isDownloadingPdf) {
       return;
@@ -204,7 +214,6 @@ export function ReportViewer() {
     return (
       <main className="appShell reportPage">
         <section className="panel reportEmptyState">
-
           <h1>저장된 보고서가 없습니다.</h1>
           <p className="emptyPanelText">먼저 모의 수업 실행 및 성찰 화면에서 `리포트 저장하기`를 눌러 주세요.</p>
           <div className="heroActions">
@@ -240,7 +249,6 @@ export function ReportViewer() {
           />
           <div className="heroPanelMain">
             <div>
-
               <h1>{report.reportTitle}</h1>
               <p className="heroCopy">생성 시각: {formatDateTime(report.generatedAt)}</p>
             </div>
@@ -251,202 +259,108 @@ export function ReportViewer() {
       <ReportToc activeId={activeTocId} />
 
       <div ref={reportDocumentRef} className="reportDocument">
-        <section id="section-design" className="reportSection" data-report-section>
-          <div className="panelHeader">
-            <div>
 
-              <h2>수업 설계 내용</h2>
+        {/* ① 수업 개요 */}
+        <section id="section-design" className="reportSection" data-report-section>
+          <h2 className="reportSectionTitle">① 수업 개요</h2>
+
+          <div className="reportOverviewCard">
+            <div className="reportOverviewMeta">
+              <span className="reportMetaChip">{report.design.meta.subject || "교과 미입력"}</span>
+              <span className="reportMetaChip">{report.design.meta.target || "대상 미입력"}</span>
+              <span className="reportMetaChip reportMetaChipMuted">v{report.design.version}</span>
             </div>
-          </div>
-          <div className="reportGrid reportGridTwo">
-            <article className="reportCard">
-              <h3>학습 목표</h3>
-              <ul>
-                {report.design.learningGoals.length ? (
-                  report.design.learningGoals.map((item) => <li key={item}>{item}</li>)
-                ) : (
-                  <li>없음</li>
-                )}
-              </ul>
-            </article>
-            <article className="reportCard">
-              <h3>설계 정보</h3>
-              <ul>
-                <li>버전 {report.design.version}</li>
-                <li>생성 {formatDateTime(report.design.createdAt)}</li>
-                <li>수정 {formatDateTime(report.design.updatedAt)}</li>
-              </ul>
-            </article>
-          </div>
-          <div className="reportTableWrap">
-            <table className="lessonTable reportTable">
-              <thead>
-                <tr>
-                  <th>기능</th>
-                  <th>교과</th>
-                  <th>학습활동</th>
-                  <th>AI도구</th>
-                  <th>평가 방법</th>
-                  <th>교사 질문·행동</th>
-                  <th>AI 질문·행동</th>
-                </tr>
-              </thead>
-              <tbody>
-                {report.design.activities.map((activity) => {
-                  const cards = activityCards.get(activity.id) ?? { teacher: [], ai: [] };
-                  return (
-                    <tr key={activity.id}>
-                      <td>{activity.functionLabel || `활동 ${activity.order}`}</td>
-                      <td>{activity.subjectLabel || report.design.meta.subject || "-"}</td>
-                      <td>{activity.learningActivity || activity.title || "-"}</td>
-                      <td>
-                        <div className="reportChipWrap">
-                          {activity.tools.length ? (
-                            activity.tools.map((item) => (
-                              <span key={`${activity.id}-tool-${item}`} className="reportChip">
-                                {item}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="reportChip reportChipMuted">없음</span>
-                          )}
-                        </div>
-                      </td>
-                      <td>{activity.assessmentMethod || "-"}</td>
-                      <td>
-                        <div className="reportChipWrap">
-                          {cards.teacher.length ? (
-                            cards.teacher.map((item) => (
-                              <span key={`${activity.id}-${item}`} className="reportChip">
-                                {item}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="reportChip reportChipMuted">없음</span>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="reportChipWrap">
-                          {cards.ai.length ? (
-                            cards.ai.map((item) => (
-                              <span key={`${activity.id}-${item}`} className="reportChip">
-                                {item}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="reportChip reportChipMuted">없음</span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="reportOverviewGrid">
+              <div className="reportOverviewBlock">
+                <p className="reportBlockLabel">학습 목표</p>
+                <ul className="reportGoalList">
+                  {report.design.learningGoals.length ? (
+                    report.design.learningGoals.map((item) => <li key={item}>{item}</li>)
+                  ) : (
+                    <li className="reportMutedText">없음</li>
+                  )}
+                </ul>
+              </div>
+              <div className="reportOverviewBlock">
+                <p className="reportBlockLabel">활동 구성</p>
+                <ol className="reportActivityFlow">
+                  {report.design.activities.map((activity) => {
+                    const cards = activityCards.get(activity.id) ?? { teacher: [], ai: [] };
+                    return (
+                      <li key={activity.id} className="reportActivityFlowItem">
+                        <span className="reportActivityFlowLabel">{activity.functionLabel || `활동 ${activity.order}`}</span>
+                        <span className="reportActivityFlowDesc">{activity.learningActivity || activity.title || "-"}</span>
+                        {(cards.teacher.length > 0 || cards.ai.length > 0) && (
+                          <div className="reportActivityFlowCards">
+                            {cards.teacher.map((c) => (
+                              <span key={c} className="reportChip reportChip-teacher">교사 {c}</span>
+                            ))}
+                            {cards.ai.map((c) => (
+                              <span key={c} className="reportChip reportChip-ai">AI {c}</span>
+                            ))}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            </div>
           </div>
         </section>
 
+        {/* ② 활동별 수업 장면 */}
         <section id="section-simulation" className="reportSection" data-report-section>
-          <div className="panelHeader">
-            <div>
+          <h2 className="reportSectionTitle">② 활동별 수업 장면</h2>
 
-              <h2>모의 수업 실행 결과</h2>
-            </div>
-          </div>
           {report.turns.length ? (
             <div className="reportStack">
               {report.turns.map((turn) => {
                 const cards = activityCards.get(turn.activityId) ?? { teacher: [], ai: [] };
+                const topSignal = (turn.activityRiskSignals ?? [])[0];
 
                 return (
-                <article key={turn.id} className="reportCard">
-                  <div className="reportEpisodeHead">
-                    <span className="reportChip">{turn.turnIndex}차 활동</span>
-                    <span className="reportChip">{turn.engine}</span>
-                  </div>
-                  <h3>{turn.activityTitle}</h3>
-                  <ul className="reportDetailList">
-                    <li>
-                      <strong>교사 행동</strong>
-                      <span>{turn.teacherAction}</span>
-                    </li>
-                    <li>
-                      <strong>AI 행동</strong>
-                      <span>{turn.aiAction}</span>
-                    </li>
-                    <li>
-                      <strong>예상 학생 반응</strong>
-                      <span>{turn.expectedStudentResponse}</span>
-                    </li>
-                    <li>
-                      <strong>관찰 메모</strong>
-                      <span>{turn.observerNote}</span>
-                    </li>
-                    <li>
-                      <strong>놓치기 쉬운 지점</strong>
-                      <span>{turn.missedOpportunities.length ? turn.missedOpportunities.join(" / ") : "없음"}</span>
-                    </li>
-                    <li>
-                      <strong>연결된 질문·행동</strong>
-                      <span>{findCardTitles(turn.linkedCardIds, report.design.customCards).join(" / ") || "없음"}</span>
-                    </li>
-                    <li>
-                      <strong>설계된 교사 질문·행동</strong>
-                      <span>{cards.teacher.join(" / ") || "없음"}</span>
-                    </li>
-                    <li>
-                      <strong>설계된 AI 질문·행동</strong>
-                      <span>{cards.ai.join(" / ") || "없음"}</span>
-                    </li>
-                    <li>
-                      <strong>활동별 위험 신호</strong>
-                      <span>{(turn.activityRiskSignals ?? []).join(" / ") || "없음"}</span>
-                    </li>
-                  </ul>
-                  <div className="reportGrid reportGridTwo reportScenarioDetailGrid">
-                    <div className="reportMiniBlock">
-                      <strong>학생 페르소나 반응</strong>
-                      <ul>
-                        {(turn.studentPersonaResponses ?? []).map((item) => (
-                          <li key={`${turn.id}-${item.personaId}`}>
-                            {item.personaName}: {item.response}
-                          </li>
-                        ))}
-                      </ul>
+                  <article key={turn.id} className="reportSceneCard">
+                    <div className="reportSceneHead">
+                      <span className="reportSceneIndex">활동 {turn.turnIndex}</span>
+                      <h3 className="reportSceneTitle">{turn.activityTitle}</h3>
                     </div>
-                    <div className="reportMiniBlock">
-                      <strong>학생 산출물 예시</strong>
-                      <ul>
-                        {(turn.sampleArtifacts ?? []).map((artifact) => (
-                          <li key={artifact.id}>
-                            {artifact.title}: {artifact.content}
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="reportSceneBody">
+                      <div className="reportSceneCol">
+                        <p className="reportBlockLabel">교사 · AI 역할 분담</p>
+                        <div className="reportRoleBlock">
+                          <div className="reportRoleRow">
+                            <span className="reportRoleBadge reportRoleBadge-teacher">교사</span>
+                            <p>{turn.teacherAction}</p>
+                          </div>
+                          <div className="reportRoleRow">
+                            <span className="reportRoleBadge reportRoleBadge-ai">AI</span>
+                            <p>{turn.aiAction}</p>
+                          </div>
+                        </div>
+                        {(cards.teacher.length > 0 || cards.ai.length > 0) && (
+                          <div className="reportCardChips">
+                            {cards.teacher.map((c) => (
+                              <span key={c} className="reportChip reportChip-teacher">{c}</span>
+                            ))}
+                            {cards.ai.map((c) => (
+                              <span key={c} className="reportChip reportChip-ai">{c}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="reportSceneCol">
+                        <p className="reportBlockLabel">핵심 관찰 포인트</p>
+                        <p className="reportObserverNote">{turn.observerNote}</p>
+                        {topSignal && (
+                          <div className="reportSignalChip">
+                            <span className="reportSignalIcon">⚠</span>
+                            {topSignal}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="reportMiniBlock">
-                      <strong>교사 개입 추천</strong>
-                      <ul>
-                        {(turn.teacherInterventions ?? []).map((item) => (
-                          <li key={item.id}>
-                            {item.title}: {item.move}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="reportMiniBlock">
-                      <strong>질문·행동과 결과 연결</strong>
-                      <ul>
-                        {(turn.cardOutcomeLinks ?? []).map((item) => (
-                          <li key={`${turn.id}-${item.cardId}`}>
-                            {item.cardTitle}: {item.resultingChange}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </article>
+                  </article>
                 );
               })}
             </div>
@@ -455,71 +369,76 @@ export function ReportViewer() {
           )}
         </section>
 
+        {/* ③ 위험 신호 */}
         <section id="section-risks" className="reportSection" data-report-section>
-          <div className="panelHeader">
-            <div>
+          <h2 className="reportSectionTitle">③ 위험 신호</h2>
 
-              <h2>활동별 위험 관찰</h2>
-            </div>
-          </div>
           {report.risks.length ? (
             <div className="reportStack">
-              {report.risks.map((risk) => (
-                <article key={risk.id} className={`reportCard reportRiskCard reportRiskCard-${risk.severity}`}>
-                  <div className="reportEpisodeHead">
-                    <span className="reportChip">{riskLabels[risk.riskType]}</span>
-                    <span className="reportChip">{risk.severity}</span>
+              {[
+                { label: "HIGH", items: highRisks, cls: "high" },
+                { label: "MEDIUM", items: mediumRisks, cls: "medium" },
+                { label: "LOW", items: lowRisks, cls: "low" },
+              ]
+                .filter(({ items }) => items.length > 0)
+                .map(({ label, items, cls }) => (
+                  <div key={label} className={`reportRiskGroup reportRiskGroup-${cls}`}>
+                    <p className={`reportRiskGroupLabel reportRiskGroupLabel-${cls}`}>{SEVERITY_LABEL[cls] ?? label}</p>
+                    {items.map((risk) => (
+                      <div key={risk.id} className="reportRiskRow">
+                        <strong className="reportRiskType">{riskLabels[risk.riskType]}</strong>
+                        <p className="reportRiskIntervention">→ {risk.recommendedIntervention}</p>
+                      </div>
+                    ))}
                   </div>
-                  <p>{risk.rationale}</p>
-                  <div className="reportGrid reportGridTwo reportScenarioDetailGrid">
-                    <div className="reportMiniBlock">
-                      <strong>활동/초점</strong>
-                      <p>{`${risk.activityTitle || "공통 위험"} · ${risk.focusArea}`}</p>
-                    </div>
-                    <div className="reportMiniBlock">
-                      <strong>학생 영향</strong>
-                      <p>{risk.studentImpact}</p>
-                    </div>
-                    <div className="reportMiniBlock">
-                      <strong>관찰 신호</strong>
-                      <p>{(risk.watchSignals ?? []).join(" / ") || "없음"}</p>
-                    </div>
-                    <div className="reportMiniBlock">
-                      <strong>권장 개입</strong>
-                      <p>{risk.recommendedIntervention}</p>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                ))}
             </div>
           ) : (
             <p className="emptyPanelText">주요 위험이 없습니다.</p>
           )}
         </section>
 
+        {/* ④ 교사 성찰 */}
         <section id="section-reflection" className="reportSection" data-report-section>
-          <div className="panelHeader">
-            <div>
+          <h2 className="reportSectionTitle">④ 교사 성찰</h2>
 
-              <h2>성찰 일지</h2>
+          {report.summary ? (
+            <div className="reportReflectionCard">
+              <p className="reportBlockLabel">수업 총평</p>
+              <p className="reportReflectionText">{report.summary}</p>
             </div>
-          </div>
-          <div className="reportStack">
-            {report.questions.length ? (
-              report.questions.map((question) => (
-                <article key={question.id} className="reportCard">
-                  <h3>{question.prompt}</h3>
-                  <p className="panelHint">{question.rationale}</p>
-                  <div className="reportAnswerBlock">{report.answers[question.id] || "작성되지 않음"}</div>
-                </article>
-              ))
-            ) : (
-              <article className="reportCard">
-                <p>생성된 성찰 질문이 없습니다.</p>
-              </article>
-            )}
-          </div>
+          ) : null}
+
+          {report.questions.length ? (
+            <div className="reportStack">
+              {report.questions
+                .filter((q) => report.answers[q.id])
+                .map((question) => (
+                  <div key={question.id} className="reportReflectionQA">
+                    <p className="reportReflectionQ">{question.prompt}</p>
+                    <div className="reportAnswerBlock">{report.answers[question.id]}</div>
+                  </div>
+                ))}
+              {report.questions.every((q) => !report.answers[q.id]) && (
+                <p className="emptyPanelText">작성된 성찰 답변이 없습니다.</p>
+              )}
+            </div>
+          ) : (
+            <p className="emptyPanelText">생성된 성찰 질문이 없습니다.</p>
+          )}
+
+          {report.nextRevisionNotes?.length ? (
+            <div className="reportReflectionCard" style={{ marginTop: 16 }}>
+              <p className="reportBlockLabel">다음 수업에서 바꿀 것</p>
+              <ul className="reportRevisionList">
+                {report.nextRevisionNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </section>
+
       </div>
     </main>
   );
