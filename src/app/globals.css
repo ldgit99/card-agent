@@ -6800,11 +6800,7 @@ body:has(.reportPage) {
 
 .simulationPage .heroPanelMain,
 .reportPage .heroPanelMain {
-  gap: 14px;
-}
-
-.reportPage .heroPanelMain {
-  display: block;
+  display: none;
 }
 
 .simulationPage .primaryButton,
