@@ -849,7 +849,7 @@ export function DesignStudio() {
               <table className="lessonTable lessonTableCards">
                 <thead>
                   <tr>
-                    <th className="colFunction">Activity</th>
+                    <th className="colFunction">기능</th>
                     <th className="colSubject">교과</th>
                     <th className="colLearningActivity">학습활동</th>
                     <th className="colAiTools">AI에듀테크</th>

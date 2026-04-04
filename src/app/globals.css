@@ -5378,6 +5378,11 @@ body:has(.designStudioPage) {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
+.designStudioPage .tableWrapWide .lessonTableCards {
+  width: 100%;
+  min-width: 1480px;
+}
+
 .designStudioPage .lessonTable thead th {
   background: linear-gradient(180deg, #f8fafc, #f2f4f7);
   color: #475467;
@@ -5395,7 +5400,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTableCards .colLearningActivity {
-  width: 29%;
+  width: 24%;
 }
 
 .designStudioPage .lessonTableCards .colAiTools,
@@ -5431,7 +5436,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .lessonTableCards textarea {
-  min-width: 256px;
+  min-width: 220px;
   min-height: 136px;
 }
 
