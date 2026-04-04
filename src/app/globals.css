@@ -2523,13 +2523,13 @@ a {
 }
 
 .promptCard-library {
-  padding: 14px 14px 12px;
+  padding: 16px 18px 14px;
   min-height: 188px;
   cursor: grab;
 }
 
 .promptCard-compact {
-  padding: 12px 12px 10px;
+  padding: 14px 16px 12px;
   min-height: 122px;
 }
 
@@ -4955,7 +4955,7 @@ body {
 
 /* heroPanel: flat topbar layout */
 .heroPanel {
-  padding: 10px 16px;
+  padding: 10px 16px 8px;
 }
 
 .heroPanelStack {
@@ -4966,7 +4966,7 @@ body {
 
 .heroPanelMain {
   display: grid;
-  gap: 2px;
+  gap: 0;
   min-width: 0;
 }
 
@@ -5118,7 +5118,7 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .designHeroStack {
-  gap: 18px;
+  gap: 6px;
 }
 
 .designStudioPage .workspaceTopbar {
@@ -5213,6 +5213,8 @@ body:has(.designStudioPage) {
 
 .designStudioPage .designHeroMain {
   display: block;
+  margin: 0;
+  padding: 0;
 }
 
 .designStudioPage .designHeroCopyBlock {
