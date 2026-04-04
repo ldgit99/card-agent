@@ -602,7 +602,6 @@ export function SimulationWorkspace() {
           {runProgressLabel ? <p className="heroCopy simulationProgressCopy">{runProgressLabel}</p> : null}
           <div className="heroPanelMain">
             <div>
-              <p className="eyebrow">Simulation Workspace</p>
               <h1>모의수업 실행과 성찰</h1>
               <p className="heroCopy">
                 자연스러운 수업 이야기, Human-AI 에이전시 관점의 문제점, 활동별 분석과 성찰을 한 화면에서 나란히 비교합니다.
