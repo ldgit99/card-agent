@@ -4955,7 +4955,7 @@ body {
 
 /* heroPanel: flat topbar layout */
 .heroPanel {
-  padding: 14px 18px;
+  padding: 14px 18px 10px;
 }
 
 .heroPanelStack {
@@ -4966,12 +4966,12 @@ body {
 
 .heroPanelMain {
   display: grid;
-  gap: 14px;
+  gap: 6px;
   min-width: 0;
 }
 
 .heroPanel h1 {
-  margin: 8px 0 12px;
+  margin: 4px 0 6px;
   font-size: clamp(1.9rem, 2.8vw, 3rem);
   line-height: 1.1;
 }
