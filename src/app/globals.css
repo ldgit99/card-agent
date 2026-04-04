@@ -5934,18 +5934,21 @@ body:has(.designStudioPage) {
 }
 
 .designStudioPage .workspaceNavLink {
-  min-width: 170px;
-  min-height: 70px;
-  padding: 14px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 148px;
+  min-height: 58px;
+  padding: 10px 16px;
   border: 1px solid #d6ddeb;
-  border-radius: 18px;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
   color: #1f2937;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
+    transform 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .designStudioPage .workspaceNavLink:hover {
@@ -6936,18 +6939,21 @@ body:has(.reportPage) {
 
 .simulationPage .workspaceNavLink,
 .reportPage .workspaceNavLink {
-  min-width: 170px;
-  min-height: 70px;
-  padding: 14px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 148px;
+  min-height: 58px;
+  padding: 10px 16px;
   border: 1px solid #d6ddeb;
-  border-radius: 18px;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.98));
   color: #1f2937;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
+    transform 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .simulationPage .workspaceNavLink:hover,
@@ -7394,11 +7400,11 @@ body:has(.reportPage) {
 .designStudioPage .workspaceNavLink,
 .simulationPage .workspaceNavLink,
 .reportPage .workspaceNavLink {
-  min-width: 170px;
+  min-width: 148px;
 }
 
 .workspaceTopbar .workspaceNavStatusIcon {
-  margin-left: 0;
+  margin-left: auto;
 }
 
 @media (max-width: 640px) {
@@ -7409,7 +7415,7 @@ body:has(.reportPage) {
   }
 }
 .workspaceTopbar {
-  --workspace-topbar-button-height: 70px;
+  --workspace-topbar-button-height: 58px;
 }
 
 .workspaceTopbar .workspaceNavLink,
@@ -7516,5 +7522,102 @@ body:has(.reportPage) {
 .versionPickerItemBody span {
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* ── Workspace nav: step circle badge ──────────────────────────── */
+.workspaceNavStepCircle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: rgba(79, 111, 245, 0.1);
+  color: var(--accent);
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.workspaceNavLink-active .workspaceNavStepCircle {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+.workspaceNavLink-done:not(.workspaceNavLink-active) .workspaceNavStepCircle {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.workspaceNavLink-locked .workspaceNavStepCircle {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--muted);
+}
+
+/* ── Workspace nav: text ──────────────────────────────────────── */
+.designStudioPage .workspaceNavText,
+.simulationPage .workspaceNavText,
+.reportPage .workspaceNavText {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* ── Workspace nav: connector arrow ──────────────────────────── */
+.workspaceNavConnector {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--line-strong);
+  margin: 0 2px;
+  transition: color 140ms ease;
+}
+
+.workspaceNavConnector-done {
+  color: #22c55e;
+}
+
+/* ── Workspace nav: done state (green tint) ──────────────────── */
+.designStudioPage .workspaceNavLink-done:not(.workspaceNavLink-active),
+.simulationPage .workspaceNavLink-done:not(.workspaceNavLink-active),
+.reportPage .workspaceNavLink-done:not(.workspaceNavLink-active) {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #166534;
+}
+
+.designStudioPage .workspaceNavLink-done:not(.workspaceNavLink-active):hover,
+.simulationPage .workspaceNavLink-done:not(.workspaceNavLink-active):hover,
+.reportPage .workspaceNavLink-done:not(.workspaceNavLink-active):hover {
+  border-color: #22c55e;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.12);
+}
+
+/* ── Workspace nav: locked state (dimmed) ────────────────────── */
+.designStudioPage .workspaceNavLink-locked,
+.simulationPage .workspaceNavLink-locked,
+.reportPage .workspaceNavLink-locked {
+  opacity: 0.45;
+  background: rgba(248, 250, 252, 0.9);
+  border-color: #e2e8f0;
+}
+
+/* ── Workspace nav: lock icon ────────────────────────────────── */
+.workspaceNavLockIcon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.workspaceNavStatusIcon-locked {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.workspaceNavStatusIcon-done {
+  margin-left: auto;
+  color: #16a34a;
+  font-weight: 900;
+  font-size: 0.85rem;
 }
 

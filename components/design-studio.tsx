@@ -777,7 +777,7 @@ export function DesignStudio() {
                     {isSyncingWorkspace ? "저장 중..." : "설계 저장"}
                   </button>
                   <button type="button" className="ghostButton" onClick={() => { void reloadFromServer(); setShowVersionPicker(true); }}>
-                    저장본 불러오기
+                    불러오기
                   </button>
                 </>
               }
