@@ -759,9 +759,8 @@ export function DesignStudio() {
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <main className="appShell designStudioPage">
-        <section className="heroPanel designHeroPanel">
-          <div className="designHeroGlow" aria-hidden="true" />
-          <div className="heroPanelStack designHeroStack">
+        <section className="heroPanel">
+          <div className="heroPanelStack">
             <WorkspaceTopbar
               active="design"
               navigationHandlers={{ simulation: navigateToSimulation }}
@@ -777,8 +776,8 @@ export function DesignStudio() {
                 </>
               }
             />
-            <div className="heroPanelMain designHeroMain">
-              <div className="designHeroCopyBlock">
+            <div className="heroPanelMain">
+              <div>
                 <h1>AI 오케스트레이션 수업 설계</h1>
               </div>
             </div>
