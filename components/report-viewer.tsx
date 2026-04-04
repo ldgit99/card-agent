@@ -223,11 +223,10 @@ export function ReportViewer() {
               </ul>
             </article>
             <article className="reportCard">
-              <h3>설계 정보</h3>
-              <ul>
-                <li>버전 {report.design.version}</li>
-                <li>생성 {formatDateTime(report.design.createdAt)}</li>
-                <li>수정 {formatDateTime(report.design.updatedAt)}</li>
+              <h3>수업 정보</h3>
+              <ul className="reportInfoList">
+                <li><span className="reportInfoCircle">①</span><span className="reportInfoLabel">교과</span>{report.design.meta.subject || "-"}</li>
+                <li><span className="reportInfoCircle">②</span><span className="reportInfoLabel">대상</span>{report.design.meta.target || "-"}</li>
               </ul>
             </article>
           </div>
