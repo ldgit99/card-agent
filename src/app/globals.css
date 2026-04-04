@@ -1,37 +1,37 @@
 ﻿:root {
   color-scheme: light;
-  --bg-top: #f7f9fc;
-  --bg-bottom: #eef4ff;
+  --bg-top: #f8faff;
+  --bg-bottom: #f0f4ff;
   --surface: #ffffff;
   --surface-strong: #ffffff;
   --surface-soft: #f8fbff;
-  --line: #e4e4e7;
-  --line-strong: #cfd4dc;
-  --ink: #18181b;
-  --muted: #71717b;
-  --accent: #155dfc;
-  --accent-strong: #1447e6;
-  --accent-soft: rgba(21, 93, 252, 0.08);
-  --accent-soft-strong: rgba(21, 93, 252, 0.14);
-  --teacher: #1447e6;
-  --teacher-soft: rgba(21, 93, 252, 0.06);
-  --ai: #00a3a3;
-  --ai-soft: rgba(0, 163, 163, 0.08);
-  --risk-high: #e40014;
-  --risk-high-soft: rgba(228, 0, 20, 0.07);
-  --risk-medium: #f99c00;
-  --risk-medium-soft: rgba(249, 156, 0, 0.08);
-  --risk-low: #155dfc;
-  --risk-low-soft: rgba(21, 93, 252, 0.07);
-  --shadow-xl: 0 1px 3px rgba(60, 64, 67, 0.10), 0 4px 12px rgba(60, 64, 67, 0.07);
-  --shadow-lg: 0 1px 2px rgba(60, 64, 67, 0.12), 0 2px 6px rgba(60, 64, 67, 0.08);
-  --shadow-sm: 0 1px 2px rgba(60, 64, 67, 0.10);
+  --line: #e2e8f0;
+  --line-strong: #c8d0dc;
+  --ink: #111827;
+  --muted: #64748b;
+  --accent: #4f6ff5;
+  --accent-strong: #3d5ce8;
+  --accent-soft: rgba(79, 111, 245, 0.08);
+  --accent-soft-strong: rgba(79, 111, 245, 0.14);
+  --teacher: #4f6ff5;
+  --teacher-soft: rgba(79, 111, 245, 0.08);
+  --ai: #0891b2;
+  --ai-soft: rgba(8, 145, 178, 0.08);
+  --risk-high: #ef4444;
+  --risk-high-soft: rgba(239, 68, 68, 0.08);
+  --risk-medium: #f59e0b;
+  --risk-medium-soft: rgba(245, 158, 11, 0.08);
+  --risk-low: #3b82f6;
+  --risk-low-soft: rgba(59, 130, 246, 0.08);
+  --shadow-xl: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 1px 2px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --radius-xl: 24px;
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 10px;
-  --font-heading: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-heading: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
 * {
@@ -46,12 +46,14 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.65;
   color: var(--ink);
   font-family: var(--font-body);
   background: none;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .unlockShell {
   min-height: 100vh;
@@ -106,7 +108,7 @@ body {
 
 .textInput:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(21, 93, 252, 0.08);
+  box-shadow: 0 0 0 3px rgba(79, 111, 245, 0.15);
   outline: none;
 }
 
@@ -119,9 +121,9 @@ body {
   margin: 0 0 16px;
   padding: 12px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(228, 0, 20, 0.16);
-  background: rgba(228, 0, 20, 0.06);
-  color: #9f1239;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.06);
+  color: #b91c1c;
   font-weight: 600;
 }
 
@@ -143,7 +145,7 @@ button {
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.4;
 }
 
 input,
@@ -155,12 +157,12 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.18);
+  outline: 2px solid rgba(79, 111, 245, 0.5);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(79, 111, 245, 0.15);
 }
 
 .appShell {
@@ -174,8 +176,8 @@ a {
 .statusBar,
 .summaryCard {
   background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
   backdrop-filter: none;
 }
 
@@ -230,13 +232,13 @@ a {
   align-items: center;
   gap: 8px;
   margin: 0;
-  padding: 6px 11px;
+  padding: 5px 11px;
   border-radius: 999px;
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
-  font-size: 0.72rem;
+  background: rgba(79, 111, 245, 0.07);
+  border: 1px solid rgba(79, 111, 245, 0.18);
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--accent-strong);
 }
@@ -264,10 +266,11 @@ a {
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   transition:
-    box-shadow 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+    box-shadow 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
 }
 
 .primaryButton,
@@ -275,41 +278,60 @@ a {
 .ghostButton {
   min-height: 46px;
   padding: 11px 18px;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
 }
 
 .primaryButton {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #6580f6 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(21, 93, 252, 0.18);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(79, 111, 245, 0.22), 0 1px 2px rgba(79, 111, 245, 0.12);
 }
 
-.primaryButton:hover {
-  background: var(--accent-strong);
-  box-shadow: var(--shadow-lg);
+.primaryButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent-strong) 0%, #5470f0 100%);
+  box-shadow: 0 6px 20px rgba(79, 111, 245, 0.28), 0 2px 6px rgba(79, 111, 245, 0.14);
+  transform: translateY(-1px);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 2px 6px rgba(79, 111, 245, 0.18);
 }
 
 .secondaryButton {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.85);
   border-color: var(--line-strong);
   color: var(--ink);
+  backdrop-filter: blur(4px);
 }
 
 .ghostButton,
 .tableActionButton,
 .iconButton {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.75);
   border-color: var(--line);
   color: var(--ink);
+  backdrop-filter: blur(4px);
 }
 
-.secondaryButton:hover,
-.ghostButton:hover,
-.tableActionButton:hover,
-.iconButton:hover {
-  border-color: #93c5fd;
-  box-shadow: var(--shadow-sm);
+.secondaryButton:hover:not(:disabled),
+.ghostButton:hover:not(:disabled),
+.tableActionButton:hover:not(:disabled),
+.iconButton:hover:not(:disabled) {
+  border-color: rgba(79, 111, 245, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(79, 111, 245, 0.08);
+  transform: translateY(-1px);
+}
+
+.secondaryButton:active:not(:disabled),
+.ghostButton:active:not(:disabled),
+.tableActionButton:active:not(:disabled),
+.iconButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
 }
 
 .workspaceGrid {
@@ -363,9 +385,10 @@ a {
 }
 
 .panelHeader h2 {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  color: var(--ink);
 }
 
 .metaTable {
@@ -432,8 +455,8 @@ a {
 .lessonTable textarea:focus,
 .detailForm textarea:focus,
 .reflectionQuestionCard textarea:focus {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 111, 245, 0.15);
   outline: none;
 }
 
@@ -1328,8 +1351,8 @@ a {
 }
 
 .metaSupplementCard textarea:focus {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 111, 245, 0.15);
   outline: none;
 }
 
@@ -3962,49 +3985,61 @@ body {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 12px 0 8px;
+  padding: 10px 0 8px;
   overflow-x: auto;
 }
 
 .simStep {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  padding: 5px 13px 5px 8px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface-soft);
   flex-shrink: 0;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.simStep-done {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.simStep-active {
+  border-color: var(--accent);
+  background: rgba(79, 111, 245, 0.06);
+  box-shadow: 0 0 0 3px rgba(79, 111, 245, 0.12);
 }
 
 .simStepDot {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 0.8rem;
-  font-weight: 800;
-  border: 2px solid var(--line-strong);
-  background: #ffffff;
-  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--line-strong);
+  color: #fff;
   flex-shrink: 0;
-  transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+  transition: background 140ms ease;
 }
 
 .simStep-done .simStepDot {
-  background: #dcfce7;
-  border-color: #16a34a;
-  color: #16a34a;
+  background: #22c55e;
 }
 
 .simStep-active .simStepDot {
   background: var(--accent);
-  border-color: var(--accent);
-  color: #ffffff;
 }
 
 .simStepLabel {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .simStep-done .simStepLabel {
@@ -4013,19 +4048,18 @@ body {
 
 .simStep-active .simStepLabel {
   color: var(--accent-strong);
+  font-weight: 700;
 }
 
 .simStepLine {
-  width: 32px;
-  height: 2px;
-  border-radius: 2px;
+  width: 16px;
+  height: 1.5px;
   background: var(--line-strong);
-  margin: 0 4px;
   flex-shrink: 0;
 }
 
 .simStepLine-done {
-  background: #16a34a;
+  background: #22c55e;
 }
 
 @keyframes simSpin {
@@ -5934,9 +5968,15 @@ body:has(.designStudioPage) {
   box-shadow: 0 12px 24px rgba(79, 111, 245, 0.18);
 }
 
-.designStudioPage .primaryButton:hover {
-  border-color: #4060e7;
-  background: linear-gradient(135deg, #4060e7, #5c76ef);
+.designStudioPage .primaryButton:hover:not(:disabled) {
+  border-color: #3d5ce8;
+  background: linear-gradient(135deg, #3d5ce8, #5470f0);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79, 111, 245, 0.28);
+}
+
+.designStudioPage .primaryButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
 }
 
 .designStudioPage .ghostButton,
@@ -5944,16 +5984,26 @@ body:has(.designStudioPage) {
 .designStudioPage .tableActionButton,
 .designStudioPage .iconButton {
   border-color: #d6ddeb;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.88);
   color: #344054;
+  backdrop-filter: blur(4px);
 }
 
-.designStudioPage .ghostButton:hover,
-.designStudioPage .secondaryButton:hover,
-.designStudioPage .tableActionButton:hover,
-.designStudioPage .iconButton:hover {
-  border-color: #c1ccf5;
-  background: rgba(248, 250, 255, 1);
+.designStudioPage .ghostButton:hover:not(:disabled),
+.designStudioPage .secondaryButton:hover:not(:disabled),
+.designStudioPage .tableActionButton:hover:not(:disabled),
+.designStudioPage .iconButton:hover:not(:disabled) {
+  border-color: rgba(79, 111, 245, 0.3);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 8px rgba(79, 111, 245, 0.08);
+  transform: translateY(-1px);
+}
+
+.designStudioPage .ghostButton:active:not(:disabled),
+.designStudioPage .secondaryButton:active:not(:disabled),
+.designStudioPage .tableActionButton:active:not(:disabled),
+.designStudioPage .iconButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
 }
 
 .designStudioPage .designHeroMain {
@@ -6936,10 +6986,18 @@ body:has(.reportPage) {
   box-shadow: 0 12px 24px rgba(79, 111, 245, 0.18);
 }
 
-.simulationPage .primaryButton:hover,
-.reportPage .primaryButton:hover {
-  border-color: #4060e7;
-  background: linear-gradient(135deg, #4060e7, #5c76ef);
+.simulationPage .primaryButton:hover:not(:disabled),
+.reportPage .primaryButton:hover:not(:disabled) {
+  border-color: #3d5ce8;
+  background: linear-gradient(135deg, #3d5ce8, #5470f0);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79, 111, 245, 0.28);
+}
+
+.simulationPage .primaryButton:active:not(:disabled),
+.reportPage .primaryButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 4px 10px rgba(79, 111, 245, 0.18);
 }
 
 .simulationPage .ghostButton,
@@ -6951,20 +7009,34 @@ body:has(.reportPage) {
 .reportPage .tableActionButton,
 .reportPage .iconButton {
   border-color: #d6ddeb;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.88);
   color: #344054;
+  backdrop-filter: blur(4px);
 }
 
-.simulationPage .ghostButton:hover,
-.simulationPage .secondaryButton:hover,
-.simulationPage .tableActionButton:hover,
-.simulationPage .iconButton:hover,
-.reportPage .ghostButton:hover,
-.reportPage .secondaryButton:hover,
-.reportPage .tableActionButton:hover,
-.reportPage .iconButton:hover {
-  border-color: #c1ccf5;
-  background: rgba(248, 250, 255, 1);
+.simulationPage .ghostButton:hover:not(:disabled),
+.simulationPage .secondaryButton:hover:not(:disabled),
+.simulationPage .tableActionButton:hover:not(:disabled),
+.simulationPage .iconButton:hover:not(:disabled),
+.reportPage .ghostButton:hover:not(:disabled),
+.reportPage .secondaryButton:hover:not(:disabled),
+.reportPage .tableActionButton:hover:not(:disabled),
+.reportPage .iconButton:hover:not(:disabled) {
+  border-color: rgba(79, 111, 245, 0.3);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 8px rgba(79, 111, 245, 0.08);
+  transform: translateY(-1px);
+}
+
+.simulationPage .ghostButton:active:not(:disabled),
+.simulationPage .secondaryButton:active:not(:disabled),
+.simulationPage .tableActionButton:active:not(:disabled),
+.simulationPage .iconButton:active:not(:disabled),
+.reportPage .ghostButton:active:not(:disabled),
+.reportPage .secondaryButton:active:not(:disabled),
+.reportPage .tableActionButton:active:not(:disabled),
+.reportPage .iconButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
 }
 
 .simulationPage .heroPanelMain,
