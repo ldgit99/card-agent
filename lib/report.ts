@@ -86,80 +86,6 @@ export function buildFallbackReportSnapshot(input: {
 
 export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
   const generatedAt = new Date(report.generatedAt).toLocaleString("ko-KR");
-  const personaMap = new Map((report.scenario?.studentPersonas ?? []).map((persona) => [persona.id, persona]));
-
-  const activityRows = report.design.activities
-    .map(
-      (activity) => `
-        <tr>
-          <td>${escapeHtml(activity.functionLabel || `활동 ${activity.order}`)}</td>
-          <td>${escapeHtml(activity.subjectLabel || report.design.meta.subject || "-")}</td>
-          <td>${escapeHtml(activity.learningActivity || activity.title || "-")}</td>
-          <td>${renderChips(activity.tools)}</td>
-          <td>${escapeHtml(activity.assessmentMethod || "-")}</td>
-          <td>${renderChips(activity.humanCardIds.map(cardTitle))}</td>
-          <td>${renderChips(activity.aiCardIds.map(cardTitle))}</td>
-        </tr>
-      `,
-    )
-    .join("");
-
-  const analysisSection = "";
-
-  const scenarioSection = report.scenario
-    ? `
-      <section class="report-section">
-        <h2>모의수업 시나리오</h2>
-        <div class="report-card-grid report-card-grid-3">
-          <article class="report-card"><span>시나리오 제목</span><strong>${escapeHtml(report.scenario.title)}</strong></article>
-          <article class="report-card"><span>학습 흐름</span><strong>${escapeHtml(report.scenario.learningArc)}</strong></article>
-          <article class="report-card"><span>엔진</span><strong>${escapeHtml(report.scenario.engine)}</strong></article>
-        </div>
-        <article class="report-block">
-          <h3>배경</h3>
-          <p>${escapeHtml(report.scenario.setting)}</p>
-          <h3>관찰 포인트</h3>
-          <p>${escapeHtml(report.scenario.facilitatorBrief)}</p>
-        </article>
-        <div class="report-stack">
-          ${report.scenario.episodes
-            .map(
-              (episode, index) => `
-                <article class="report-block">
-                  <div class="report-block-head">
-                    <span>Episode ${index + 1}</span>
-                    <strong>${escapeHtml(episode.lens)}</strong>
-                  </div>
-                  <h3>${escapeHtml(episode.title)}</h3>
-                  <p>${escapeHtml(episode.narrative)}</p>
-                  <div class="report-bullet-grid report-bullet-grid-3 report-contrast-grid">
-                    <li class="report-contrast-card report-contrast-card-positive"><strong>잘되고 있는 모습</strong><span>${escapeHtml(episode.successScene || "설계를 따라갈 때 드러나는 긍정 장면이 제시됩니다.")}</span></li>
-                    <li class="report-contrast-card report-contrast-card-neutral"><strong>보통의 실제 모습</strong><span>${escapeHtml(episode.ordinaryScene || "실제 교실에서 흔히 나타나는 평균적 장면이 제시됩니다.")}</span></li>
-                    <li class="report-contrast-card report-contrast-card-negative"><strong>잘 안되는 모습</strong><span>${escapeHtml(episode.challengeScene || "같은 설계 안에서도 흔들릴 수 있는 장면이 제시됩니다.")}</span></li>
-                  </div>
-                  <ul class="report-bullet-grid">
-                    <li><strong>Human agency</strong><span>${escapeHtml(episode.humanAgencyFocus)}</span></li>
-                    <li><strong>AI agency</strong><span>${escapeHtml(episode.aiAgencyFocus)}</span></li>
-                    <li><strong>학생 학습 신호</strong><span>${escapeHtml(episode.studentLearningSignal)}</span></li>
-                    <li><strong>잠재 긴장</strong><span>${escapeHtml(episode.possibleTension)}</span></li>
-                  </ul>
-                  <div class="report-card-grid report-card-grid-2">
-                    <article class="report-card"><h3>주요 학생 페르소나</h3>${renderChips((episode.featuredPersonaIds ?? []).map((personaId) => {
-                      const persona = personaMap.get(personaId);
-                      return persona ? `${persona.name} · ${persona.label}` : personaId;
-                    }))}</article>
-                    <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((episode.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
-                    <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((episode.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
-                    <article class="report-card"><h3>질문·행동과 결과 연결</h3>${renderMiniList((episode.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
-                  </div>
-                </article>
-              `,
-            )
-            .join("")}
-        </div>
-      </section>
-    `
-    : "";
 
   const activityCardMap = new Map(
     report.design.activities.map((activity) => [
@@ -171,91 +97,155 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     ]),
   );
 
+  // ① 수업 설계 내용
+  const activityRows = report.design.activities
+    .map((activity) => {
+      const cards = activityCardMap.get(activity.id) ?? { teacher: [], ai: [] };
+      return `
+        <tr>
+          <td>${escapeHtml(activity.functionLabel || `활동 ${activity.order}`)}</td>
+          <td>${escapeHtml(activity.subjectLabel || report.design.meta.subject || "-")}</td>
+          <td>${escapeHtml(activity.learningActivity || activity.title || "-")}</td>
+          <td>${renderChips(activity.tools)}</td>
+          <td>${escapeHtml(activity.assessmentMethod || "-")}</td>
+          <td>${renderChips(cards.teacher)}</td>
+          <td>${renderChips(cards.ai)}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  const designSection = `
+    <section class="rs">
+      <h2><span class="rs-circle">①</span>수업 설계 내용</h2>
+      <div class="rs-grid2" style="margin-top:14px">
+        <article class="rs-card">
+          <h3>학습 목표</h3>
+          <ul>${renderList(report.design.learningGoals)}</ul>
+        </article>
+        <article class="rs-card">
+          <h3>수업 정보</h3>
+          <ul class="rs-info-list">
+            <li><span class="rs-info-label">교과</span>${escapeHtml(report.design.meta.subject || "-")}</li>
+            <li><span class="rs-info-label">대상</span>${escapeHtml(report.design.meta.target || "-")}</li>
+          </ul>
+        </article>
+      </div>
+      <div style="overflow-x:auto;margin-top:14px">
+        <table class="rs-table">
+          <thead>
+            <tr>
+              <th>기능</th><th>교과</th><th>학습활동</th><th>AI도구</th>
+              <th>평가 방법</th><th>교사 질문·행동</th><th>AI 질문·행동</th>
+            </tr>
+          </thead>
+          <tbody>${activityRows}</tbody>
+        </table>
+      </div>
+    </section>
+  `;
+
+  // ② 활동별 수업 장면
   const turnsSection = report.turns.length
     ? `
-      <section class="report-section">
-        <h2>모의수업 실행 결과</h2>
-        <div class="report-stack">
-          ${report.turns
-            .map(
-              (turn) => `
-                <article class="report-block">
-                  <div class="report-block-head">
-                    <span>${turn.turnIndex}차 활동</span>
-                    <strong>${escapeHtml(turn.engine)}</strong>
+      <section class="rs">
+        <h2><span class="rs-circle">②</span>활동별 수업 장면</h2>
+        <div class="rs-stack">
+          ${report.turns.map((turn) => {
+            const cards = activityCardMap.get(turn.activityId) ?? { teacher: [], ai: [] };
+            const topSignal = (turn.activityRiskSignals ?? [])[0];
+            return `
+              <article class="rs-scene">
+                <div class="rs-scene-head">
+                  <span class="rs-index-chip">활동 ${turn.turnIndex}</span>
+                  <strong>${escapeHtml(turn.activityTitle)}</strong>
+                </div>
+                <div class="rs-scene-body">
+                  <div class="rs-scene-col">
+                    <p class="rs-block-label">교사 · AI 역할 분담</p>
+                    <div class="rs-role-row">
+                      <span class="rs-role-badge rs-role-teacher">교사</span>
+                      <p>${escapeHtml(turn.teacherAction)}</p>
+                    </div>
+                    <div class="rs-role-row">
+                      <span class="rs-role-badge rs-role-ai">AI</span>
+                      <p>${escapeHtml(turn.aiAction)}</p>
+                    </div>
+                    <div style="margin-top:10px">${renderChips([...cards.teacher, ...cards.ai])}</div>
                   </div>
-                  <h3>${escapeHtml(turn.activityTitle)}</h3>
-                  <ul class="report-detail-list">
-                    <li><strong>교사 행동</strong><span>${escapeHtml(turn.teacherAction)}</span></li>
-                    <li><strong>AI 행동</strong><span>${escapeHtml(turn.aiAction)}</span></li>
-                    <li><strong>예상 학생 반응</strong><span>${escapeHtml(turn.expectedStudentResponse)}</span></li>
-                    <li><strong>관찰 메모</strong><span>${escapeHtml(turn.observerNote)}</span></li>
-                    <li><strong>놓칠 수 있는 지점</strong><span>${escapeHtml(turn.missedOpportunities.join(" / ") || "없음")}</span></li>
-                    <li><strong>연결된 질문·행동</strong><span>${escapeHtml(turn.linkedCardIds.map(cardTitle).join(" / ") || "없음")}</span></li>
-                    <li><strong>설계된 교사 질문·행동</strong><span>${escapeHtml((activityCardMap.get(turn.activityId)?.teacher ?? []).join(" / ") || "없음")}</span></li>
-                    <li><strong>설계된 AI 질문·행동</strong><span>${escapeHtml((activityCardMap.get(turn.activityId)?.ai ?? []).join(" / ") || "없음")}</span></li>
-                    <li><strong>활동별 위험 신호</strong><span>${escapeHtml((turn.activityRiskSignals ?? []).join(" / ") || "없음")}</span></li>
-                  </ul>
-                  <div class="report-card-grid report-card-grid-2">
-                    <article class="report-card"><h3>학생 페르소나 반응</h3>${renderMiniList((turn.studentPersonaResponses ?? []).map((item) => `${item.personaName}: ${item.response}`))}</article>
-                    <article class="report-card"><h3>학생 산출물 예시</h3>${renderMiniList((turn.sampleArtifacts ?? []).map((artifact) => `${artifact.title}: ${artifact.content}`))}</article>
-                    <article class="report-card"><h3>교사 개입 추천</h3>${renderMiniList((turn.teacherInterventions ?? []).map((item) => `${item.title}: ${item.move}`))}</article>
-                    <article class="report-card"><h3>질문·행동과 결과 연결</h3>${renderMiniList((turn.cardOutcomeLinks ?? []).map((item) => `${item.cardTitle}: ${item.resultingChange}`))}</article>
+                  <div class="rs-scene-col">
+                    <p class="rs-block-label">핵심 관찰 포인트</p>
+                    <p>${escapeHtml(turn.observerNote)}</p>
+                    ${topSignal ? `<div class="rs-signal">⚠ ${escapeHtml(topSignal)}</div>` : ""}
                   </div>
-                </article>
-              `,
-            )
-            .join("")}
+                </div>
+              </article>
+            `;
+          }).join("")}
         </div>
       </section>
     `
     : "";
 
+  // ③ 위험 신호
+  const severities: Array<{ key: "high" | "medium" | "low"; label: string }> = [
+    { key: "high", label: "HIGH" },
+    { key: "medium", label: "MEDIUM" },
+    { key: "low", label: "LOW" },
+  ];
+  const riskGroups = severities
+    .map(({ key, label }) => {
+      const items = report.risks.filter((r) => r.severity === key);
+      if (!items.length) return "";
+      return `
+        <div class="rs-risk-group rs-risk-${key}">
+          <p class="rs-risk-label rs-risk-label-${key}">${label}</p>
+          ${items.map((risk) => `
+            <div class="rs-risk-row">
+              <strong>${escapeHtml(riskLabels[risk.riskType])}</strong>
+              <p>→ ${escapeHtml(risk.recommendedIntervention)}</p>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    })
+    .join("");
+
   const risksSection = `
-    <section class="report-section">
-      <h2>위험 관찰 결과</h2>
-      ${report.risks.length
-        ? `<div class="report-stack">${report.risks
-            .map(
-              (risk) => `
-                <article class="report-block">
-                  <div class="report-block-head">
-                    <span>${escapeHtml(riskLabels[risk.riskType])}</span>
-                    <strong>${escapeHtml(risk.severity)}</strong>
-                  </div>
-                  <p>${escapeHtml(risk.rationale)}</p>
-                  <div class="report-card-grid report-card-grid-2">
-                    <article class="report-card"><h3>활동/초점</h3><p>${escapeHtml(`${risk.activityTitle || "공통 위험"} · ${risk.focusArea}`)}</p></article>
-                    <article class="report-card"><h3>학생 영향</h3><p>${escapeHtml(risk.studentImpact)}</p></article>
-                    <article class="report-card"><h3>관찰 신호</h3><p>${escapeHtml((risk.watchSignals ?? []).join(" / ") || "없음")}</p></article>
-                    <article class="report-card"><h3>권장 개입</h3><p>${escapeHtml(risk.recommendedIntervention)}</p></article>
-                  </div>
-                </article>
-              `,
-            )
-            .join("")}</div>`
-        : '<article class="report-block"><p>주요 위험이 없습니다.</p></article>'}
+    <section class="rs">
+      <h2><span class="rs-circle">③</span>위험 신호</h2>
+      <div class="rs-stack" style="margin-top:14px">
+        ${riskGroups || "<p>주요 위험이 없습니다.</p>"}
+      </div>
     </section>
   `;
 
-  const reflectionSection = `
-    <section class="report-section">
-      <h2>성찰 일지</h2>
-      <div class="report-stack">
-        ${report.questions
-          .map(
-            (question) => `
-              <article class="report-block">
-                <h3>${escapeHtml(question.prompt)}</h3>
-                <p class="report-note">${escapeHtml(question.rationale)}</p>
-                <div class="report-answer">${escapeHtml(report.answers[question.id] || "응답 없음")}</div>
-              </article>
-            `,
-          )
-          .join("")}
-
-
+  // ④ 교사 성찰
+  const answeredQuestions = report.questions
+    .filter((q) => report.answers[q.id])
+    .map((q) => `
+      <div class="rs-qa">
+        <p class="rs-q">${escapeHtml(q.prompt)}</p>
+        <div class="rs-answer">${escapeHtml(report.answers[q.id])}</div>
       </div>
+    `)
+    .join("");
+
+  const revisionNotes = (report.nextRevisionNotes ?? []).length
+    ? `<div class="rs-card" style="margin-top:14px">
+        <p class="rs-block-label">다음 수업에서 바꿀 것</p>
+        <ul>${renderList(report.nextRevisionNotes ?? [])}</ul>
+       </div>`
+    : "";
+
+  const reflectionSection = `
+    <section class="rs">
+      <h2><span class="rs-circle">④</span>교사 성찰</h2>
+      ${report.summary ? `<div class="rs-card" style="margin-top:14px"><p class="rs-block-label">수업 총평</p><p>${escapeHtml(report.summary)}</p></div>` : ""}
+      <div class="rs-stack" style="margin-top:14px">
+        ${answeredQuestions || "<p>작성된 성찰 답변이 없습니다.</p>"}
+      </div>
+      ${revisionNotes}
     </section>
   `;
 
@@ -267,243 +257,111 @@ export function buildReportHtmlDocument(report: SimulationReportSnapshot) {
     <title>${escapeHtml(report.reportTitle)}</title>
     <style>
       :root {
-        color-scheme: light;
-        --bg: #f3f7ff;
-        --surface: #ffffff;
-        --surface-soft: #f8fbff;
-        --line: #dbe7ff;
-        --ink: #172554;
-        --muted: #5b6b82;
-        --accent: #2563eb;
+        --ink: #18181b; --muted: #71717b; --accent: #155dfc; --accent-soft: rgba(21,93,252,0.08);
+        --teacher: #1447e6; --ai: #00a3a3;
+        --risk-high: #e40014; --risk-medium: #f99c00; --risk-low: #155dfc;
+        --line: #e4e4e7; --surface: #ffffff; --bg: #f7f9fc;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
         font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-        color: var(--ink);
-        background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+        font-size: 15px; line-height: 1.6; color: var(--ink);
+        background: linear-gradient(180deg, #f7f9fc 0%, #eef4ff 100%);
       }
       .report-page {
         width: min(1160px, calc(100% - 40px));
-        margin: 0 auto;
-        padding: 32px 0 48px;
+        margin: 0 auto; padding: 32px 0 48px;
+        display: grid; gap: 16px;
       }
-      .report-hero,
-      .report-section,
-      .report-block,
-      .report-card {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 22px;
+      .report-hero {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 24px; padding: 22px 28px;
+        box-shadow: 0 1px 3px rgba(60,64,67,.1), 0 4px 12px rgba(60,64,67,.07);
       }
-      .report-hero,
-      .report-section {
-        padding: 24px;
-        margin-bottom: 18px;
+      .report-hero h1 { margin: 8px 0 4px; font-size: 1.5rem; letter-spacing: -0.03em; }
+      .report-hero p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+      .rs {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 24px; padding: 22px;
+        box-shadow: 0 1px 3px rgba(60,64,67,.1), 0 4px 12px rgba(60,64,67,.07);
       }
-      .report-hero h1,
-      .report-section h2,
-      .report-block h3,
-      .report-card h3 {
-        margin: 0;
-        letter-spacing: -0.03em;
+      .rs h2 { margin: 0 0 0; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+      .rs-circle {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 26px; height: 26px; border-radius: 50%;
+        background: var(--accent); color: #fff;
+        font-size: 0.82rem; font-weight: 800; flex-shrink: 0;
       }
-      .report-hero p,
-      .report-block p,
-      .report-card p,
-      .report-detail-list span,
-      .report-bullet-grid span,
-      .report-note {
-        color: var(--muted);
-        line-height: 1.7;
+      .rs-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .rs-card {
+        border: 1px solid var(--line); border-radius: 16px;
+        padding: 16px; background: var(--surface);
       }
-      .report-eyebrow {
-        margin: 0 0 10px;
-        font-size: 0.76rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--accent);
+      .rs-card h3 { margin: 0 0 10px; font-size: 0.95rem; font-weight: 700; }
+      .rs-card ul { margin: 0; padding-left: 18px; }
+      .rs-card li { line-height: 1.6; font-size: 0.9rem; }
+      .rs-info-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+      .rs-info-list li { display: flex; align-items: center; gap: 10px; font-size: 0.92rem; }
+      .rs-info-label { font-weight: 700; color: var(--muted); font-size: 0.82rem; min-width: 32px; }
+      .rs-block-label {
+        margin: 0 0 8px; font-size: 0.76rem; font-weight: 800;
+        letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
       }
-      .report-meta,
-      .report-card-grid {
-        display: grid;
-        gap: 12px;
-      }
-      .report-meta {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        margin-top: 18px;
-      }
-      .report-card-grid-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .report-card-grid-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .report-card,
-      .report-block {
-        padding: 18px;
-      }
-      .report-card span,
-      .report-block-head span {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 0.78rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--accent);
-      }
-      .report-card strong,
-      .report-block-head strong {
-        font-size: 1rem;
-      }
-      .report-stack { display: grid; gap: 14px; }
-      .report-block-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-      .report-bullet-grid,
-      .report-detail-list {
-        display: grid;
-        gap: 10px;
-        list-style: none;
-        padding: 0;
-        margin: 14px 0 0;
-      }
-      .report-bullet-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .report-bullet-grid-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .report-bullet-grid li,
-      .report-detail-list li {
-        display: grid;
-        gap: 6px;
-        padding: 12px 14px;
-        border-radius: 16px;
-        background: var(--surface-soft);
-      }
-      .report-contrast-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 14px;
-      }
-      .report-contrast-card-positive {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-      }
-      .report-contrast-card-neutral {
-        background: #f8fafc;
-        border: 1px solid #dbeafe;
-      }
-      .report-contrast-card-negative {
-        background: #fff7ed;
-        border: 1px solid #fed7aa;
-      }
-      .report-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 14px;
-      }
-      .report-table th,
-      .report-table td {
-        padding: 12px 14px;
-        border-bottom: 1px solid var(--line);
-        vertical-align: top;
-        text-align: left;
-      }
-      .report-table th {
-        background: #eff6ff;
-        font-size: 0.84rem;
-      }
-      .report-chip {
-        display: inline-flex;
-        align-items: center;
-        min-height: 30px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: #eff6ff;
-        color: var(--accent);
-        font-size: 0.82rem;
-        font-weight: 700;
-      }
-      .report-chip-muted {
-        background: #f4f4f5;
-        color: #71717a;
-      }
-      .report-answer {
-        padding: 14px 16px;
-        border-radius: 16px;
-        background: #f8fbff;
-        border: 1px solid var(--line);
-        white-space: pre-wrap;
-        line-height: 1.7;
-      }
-      @media (max-width: 860px) {
-        .report-page { width: min(100% - 20px, 1160px); }
-        .report-meta,
-        .report-card-grid-2,
-        .report-card-grid-3,
-        .report-bullet-grid,
-        .report-bullet-grid-3,
-        .report-contrast-grid { grid-template-columns: 1fr; }
+      .rs-table { width: 100%; border-collapse: collapse; min-width: 720px; }
+      .rs-table th, .rs-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; text-align: left; font-size: 0.88rem; }
+      .rs-table th:last-child, .rs-table td:last-child { border-right: none; }
+      .rs-table th { background: rgba(223,235,255,.72); color: var(--accent); font-weight: 800; text-align: center; }
+      .report-chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: #eff6ff; color: var(--accent); font-size: 0.8rem; font-weight: 700; margin: 2px; }
+      .report-chip-muted { background: #f4f4f5; color: #71717a; }
+      .rs-stack { display: grid; gap: 12px; }
+      .rs-scene { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+      .rs-scene-head { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #f8fafc; border-bottom: 1px solid var(--line); }
+      .rs-scene-head strong { font-size: 0.95rem; }
+      .rs-index-chip { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 0.76rem; font-weight: 800; white-space: nowrap; }
+      .rs-scene-body { display: grid; grid-template-columns: 1.2fr 1fr; }
+      .rs-scene-col { padding: 14px 16px; }
+      .rs-scene-col:first-child { border-right: 1px solid var(--line); }
+      .rs-role-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+      .rs-role-row p { margin: 0; font-size: 0.88rem; line-height: 1.55; }
+      .rs-role-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+      .rs-role-teacher { background: rgba(20,71,230,.08); color: var(--teacher); }
+      .rs-role-ai { background: rgba(0,163,163,.1); color: var(--ai); }
+      .rs-signal { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 5px 12px; border-radius: 999px; background: rgba(249,156,0,.1); border: 1px solid rgba(249,156,0,.24); font-size: 0.82rem; font-weight: 700; color: #b45309; }
+      .rs-risk-group { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .rs-risk-high { border-left: 4px solid var(--risk-high); }
+      .rs-risk-medium { border-left: 4px solid var(--risk-medium); }
+      .rs-risk-low { border-left: 4px solid var(--risk-low); }
+      .rs-risk-label { margin: 0; padding: 7px 14px; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+      .rs-risk-label-high { background: rgba(254,242,242,.9); color: var(--risk-high); }
+      .rs-risk-label-medium { background: rgba(255,251,235,.9); color: #b45309; }
+      .rs-risk-label-low { background: rgba(239,246,255,.9); color: var(--risk-low); }
+      .rs-risk-row { display: grid; gap: 3px; padding: 10px 14px; border-top: 1px solid var(--line); background: #fff; }
+      .rs-risk-row strong { font-size: 0.88rem; }
+      .rs-risk-row p { margin: 0; font-size: 0.88rem; color: var(--muted); line-height: 1.55; }
+      .rs-qa { display: grid; gap: 8px; }
+      .rs-q { margin: 0; font-size: 0.9rem; font-weight: 700; line-height: 1.5; }
+      .rs-answer { padding: 12px 14px; border-radius: 12px; background: #f8fbff; border: 1px solid rgba(219,234,254,.88); font-size: 0.9rem; line-height: 1.7; white-space: pre-wrap; color: var(--muted); }
+      @media (max-width: 760px) {
+        .rs-grid2, .rs-scene-body { grid-template-columns: 1fr; }
+        .rs-scene-col:first-child { border-right: none; border-bottom: 1px solid var(--line); }
       }
       @media print {
-        body { background: white; }
+        @page { size: A4 portrait; margin: 18mm 15mm; }
+        body { background: #fff; }
         .report-page { width: 100%; margin: 0; padding: 0; }
-        .report-hero,
-        .report-section,
-        .report-block,
-        .report-card { box-shadow: none; }
+        .rs { box-shadow: none; page-break-inside: avoid; }
       }
     </style>
   </head>
   <body>
     <main class="report-page">
       <section class="report-hero">
-        <p class="report-eyebrow">Teacher Agent Report</p>
+        <p style="margin:0;font-size:0.76rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent)">Teacher Agent Report</p>
         <h1>${escapeHtml(report.reportTitle)}</h1>
         <p>생성 시각: ${escapeHtml(generatedAt)}</p>
-        <div class="report-meta">
-          <article class="report-card"><span>주제</span><strong>${escapeHtml(report.design.meta.topic || "미입력")}</strong></article>
-          <article class="report-card"><span>교과</span><strong>${escapeHtml(report.design.meta.subject || "미입력")}</strong></article>
-          <article class="report-card"><span>대상</span><strong>${escapeHtml(report.design.meta.target || "미입력")}</strong></article>
-          <article class="report-card"><span>활동 수</span><strong>${report.design.activities.length}개</strong></article>
-        </div>
       </section>
-      <section class="report-section">
-        <h2>수업 설계 내용</h2>
-        <div class="report-card-grid report-card-grid-2">
-          <article class="report-block"><h3>학습 목표</h3><ul>${renderList(report.design.learningGoals)}</ul></article>
-          <article class="report-block"><h3>설계 메타</h3><ul>${renderList([
-            `버전: ${report.design.version}`,
-            `생성: ${new Date(report.design.createdAt).toLocaleString("ko-KR")}`,
-            `수정: ${new Date(report.design.updatedAt).toLocaleString("ko-KR")}`,
-          ])}</ul></article>
-        </div>
-        <table class="report-table">
-          <thead>
-            <tr>
-              <th>기능</th>
-              <th>교과</th>
-              <th>학습활동</th>
-              <th>AI도구</th>
-              <th>평가 방법</th>
-              <th>교사 질문·행동</th>
-              <th>AI 질문·행동</th>
-            </tr>
-          </thead>
-          <tbody>${activityRows}</tbody>
-        </table>
-      </section>
-      ${analysisSection}
-      ${scenarioSection}
+      ${designSection}
       ${turnsSection}
       ${risksSection}
       ${reflectionSection}
