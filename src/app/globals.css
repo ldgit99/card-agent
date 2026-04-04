@@ -7282,33 +7282,59 @@ body:has(.reportPage) {
 }
 .workspaceTopbar .workspaceNavLink {
   flex: 0 0 auto;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  white-space: normal;
 }
 
-.workspaceTopbar .workspaceNavTitle {
-  font-size: 0.96rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: inherit;
+.workspaceTopbar .workspaceNavText {
+  display: block;
+  line-height: 1.24;
+  word-break: keep-all;
 }
 
 .designStudioPage .workspaceNavLink,
 .simulationPage .workspaceNavLink,
 .reportPage .workspaceNavLink {
-  min-width: fit-content;
+  min-width: 170px;
 }
 
 .workspaceTopbar .workspaceNavStatusIcon {
-  margin-left: 2px;
+  margin-left: 0;
 }
 
 @media (max-width: 640px) {
-  .workspaceTopbar .workspaceNavTitle {
-    font-size: 0.9rem;
+  .designStudioPage .workspaceNavLink,
+  .simulationPage .workspaceNavLink,
+  .reportPage .workspaceNavLink {
+    min-width: 148px;
+  }
+}
+.workspaceTopbar {
+  --workspace-topbar-button-height: 70px;
+}
+
+.workspaceTopbar .workspaceNavLink,
+.workspaceTopbarActions .primaryButton,
+.workspaceTopbarActions .secondaryButton,
+.workspaceTopbarActions .ghostButton {
+  min-height: var(--workspace-topbar-button-height);
+}
+
+.workspaceTopbarActions .primaryButton,
+.workspaceTopbarActions .secondaryButton,
+.workspaceTopbarActions .ghostButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+@media (max-width: 640px) {
+  .workspaceTopbar {
+    --workspace-topbar-button-height: 62px;
   }
 }
 

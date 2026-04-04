@@ -5,10 +5,15 @@ export type WorkspaceSection = "design" | "simulation" | "report";
 
 export type SectionStatus = "idle" | "done" | "locked";
 
-const workspaceLinks: Array<{ id: WorkspaceSection; href: string; title: string }> = [
-  { id: "design", href: "/", title: "1단계: 수업 설계" },
-  { id: "simulation", href: "/simulation", title: "2단계: 모의 수업 실행 및 성찰" },
-  { id: "report", href: "/report", title: "3단계: 보고서 출력" },
+const workspaceLinks: Array<{
+  id: WorkspaceSection;
+  href: string;
+  step: string;
+  label: string;
+}> = [
+  { id: "design", href: "/", step: "1단계", label: "수업 설계" },
+  { id: "simulation", href: "/simulation", step: "2단계", label: "모의 수업 실행 및 성찰" },
+  { id: "report", href: "/report", step: "3단계", label: "보고서 출력" },
 ];
 
 function StatusIcon({ status }: { status: SectionStatus }) {
@@ -60,6 +65,14 @@ export function WorkspaceTopbar({
           const handler = navigationHandlers?.[item.id];
           const isDisabled = disabledSection === item.id || isLocked;
 
+          const content = (
+            <>
+              <span className="workspaceNavStep">{item.step}</span>
+              <span className="workspaceNavText">{item.label}</span>
+              <StatusIcon status={status} />
+            </>
+          );
+
           if (handler && !isActive) {
             return (
               <button
@@ -69,8 +82,7 @@ export function WorkspaceTopbar({
                 onClick={() => void handler()}
                 disabled={isDisabled}
               >
-                <span className="workspaceNavTitle">{item.title}</span>
-                <StatusIcon status={status} />
+                {content}
               </button>
             );
           }
@@ -83,8 +95,7 @@ export function WorkspaceTopbar({
               aria-disabled={isDisabled ? true : undefined}
               tabIndex={isDisabled ? -1 : undefined}
             >
-              <span className="workspaceNavTitle">{item.title}</span>
-              <StatusIcon status={status} />
+              {content}
             </Link>
           );
         })}
