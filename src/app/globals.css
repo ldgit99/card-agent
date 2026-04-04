@@ -822,30 +822,36 @@ a {
 }
 
 .risk-high {
-  border-color: rgba(228, 0, 20, 0.22);
-  background: #ffffff;
+  border-color: rgba(228, 0, 20, 0.28);
+  border-left: 4px solid var(--risk-high);
+  background: rgba(254, 242, 242, 0.6);
 }
 
 .risk-high .riskHeader span {
   color: var(--risk-high);
+  font-weight: 800;
 }
 
 .risk-medium {
-  border-color: rgba(249, 156, 0, 0.24);
-  background: #ffffff;
+  border-color: rgba(249, 156, 0, 0.3);
+  border-left: 4px solid var(--risk-medium);
+  background: rgba(255, 251, 235, 0.6);
 }
 
 .risk-medium .riskHeader span {
   color: var(--risk-medium);
+  font-weight: 800;
 }
 
 .risk-low {
   border-color: rgba(21, 93, 252, 0.2);
-  background: #ffffff;
+  border-left: 4px solid var(--risk-low);
+  background: rgba(239, 246, 255, 0.5);
 }
 
 .risk-low .riskHeader span {
   color: var(--risk-low);
+  font-weight: 800;
 }
 
 .historyCard {
@@ -3468,10 +3474,265 @@ body {
   }
 }
 
+/* ─── Simulation Step Indicator ─────────────────────────────────── */
+
+.simStepIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 0 8px;
+  overflow-x: auto;
+}
+
+.simStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.simStepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border: 2px solid var(--line-strong);
+  background: #ffffff;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.simStep-done .simStepDot {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.simStep-active .simStepDot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.simStepLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.simStep-done .simStepLabel {
+  color: #16a34a;
+}
+
+.simStep-active .simStepLabel {
+  color: var(--accent-strong);
+}
+
+.simStepLine {
+  width: 32px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.simStepLine-done {
+  background: #16a34a;
+}
+
+@keyframes simSpin {
+  to { transform: rotate(360deg); }
+}
+
+.simStepSpinner {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: simSpin 0.7s linear infinite;
+}
+
+/* ─── History Tab Bar ─────────────────────────────────────────────── */
+
+.historyTabBar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0;
+}
+
+.historyTabBtn {
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.historyTabBtn:hover {
+  color: var(--ink);
+}
+
+.historyTabBtn-active {
+  color: var(--accent-strong);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+
+.journalPanel {
+  display: grid;
+  gap: 16px;
+}
+
+.journalField {
+  display: grid;
+  gap: 8px;
+}
+
+.journalLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.journalTextarea {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+  font-family: var(--font-body);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.journalTextarea:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+
+/* ─── Report TOC ──────────────────────────────────────────────────── */
+
+.reportToc {
+  position: fixed;
+  left: max(12px, calc((100vw - 1540px) / 2 - 140px));
+  top: 50%;
+  transform: translateY(-50%);
+  width: 130px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 14px 12px;
+  z-index: 40;
+}
+
+.reportTocTitle {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.reportTocList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.reportTocLink {
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background 140ms ease, color 140ms ease;
+  line-height: 1.4;
+}
+
+.reportTocLink:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.reportTocLink-active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+@media (max-width: 1400px) {
+  .reportToc {
+    display: none;
+  }
+}
+
+/* ─── Topbar status ───────────────────────────────────────────────── */
+
 .workspaceNavLink[disabled],
 .workspaceNavLink[aria-disabled="true"] {
   pointer-events: none;
   opacity: 0.58;
+}
+
+.workspaceNavLink-done:not(.workspaceNavLink-active) {
+  border-color: rgba(22, 163, 74, 0.28);
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #166534;
+}
+
+.workspaceNavLink-done:not(.workspaceNavLink-active) .workspaceNavStep {
+  color: #16a34a;
+}
+
+.workspaceNavLink-locked {
+  opacity: 0.52;
+  pointer-events: none;
+}
+
+.workspaceNavStatusIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.workspaceNavStatusIcon-done {
+  color: #16a34a;
+  font-weight: 900;
+}
+
+.workspaceNavStatusIcon-locked {
+  font-size: 0.7rem;
+  opacity: 0.7;
 }
 
 .workspaceNavLink {
@@ -6095,6 +6356,12 @@ body:has(.reportPage) {
   box-shadow:
     0 18px 40px rgba(15, 23, 42, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  padding: 10px 16px 8px;
+}
+
+.simulationPage .heroPanelStack,
+.reportPage .heroPanelStack {
+  gap: 6px;
 }
 
 .simulationPage .workspaceTopbar,
@@ -6160,7 +6427,7 @@ body:has(.reportPage) {
 
 .simulationPage .heroPanelMain,
 .reportPage .heroPanelMain {
-  gap: 22px;
+  gap: 14px;
 }
 
 .reportPage .heroPanelMain {
@@ -6223,7 +6490,6 @@ body:has(.reportPage) {
 .simulationPage .heroPanelMain,
 .reportPage .heroPanelMain {
   align-items: stretch;
-  gap: 28px;
 }
 
 .simulationPage .eyebrow,
@@ -6253,6 +6519,13 @@ body:has(.reportPage) {
 .simulationPage .emptyPanelText,
 .reportPage .emptyPanelText {
   color: #667085;
+}
+
+.simulationPage .heroPanel .heroCopy,
+.reportPage .heroPanel .heroCopy {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
 
 .simulationPage .heroStatRack,
@@ -6425,5 +6698,106 @@ body:has(.reportPage) {
   .reportPage .reportMetricCard,
   .reportPage .reportSection {
     padding: 16px;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 15mm 18mm 15mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #18181b !important;
+    font-size: 13px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .printHidden,
+  .reportToc,
+  .workspaceTopbar,
+  .heroPanel,
+  button,
+  nav {
+    display: none !important;
+  }
+
+  .reportShell,
+  .reportDocument {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .reportSection {
+    page-break-before: always;
+    break-before: page;
+    padding: 0 0 16px !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .reportSection:first-child {
+    page-break-before: avoid;
+    break-before: avoid;
+  }
+
+  .reportCard,
+  .riskCard,
+  .reportMiniBlock {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: 1px solid #d4d4d8 !important;
+    box-shadow: none !important;
+  }
+
+  .reportGridTwo {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .reportTableWrap {
+    overflow: visible !important;
+  }
+
+  .lessonTable {
+    font-size: 11px !important;
+  }
+
+  .lessonTable th,
+  .lessonTable td {
+    padding: 6px 8px !important;
+  }
+
+  .panelHeader h2 {
+    font-size: 1.1rem !important;
+    border-bottom: 2px solid #e4e4e7;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+
+  .risk-high {
+    background: rgba(254, 242, 242, 0.9) !important;
+    border-left: 4px solid #e40014 !important;
+  }
+
+  .risk-medium {
+    background: rgba(255, 251, 235, 0.9) !important;
+    border-left: 4px solid #f99c00 !important;
+  }
+
+  .risk-low {
+    background: rgba(239, 246, 255, 0.9) !important;
+    border-left: 4px solid #155dfc !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
   }
 }

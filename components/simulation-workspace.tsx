@@ -122,6 +122,47 @@ function pickNewerDesign(left: LessonDesign | null, right: LessonDesign | null) 
   return new Date(left.updatedAt).getTime() >= new Date(right.updatedAt).getTime() ? left : right;
 }
 
+type SimStep = "idle" | "analysis" | "scenario" | "turns" | "risks" | "questions" | "saving" | "done" | "error";
+
+const SIM_STEPS: Array<{ id: SimStep; label: string }> = [
+  { id: "analysis", label: "설계 분석" },
+  { id: "scenario", label: "시나리오 생성" },
+  { id: "turns", label: "수업 전개" },
+  { id: "risks", label: "위험 분석" },
+  { id: "questions", label: "성찰 질문" },
+];
+
+function SimulationStepIndicator({ currentStep, activityCount, currentActivityIndex }: { currentStep: SimStep; activityCount: number; currentActivityIndex: number }) {
+  const stepOrder: SimStep[] = ["analysis", "scenario", "turns", "risks", "questions", "saving", "done"];
+  const currentIndex = stepOrder.indexOf(currentStep);
+
+  return (
+    <div className="simStepIndicator">
+      {SIM_STEPS.map((step, index) => {
+        const stepIdx = stepOrder.indexOf(step.id);
+        const isDone = currentIndex > stepIdx || currentStep === "done";
+        const isActive = currentStep === step.id || (step.id === "turns" && currentStep === "saving" && currentIndex >= stepOrder.indexOf("turns"));
+        const isTurns = step.id === "turns";
+        const status = isDone ? "done" : isActive ? "active" : "pending";
+
+        return (
+          <div key={step.id} className={`simStep simStep-${status}`}>
+            <div className="simStepDot">
+              {isDone ? "✓" : isActive ? <span className="simStepSpinner" /> : index + 1}
+            </div>
+            <span className="simStepLabel">
+              {isTurns && isActive && activityCount > 0
+                ? `${step.label} (${currentActivityIndex}/${activityCount})`
+                : step.label}
+            </span>
+            {index < SIM_STEPS.length - 1 && <div className={`simStepLine simStepLine-${isDone ? "done" : "pending"}`} />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function SimulationWorkspace() {
   const [design, setDesign] = useState<LessonDesign | null>(null);
   const [analysis, setAnalysis] = useState<DesignAnalysis | null>(null);
@@ -140,6 +181,9 @@ export function SimulationWorkspace() {
   const [serverSessions, setServerSessions] = useState<SimulationSessionRecord[]>([]);
   const [lastServerSyncAt, setLastServerSyncAt] = useState<string | null>(null);
   const [expandedIssueTurns, setExpandedIssueTurns] = useState<Record<string, boolean>>({});
+  const [currentSimStep, setCurrentSimStep] = useState<SimStep>("idle");
+  const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
+  const [historyTab, setHistoryTab] = useState<"sessions" | "journal">("sessions");
 
   const designSessions = useMemo(() => {
     if (!design) {
@@ -288,6 +332,8 @@ export function SimulationWorkspace() {
     }
 
     setIsRunning(true);
+    setCurrentSimStep("analysis");
+    setCurrentActivityIndex(0);
     setRunProgressLabel("실행 준비 중...");
     setMessage("설계본을 기준으로 시뮬레이션을 준비합니다.");
 
@@ -310,6 +356,7 @@ export function SimulationWorkspace() {
         setMessage("서버 저장 없이 시뮬레이션을 계속 진행합니다.");
       }
 
+      setCurrentSimStep("analysis");
       setRunProgressLabel("설계 분석 중...");
       const analysisResponse = await fetch("/api/design/analyze", {
         method: "POST",
@@ -325,6 +372,7 @@ export function SimulationWorkspace() {
 
       const runId = crypto.randomUUID();
       setSimulationRunId(runId);
+      setCurrentSimStep("scenario");
       setRunProgressLabel("시나리오 작성 중...");
       setMessage("수업 시나리오와 학생 페르소나를 생성하고 있습니다.");
 
@@ -345,7 +393,9 @@ export function SimulationWorkspace() {
       setScenario(scenarioPayload.scenario);
 
       const generatedTurns: SimulationTurn[] = [];
+      setCurrentSimStep("turns");
       for (const activity of nextDesign.activities) {
+        setCurrentActivityIndex(activity.order);
         setRunProgressLabel(`${activity.order}차시 수업 전개 작성 중...`);
         setMessage(`${activity.order}차 활동의 실행 장면을 생성하고 있습니다.`);
 
@@ -372,6 +422,7 @@ export function SimulationWorkspace() {
 
       setMessage("활동별 위험과 성찰 질문을 생성하고 있습니다.");
 
+      setCurrentSimStep("risks");
       setRunProgressLabel("문제점 작성 중...");
       const riskResponse = await fetch("/api/simulation/risks", {
         method: "POST",
@@ -385,6 +436,7 @@ export function SimulationWorkspace() {
       const riskPayload = (await riskResponse.json()) as { risks: DetectedRisk[] };
       setRisks(riskPayload.risks);
 
+      setCurrentSimStep("questions");
       setRunProgressLabel("성찰 질문 작성 중...");
       const questionResponse = await fetch("/api/reflection/questions", {
         method: "POST",
@@ -417,6 +469,7 @@ export function SimulationWorkspace() {
       });
 
       if (session) {
+        setCurrentSimStep("saving");
         setRunProgressLabel("결과 저장 중...");
         try {
           const savedSession = await saveSimulationSessionToWorkspace(session);
@@ -427,9 +480,11 @@ export function SimulationWorkspace() {
         }
       }
 
+      setCurrentSimStep("done");
       setMessage("모의수업 시나리오, 실행 로그, 위험, 성찰 질문 생성이 완료됐습니다.");
       setRunProgressLabel("실행 완료");
     } catch (error) {
+      setCurrentSimStep("error");
       setRunProgressLabel("실행 중 오류 발생");
       setMessage(error instanceof Error ? error.message : "모의수업 실행 중 오류가 발생했습니다.");
     } finally {
@@ -585,6 +640,11 @@ export function SimulationWorkspace() {
         <div className="heroPanelStack">
           <WorkspaceTopbar
             active="simulation"
+            sectionStatus={{
+              design: "done",
+              simulation: "idle",
+              report: simulationRunId ? "idle" : "locked",
+            }}
             actions={
               <>
                 <button type="button" className="primaryButton" onClick={runSimulation}>
@@ -599,6 +659,13 @@ export function SimulationWorkspace() {
               </>
             }
           />
+          {isRunning || currentSimStep === "done" || currentSimStep === "error" ? (
+            <SimulationStepIndicator
+              currentStep={currentSimStep}
+              activityCount={design?.activities.length ?? 0}
+              currentActivityIndex={currentActivityIndex}
+            />
+          ) : null}
           {runProgressLabel ? <p className="heroCopy simulationProgressCopy">{runProgressLabel}</p> : null}
           <div className="heroPanelMain">
             <div>
@@ -894,7 +961,7 @@ export function SimulationWorkspace() {
                   </div>
                   <div className="reflectionInlineList">
                     {linkedQuestions.length ? (
-                      linkedQuestions.slice(0, 2).map((question) => (
+                      linkedQuestions.slice(0, 1).map((question) => (
                         <label key={question.id} className="reflectionQuestionCard reflectionInlineCard">
                           <span>{question.prompt}</span>
                           <small>{question.rationale}</small>
@@ -922,24 +989,84 @@ export function SimulationWorkspace() {
 
       <section className="panel">
         <div className="panelHeader">
-          <div><h2>저장된 실행 기록</h2></div>
-          <p className="panelHint">이전 세션을 불러와 활동별 성찰을 이어서 수정할 수 있습니다.</p>
-        </div>
-        {designSessions.length ? (
-          <div className="historyList">
-            {designSessions.map((session) => (
-              <article key={session.id} className="historyCard">
-                <div className="historyCardBody">
-                  <strong>{formatSessionLabel(session)}</strong>
-                  <p>페르소나 {session.scenario?.studentPersonas.length ?? 0}명 · 활동 {session.turns.length}개 · 위험 {session.risks.length}개</p>
-                  <span>{formatSyncTime(session.updatedAt)}</span>
-                </div>
-                <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>세션 불러오기</button>
-              </article>
-            ))}
+          <div>
+            <h2>실행 기록 &amp; 성찰 일지</h2>
           </div>
+        </div>
+        <div className="historyTabBar">
+          <button
+            type="button"
+            className={`historyTabBtn ${historyTab === "sessions" ? "historyTabBtn-active" : ""}`}
+            onClick={() => setHistoryTab("sessions")}
+          >
+            📋 저장된 세션 {designSessions.length > 0 ? `(${designSessions.length})` : ""}
+          </button>
+          <button
+            type="button"
+            className={`historyTabBtn ${historyTab === "journal" ? "historyTabBtn-active" : ""}`}
+            onClick={() => setHistoryTab("journal")}
+          >
+            ✍️ 성찰 일지 {simulationRunId ? "" : "(시뮬레이션 후 작성)"}
+          </button>
+        </div>
+
+        {historyTab === "sessions" ? (
+          designSessions.length ? (
+            <div className="historyList">
+              {designSessions.map((session) => (
+                <article key={session.id} className="historyCard">
+                  <div className="historyCardBody">
+                    <strong>{formatSessionLabel(session)}</strong>
+                    <p>페르소나 {session.scenario?.studentPersonas.length ?? 0}명 · 활동 {session.turns.length}개 · 위험 {session.risks.length}개</p>
+                    <span>{formatSyncTime(session.updatedAt)}</span>
+                  </div>
+                  <button type="button" className="tableActionButton" onClick={() => loadSessionFromHistory(session)}>세션 불러오기</button>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="emptyPanelText">아직 서버에 저장된 실행 세션이 없습니다. 모의 수업을 실행하면 자동으로 저장됩니다.</p>
+          )
         ) : (
-          <p className="emptyPanelText">아직 서버에 저장된 실행 세션이 없습니다.</p>
+          <div className="journalPanel">
+            {!simulationRunId ? (
+              <p className="emptyPanelText">모의 수업을 실행한 뒤 이 곳에서 전체 성찰을 작성할 수 있습니다.</p>
+            ) : (
+              <>
+                <div className="journalField">
+                  <label className="journalLabel" htmlFor="journalSummary">수업 전체 총평</label>
+                  <textarea
+                    id="journalSummary"
+                    rows={4}
+                    className="journalTextarea"
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    placeholder="이번 모의 수업에서 가장 인상적이었던 점, 예상과 달랐던 부분, 전체적인 수업 흐름을 적어 주세요."
+                  />
+                </div>
+                <div className="journalField">
+                  <label className="journalLabel" htmlFor="journalRevision">다음 수정 계획</label>
+                  <textarea
+                    id="journalRevision"
+                    rows={4}
+                    className="journalTextarea"
+                    value={nextRevisionText}
+                    onChange={(e) => setNextRevisionText(e.target.value)}
+                    placeholder="다음 설계에서 바꾸고 싶은 카드, 활동 순서, AI 활용 방식 등을 한 줄씩 적어 주세요."
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="primaryButton"
+                  style={{ marginTop: 8 }}
+                  onClick={() => void persistReflectionToServer()}
+                  disabled={isSavingReflection}
+                >
+                  {isSavingReflection ? "저장 중..." : "성찰 일지 저장"}
+                </button>
+              </>
+            )}
+          </div>
         )}
       </section>
 

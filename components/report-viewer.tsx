@@ -10,6 +10,37 @@ import { loadStoredDesign, loadStoredReport, loadStoredSimulation } from "@/lib/
 import type { OrchestrationCard } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
 
+const TOC_ITEMS = [
+  { id: "section-design", label: "① 수업 설계" },
+  { id: "section-simulation", label: "② 모의 수업" },
+  { id: "section-risks", label: "③ 위험 관찰" },
+  { id: "section-reflection", label: "④ 성찰 일지" },
+];
+
+function ReportToc({ activeId }: { activeId: string }) {
+  return (
+    <nav className="reportToc printHidden" aria-label="보고서 목차">
+      <p className="reportTocTitle">목차</p>
+      <ul className="reportTocList">
+        {TOC_ITEMS.map((item) => (
+          <li key={item.id}>
+            <a
+              href={`#${item.id}`}
+              className={`reportTocLink ${activeId === item.id ? "reportTocLink-active" : ""}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 const PDF_MARGIN_MM = 12;
 
 function formatDateTime(value: string) {
@@ -97,7 +128,31 @@ async function downloadPdf(report: SimulationReportSnapshot, rootElement: HTMLEl
 export function ReportViewer() {
   const [report, setReport] = useState<SimulationReportSnapshot | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [activeTocId, setActiveTocId] = useState(TOC_ITEMS[0].id);
   const reportDocumentRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sectionIds = TOC_ITEMS.map((item) => item.id);
+    const observers: IntersectionObserver[] = [];
+
+    const observe = () => {
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) setActiveTocId(id);
+          },
+          { rootMargin: "-20% 0px -60% 0px", threshold: 0 },
+        );
+        observer.observe(el);
+        observers.push(observer);
+      }
+    };
+
+    observe();
+    return () => observers.forEach((obs) => obs.disconnect());
+  }, [report]);
 
   useEffect(() => {
     const storedReport = loadStoredReport();
@@ -166,11 +221,12 @@ export function ReportViewer() {
   }
 
   return (
-    <main className="reportShell reportPage">
+    <main className="reportShell reportPage reportWithToc">
       <section className="heroPanel printHidden">
         <div className="heroPanelStack">
           <WorkspaceTopbar
             active="report"
+            sectionStatus={{ design: "done", simulation: "done", report: "idle" }}
             actions={
               <>
                 <button type="button" className="primaryButton" onClick={() => void handleDownloadPdf()} disabled={isDownloadingPdf}>
@@ -192,8 +248,10 @@ export function ReportViewer() {
         </div>
       </section>
 
+      <ReportToc activeId={activeTocId} />
+
       <div ref={reportDocumentRef} className="reportDocument">
-        <section className="reportSection" data-report-section>
+        <section id="section-design" className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
 
@@ -289,7 +347,7 @@ export function ReportViewer() {
           </div>
         </section>
 
-        <section className="reportSection" data-report-section>
+        <section id="section-simulation" className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
 
@@ -397,7 +455,7 @@ export function ReportViewer() {
           )}
         </section>
 
-        <section className="reportSection" data-report-section>
+        <section id="section-risks" className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
 
@@ -439,7 +497,7 @@ export function ReportViewer() {
           )}
         </section>
 
-        <section className="reportSection" data-report-section>
+        <section id="section-reflection" className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
 

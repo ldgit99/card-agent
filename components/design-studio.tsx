@@ -765,6 +765,11 @@ export function DesignStudio() {
               active="design"
               navigationHandlers={{ simulation: navigateToSimulation }}
               disabledSection={isNavigatingToSimulation ? "simulation" : null}
+              sectionStatus={{
+                design: "idle",
+                simulation: design.activities.length > 0 ? "idle" : "locked",
+                report: "locked",
+              }}
               actions={
                 <>
                   <button type="button" className="primaryButton" onClick={persistDesign}>
