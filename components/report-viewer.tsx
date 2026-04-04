@@ -149,7 +149,7 @@ export function ReportViewer() {
     return (
       <main className="appShell reportPage">
         <section className="panel reportEmptyState">
-          <p className="sectionTag">Report</p>
+
           <h1>저장된 보고서가 없습니다.</h1>
           <p className="emptyPanelText">먼저 모의 수업 실행 및 성찰 화면에서 `리포트 저장하기`를 눌러 주세요.</p>
           <div className="heroActions">
@@ -184,7 +184,7 @@ export function ReportViewer() {
           />
           <div className="heroPanelMain">
             <div>
-              <p className="eyebrow">Teacher Agent Report</p>
+
               <h1>{report.reportTitle}</h1>
               <p className="heroCopy">생성 시각: {formatDateTime(report.generatedAt)}</p>
             </div>
@@ -196,7 +196,7 @@ export function ReportViewer() {
         <section className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
-              <p className="sectionTag">Lesson Design</p>
+
               <h2>수업 설계 내용</h2>
             </div>
           </div>
@@ -292,7 +292,7 @@ export function ReportViewer() {
         <section className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
-              <p className="sectionTag">Simulation Results</p>
+
               <h2>모의 수업 실행 결과</h2>
             </div>
           </div>
@@ -400,7 +400,7 @@ export function ReportViewer() {
         <section className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
-              <p className="sectionTag">Risk Observer</p>
+
               <h2>활동별 위험 관찰</h2>
             </div>
           </div>
@@ -442,7 +442,7 @@ export function ReportViewer() {
         <section className="reportSection" data-report-section>
           <div className="panelHeader">
             <div>
-              <p className="sectionTag">Reflection Journal</p>
+
               <h2>성찰 일지</h2>
             </div>
           </div>

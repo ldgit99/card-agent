@@ -568,7 +568,7 @@ export function SimulationWorkspace() {
             />
             <div className="heroPanelMain">
               <div>
-                <p className="eyebrow">Simulation Workspace</p>
+
                 <h1>저장된 설계가 없습니다.</h1>
                 <p className="heroCopy">먼저 수업 설계 화면에서 설계를 작성해야 모의수업을 실행할 수 있습니다.</p>
               </div>
@@ -615,7 +615,7 @@ export function SimulationWorkspace() {
       <section className="panel simulationOverviewPanel">
         <div className="panelHeader">
           <div>
-            <p className="sectionTag">Simulation Overview</p>
+
             <h2>{scenario?.title ?? "수업 실행 개요"}</h2>
           </div>
           <p className="panelHint">{message}</p>
@@ -712,7 +712,7 @@ export function SimulationWorkspace() {
       <section className="panel simulationBoardPanel">
         <div className="panelHeader">
           <div>
-            <p className="sectionTag">Simulation Board</p>
+
             <h2>모의 수업 실행 결과 · 문제점 · 분석 및 성찰</h2>
           </div>
           <p className="panelHint">각 활동을 하나의 행으로 정리해 수업 이야기, agency 문제점, 성찰을 같은 높이에서 비교합니다.</p>
@@ -923,7 +923,7 @@ export function SimulationWorkspace() {
 
       <section className="panel">
         <div className="panelHeader">
-          <div><p className="sectionTag">Session History</p><h2>저장된 실행 기록</h2></div>
+          <div><h2>저장된 실행 기록</h2></div>
           <p className="panelHint">이전 세션을 불러와 활동별 성찰을 이어서 수정할 수 있습니다.</p>
         </div>
         {designSessions.length ? (
