@@ -10,36 +10,6 @@ import { loadStoredDesign, loadStoredReport, loadStoredSimulation } from "@/lib/
 import type { OrchestrationCard } from "@/types/lesson";
 import type { SimulationReportSnapshot } from "@/types/report";
 
-const TOC_ITEMS = [
-  { id: "section-design", label: "① 수업 개요" },
-  { id: "section-simulation", label: "② 활동별 수업 장면" },
-  { id: "section-risks", label: "③ 위험 신호" },
-  { id: "section-reflection", label: "④ 교사 성찰" },
-];
-
-function ReportToc({ activeId }: { activeId: string }) {
-  return (
-    <nav className="reportToc printHidden" aria-label="보고서 목차">
-      <p className="reportTocTitle">목차</p>
-      <ul className="reportTocList">
-        {TOC_ITEMS.map((item) => (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              className={`reportTocLink ${activeId === item.id ? "reportTocLink-active" : ""}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
 
 const PDF_MARGIN_MM = 12;
 
@@ -134,31 +104,7 @@ const SEVERITY_LABEL: Record<string, string> = {
 export function ReportViewer() {
   const [report, setReport] = useState<SimulationReportSnapshot | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-  const [activeTocId, setActiveTocId] = useState(TOC_ITEMS[0].id);
   const reportDocumentRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const sectionIds = TOC_ITEMS.map((item) => item.id);
-    const observers: IntersectionObserver[] = [];
-
-    const observe = () => {
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (entry.isIntersecting) setActiveTocId(id);
-          },
-          { rootMargin: "-20% 0px -60% 0px", threshold: 0 },
-        );
-        observer.observe(el);
-        observers.push(observer);
-      }
-    };
-
-    observe();
-    return () => observers.forEach((obs) => obs.disconnect());
-  }, [report]);
 
   useEffect(() => {
     const storedReport = loadStoredReport();
@@ -256,56 +202,95 @@ export function ReportViewer() {
         </div>
       </section>
 
-      <ReportToc activeId={activeTocId} />
-
       <div ref={reportDocumentRef} className="reportDocument">
 
-        {/* ① 수업 개요 */}
+        {/* ① 수업 설계 내용 */}
         <section id="section-design" className="reportSection" data-report-section>
-          <h2 className="reportSectionTitle">① 수업 개요</h2>
-
-          <div className="reportOverviewCard">
-            <div className="reportOverviewMeta">
-              <span className="reportMetaChip">{report.design.meta.subject || "교과 미입력"}</span>
-              <span className="reportMetaChip">{report.design.meta.target || "대상 미입력"}</span>
-              <span className="reportMetaChip reportMetaChipMuted">v{report.design.version}</span>
+          <div className="panelHeader">
+            <div>
+              <h2>수업 설계 내용</h2>
             </div>
-            <div className="reportOverviewGrid">
-              <div className="reportOverviewBlock">
-                <p className="reportBlockLabel">학습 목표</p>
-                <ul className="reportGoalList">
-                  {report.design.learningGoals.length ? (
-                    report.design.learningGoals.map((item) => <li key={item}>{item}</li>)
-                  ) : (
-                    <li className="reportMutedText">없음</li>
-                  )}
-                </ul>
-              </div>
-              <div className="reportOverviewBlock">
-                <p className="reportBlockLabel">활동 구성</p>
-                <ol className="reportActivityFlow">
-                  {report.design.activities.map((activity) => {
-                    const cards = activityCards.get(activity.id) ?? { teacher: [], ai: [] };
-                    return (
-                      <li key={activity.id} className="reportActivityFlowItem">
-                        <span className="reportActivityFlowLabel">{activity.functionLabel || `활동 ${activity.order}`}</span>
-                        <span className="reportActivityFlowDesc">{activity.learningActivity || activity.title || "-"}</span>
-                        {(cards.teacher.length > 0 || cards.ai.length > 0) && (
-                          <div className="reportActivityFlowCards">
-                            {cards.teacher.map((c) => (
-                              <span key={c} className="reportChip reportChip-teacher">교사 {c}</span>
-                            ))}
-                            {cards.ai.map((c) => (
-                              <span key={c} className="reportChip reportChip-ai">AI {c}</span>
-                            ))}
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            </div>
+          </div>
+          <div className="reportGrid reportGridTwo">
+            <article className="reportCard">
+              <h3>학습 목표</h3>
+              <ul>
+                {report.design.learningGoals.length ? (
+                  report.design.learningGoals.map((item) => <li key={item}>{item}</li>)
+                ) : (
+                  <li>없음</li>
+                )}
+              </ul>
+            </article>
+            <article className="reportCard">
+              <h3>설계 정보</h3>
+              <ul>
+                <li>버전 {report.design.version}</li>
+                <li>생성 {formatDateTime(report.design.createdAt)}</li>
+                <li>수정 {formatDateTime(report.design.updatedAt)}</li>
+              </ul>
+            </article>
+          </div>
+          <div className="reportTableWrap">
+            <table className="lessonTable reportTable">
+              <thead>
+                <tr>
+                  <th>기능</th>
+                  <th>교과</th>
+                  <th>학습활동</th>
+                  <th>AI도구</th>
+                  <th>평가 방법</th>
+                  <th>교사 질문·행동</th>
+                  <th>AI 질문·행동</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.design.activities.map((activity) => {
+                  const cards = activityCards.get(activity.id) ?? { teacher: [], ai: [] };
+                  return (
+                    <tr key={activity.id}>
+                      <td>{activity.functionLabel || `활동 ${activity.order}`}</td>
+                      <td>{activity.subjectLabel || report.design.meta.subject || "-"}</td>
+                      <td>{activity.learningActivity || activity.title || "-"}</td>
+                      <td>
+                        <div className="reportChipWrap">
+                          {activity.tools.length ? (
+                            activity.tools.map((item) => (
+                              <span key={`${activity.id}-tool-${item}`} className="reportChip">{item}</span>
+                            ))
+                          ) : (
+                            <span className="reportChip reportChipMuted">없음</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>{activity.assessmentMethod || "-"}</td>
+                      <td>
+                        <div className="reportChipWrap">
+                          {cards.teacher.length ? (
+                            cards.teacher.map((item) => (
+                              <span key={`${activity.id}-${item}`} className="reportChip">{item}</span>
+                            ))
+                          ) : (
+                            <span className="reportChip reportChipMuted">없음</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="reportChipWrap">
+                          {cards.ai.length ? (
+                            cards.ai.map((item) => (
+                              <span key={`${activity.id}-${item}`} className="reportChip">{item}</span>
+                            ))
+                          ) : (
+                            <span className="reportChip reportChipMuted">없음</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </section>
 
