@@ -5218,7 +5218,7 @@ body:has(.designStudioPage) {
 .designStudioPage .designHeroCopyBlock {
   display: grid;
   align-content: start;
-  gap: 14px;
+  gap: 0;
 }
 
 .designStudioPage .eyebrow,

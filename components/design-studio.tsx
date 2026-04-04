@@ -779,11 +779,7 @@ export function DesignStudio() {
             />
             <div className="heroPanelMain designHeroMain">
               <div className="designHeroCopyBlock">
-                                <h1>AI 오케스트레이션 수업 설계</h1>
-                <p className="heroCopy">
-                  주제, 교과, 대상, 학습 목표를 먼저 정리하고 활동 표 안에서 바로 교사 개입과 AI 역할을 배치합니다.
-                  카드 라이브러리는 하단에 두고, 각 활동 행의 카드 칸에 직접 드래그해 연결하도록 구성했습니다.
-                </p>
+                <h1>AI 오케스트레이션 수업 설계</h1>
               </div>
             </div>
           </div>
