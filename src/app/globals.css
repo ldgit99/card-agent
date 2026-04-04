@@ -7280,4 +7280,35 @@ body:has(.reportPage) {
     text-decoration: none !important;
   }
 }
+.workspaceTopbar .workspaceNavLink {
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.workspaceTopbar .workspaceNavTitle {
+  font-size: 0.96rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.designStudioPage .workspaceNavLink,
+.simulationPage .workspaceNavLink,
+.reportPage .workspaceNavLink {
+  min-width: fit-content;
+}
+
+.workspaceTopbar .workspaceNavStatusIcon {
+  margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+  .workspaceTopbar .workspaceNavTitle {
+    font-size: 0.9rem;
+  }
+}
 

@@ -1,14 +1,14 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import type { ReactNode } from "react";
 
 export type WorkspaceSection = "design" | "simulation" | "report";
 
 export type SectionStatus = "idle" | "done" | "locked";
 
-const workspaceLinks: Array<{ id: WorkspaceSection; href: string; label: string; step: string }> = [
-  { id: "design", href: "/", label: "수업 설계", step: "1단계" },
-  { id: "simulation", href: "/simulation", label: "모의 수업 실행 및 성찰", step: "2단계" },
-  { id: "report", href: "/report", label: "보고서 출력", step: "3단계" },
+const workspaceLinks: Array<{ id: WorkspaceSection; href: string; title: string }> = [
+  { id: "design", href: "/", title: "1단계: 수업 설계" },
+  { id: "simulation", href: "/simulation", title: "2단계: 모의 수업 실행 및 성찰" },
+  { id: "report", href: "/report", title: "3단계: 보고서 출력" },
 ];
 
 function StatusIcon({ status }: { status: SectionStatus }) {
@@ -69,8 +69,7 @@ export function WorkspaceTopbar({
                 onClick={() => void handler()}
                 disabled={isDisabled}
               >
-                <span className="workspaceNavStep">{item.step}</span>
-                <span className="workspaceNavText">{item.label}</span>
+                <span className="workspaceNavTitle">{item.title}</span>
                 <StatusIcon status={status} />
               </button>
             );
@@ -84,8 +83,7 @@ export function WorkspaceTopbar({
               aria-disabled={isDisabled ? true : undefined}
               tabIndex={isDisabled ? -1 : undefined}
             >
-              <span className="workspaceNavStep">{item.step}</span>
-              <span className="workspaceNavText">{item.label}</span>
+              <span className="workspaceNavTitle">{item.title}</span>
               <StatusIcon status={status} />
             </Link>
           );
