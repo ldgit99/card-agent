@@ -2717,7 +2717,8 @@ a {
 
 .simulationOverviewGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: start;
   gap: 16px;
   margin-top: 16px;
 }
@@ -2728,18 +2729,197 @@ a {
   line-height: 1.72;
 }
 
+.overviewSecondaryText {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.overviewSummaryBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.95);
+  border: 1px solid rgba(147, 197, 253, 0.7);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.overviewStepGrid,
+.learningGoalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.overviewStepCard,
+.learningGoalCard,
+.overviewContextCard,
+.riskHighlightCard {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  background: #ffffff;
+}
+
+.overviewStepHeader,
+.learningGoalHeader,
+.riskHighlightHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.overviewStepBadge,
+.learningGoalHeader span,
+.riskHighlightHead span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(254, 240, 138, 0.28);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #9a6700;
+}
+
+.overviewStepTag {
+  font-size: 0.8rem;
+  color: var(--accent-strong);
+}
+
+.overviewStepTitle,
+.learningGoalText {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.overviewStepTitle,
+.learningGoalHeader strong,
+.riskHighlightHead strong {
+  font-size: 0.96rem;
+}
+
+.overviewStepLens,
+.riskHighlightMeta {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--accent-strong);
+}
+
+.learningGoalText {
+  font-weight: 700;
+}
+
+.overviewMiniList {
+  display: grid;
+  gap: 12px;
+}
+
+.overviewMiniListCompact {
+  gap: 10px;
+}
+
+.overviewMiniList div,
+.riskHighlightAction {
+  display: grid;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(226, 232, 240, 0.86);
+}
+
+.overviewMiniList strong,
+.personaInsightGrid strong,
+.riskHighlightAction strong {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.overviewMiniList span,
+.personaInsightGrid span,
+.riskHighlightAction span {
+  color: var(--muted);
+  line-height: 1.64;
+}
+
+.overviewContextGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overviewTagList,
+.riskWatchSignalList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.overviewTag,
+.riskWatchSignal {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.95);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.riskHighlightList {
+  display: grid;
+  gap: 12px;
+}
+
+.riskHighlightCard-high {
+  border-color: rgba(248, 113, 113, 0.26);
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.riskHighlightCard-medium {
+  border-color: rgba(251, 191, 36, 0.26);
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.riskHighlightCard-low {
+  border-color: rgba(96, 165, 250, 0.24);
+  background: linear-gradient(180deg, rgba(239, 246, 255, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.personaSection {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.personaSectionHeader {
+  margin-bottom: -2px;
+}
+
 .personaStrip {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 12px;
-  margin-top: 16px;
 }
 
 .personaStripCard {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 18px;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
   border: 1px solid rgba(219, 234, 254, 0.96);
   background: #ffffff;
   box-shadow: var(--shadow-sm);
@@ -2750,6 +2930,29 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.personaInsightGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.personaInsightGrid div {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.personaQuote {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(246, 248, 252, 0.94);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
 }
 
 .personaStripHead span,
@@ -2941,7 +3144,9 @@ a {
 
 @media (max-width: 1280px) {
   .simulationOverviewGrid,
+  .overviewContextGrid,
   .personaStrip,
+  .personaInsightGrid,
   .triBoardHeader,
   .simulationTriRow,
   .storySceneGrid {
@@ -4504,7 +4709,9 @@ body {
   .mobileDropGrid,
   .cardLibraryBottomGrid .libraryList,
   .simulationOverviewGrid,
+  .overviewContextGrid,
   .personaStrip,
+  .personaInsightGrid,
   .reportMetaGrid,
   .reportGrid,
   .reportGridTwo,
