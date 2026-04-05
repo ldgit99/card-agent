@@ -4,7 +4,9 @@
 import { useRouter } from "next/navigation";
 import {
   DndContext,
+  MeasuringStrategy,
   PointerSensor,
+  closestCenter,
   useDraggable,
   useDroppable,
   useSensor,
@@ -758,7 +760,12 @@ export function DesignStudio() {
   const latestSavedAt = designHistory[0]?.updatedAt ?? lastServerSyncAt;
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+      onDragEnd={handleDragEnd}
+    >
       <main className="appShell designStudioPage">
         <section className="heroPanel">
           <div className="heroPanelStack">

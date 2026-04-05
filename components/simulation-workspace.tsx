@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { normalizeLessonDesignDraft, parseMultilineField } from "@/lib/design";
 import { WorkspaceTopbar } from "@/components/workspace-topbar";
+import { findCardById } from "@/lib/card-registry";
 import { riskLabels } from "@/lib/constants";
 import { buildSimulationReportSnapshot } from "@/lib/report";
 import {
@@ -743,6 +744,21 @@ export function SimulationWorkspace() {
     });
   }, [design, episodeByActivityId]);
 
+  const activityCards = useMemo(() => {
+    if (!design) {
+      return new Map<string, { teacher: string[]; ai: string[] }>();
+    }
+    return new Map(
+      design.activities.map((activity) => [
+        activity.id,
+        {
+          teacher: activity.humanCardIds.map((id) => findCardById(id, design.customCards)?.title ?? id),
+          ai: activity.aiCardIds.map((id) => findCardById(id, design.customCards)?.title ?? id),
+        },
+      ]),
+    );
+  }, [design]);
+
   if (!design) {
     return (
       <main className="appShell simulationPage">
@@ -781,9 +797,6 @@ export function SimulationWorkspace() {
                 <button type="button" className="primaryButton" onClick={runSimulation}>
                   {isRunning ? "실행 중..." : "모의 수업 실행"}
                 </button>
-                <button type="button" className="secondaryButton" onClick={persistReflectionToServer}>
-                  {isSavingReflection ? "저장 중..." : "성찰 저장"}
-                </button>
                 <button type="button" className="secondaryButton" onClick={saveReport}>
                   리포트 저장하기
                 </button>
@@ -818,137 +831,161 @@ export function SimulationWorkspace() {
           <p className="panelHint">{message}</p>
         </div>
         <div className="simulationOverviewGrid">
-          <article className="detailSection detailSectionSoft">
-            <div className="detailSectionHeader">
-              <div>
-                <h3>2-Step 수업 설계 요약</h3>
-                <p>Show the first two phases with goals, teacher focus, AI focus, and signals.</p>
+          {/* ① 수업 설계 내용 — 3단계(보고서)와 동일한 레이아웃 */}
+          <div className="simDesignSummarySection">
+            <div className="panelHeader" style={{ marginBottom: 12 }}>
+              <div><h3>수업 설계 내용</h3></div>
+            </div>
+            <div className="reportGrid reportGridTwo">
+              <article className="reportCard">
+                <h3>학습 목표</h3>
+                <ul>
+                  {design.learningGoals.length ? (
+                    design.learningGoals.map((goal) => <li key={goal}>{goal}</li>)
+                  ) : (
+                    <li className="emptyPanelText">학습 목표를 추가해 주세요.</li>
+                  )}
+                </ul>
+              </article>
+              <article className="reportCard">
+                <h3>수업 정보</h3>
+                <ul className="reportInfoList">
+                  <li><span className="reportInfoLabel">주제</span>{design.meta.topic || "-"}</li>
+                  <li><span className="reportInfoLabel">교과</span>{design.meta.subject || "-"}</li>
+                  <li><span className="reportInfoLabel">대상</span>{design.meta.target || "-"}</li>
+                  <li><span className="reportInfoLabel">시간</span>{design.durationMinutes ? `${design.durationMinutes}분` : "-"}</li>
+                </ul>
+              </article>
+            </div>
+            <div className="reportTableWrap">
+              <table className="lessonTable reportTable">
+                <thead>
+                  <tr>
+                    <th>기능</th>
+                    <th>교과</th>
+                    <th>학습활동</th>
+                    <th>AI도구</th>
+                    <th>평가 방법</th>
+                    <th>교사 질문·행동</th>
+                    <th>AI 질문·행동</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {design.activities.map((activity) => {
+                    const cards = activityCards.get(activity.id) ?? { teacher: [], ai: [] };
+                    return (
+                      <tr key={activity.id}>
+                        <td>{activity.functionLabel || `활동 ${activity.order}`}</td>
+                        <td>{activity.subjectLabel || design.meta.subject || "-"}</td>
+                        <td>{activity.learningActivity || activity.title || "-"}</td>
+                        <td>
+                          <div className="reportChipWrap">
+                            {activity.tools.length ? (
+                              activity.tools.map((tool) => <span key={`${activity.id}-tool-${tool}`} className="reportChip">{tool}</span>)
+                            ) : (
+                              <span className="reportChip reportChipMuted">없음</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>{activity.assessmentMethod || "-"}</td>
+                        <td>
+                          <div className="reportChipWrap">
+                            {cards.teacher.length ? (
+                              cards.teacher.map((item) => <span key={`${activity.id}-t-${item}`} className="reportChip">{item}</span>)
+                            ) : (
+                              <span className="reportChip reportChipMuted">없음</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="reportChipWrap">
+                            {cards.ai.length ? (
+                              cards.ai.map((item) => <span key={`${activity.id}-a-${item}`} className="reportChip">{item}</span>)
+                            ) : (
+                              <span className="reportChip reportChipMuted">없음</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* 하단 2열: 수업 배경·관찰 포인트 | 위험 분석 요약 */}
+          <div className="simOverviewBottomGrid">
+            <article className="detailSection detailSectionSoft">
+              <div className="detailSectionHeader">
+                <div><h3>수업 배경과 관찰 포인트</h3></div>
               </div>
-            </div>
-            <div className="snapshotMetaRow">
-              <span><strong>주제</strong>{design.meta.topic || "-"}</span>
-              <span><strong>교과</strong>{design.meta.subject || "-"}</span>
-              <span><strong>대상</strong>{design.meta.target || "-"}</span>
-            </div>
-            <div className="overviewStepGrid">
-              {overviewActivities.map((activity) => (
-                <article key={activity.id} className="overviewStepCard">
-                  <div className="overviewStepHeader">
-                    <span className="overviewStepBadge">{activity.stepLabel}</span>
-                    <span className="overviewStepTag">{activity.subject}</span>
+              <div className="overviewContextGrid">
+                <article className="overviewContextCard">
+                  <strong>수업 맥락</strong>
+                  <p className="overviewLead">{scenario?.setting ?? "시뮬레이션을 실행하면 수업 맥락이 나타납니다."}</p>
+                  <div className="overviewMiniList overviewMiniListCompact">
+                    <div><strong>학습 흐름</strong><span>{scenario?.learningArc ?? "시뮬레이션 후 학습 흐름이 표시됩니다."}</span></div>
                   </div>
-                  <strong className="overviewStepTitle">{activity.title}</strong>
-                  <p className="overviewStepLens">{activity.lens}</p>
-                  <p className="overviewLead">{activity.learningFlow}</p>
-                  <div className="overviewMiniList">
-                    <div><strong>Step Goal</strong><span>{activity.objective}</span></div>
-                    <div><strong>Teacher Focus</strong><span>{activity.teacherFocus}</span></div>
-                    <div><strong>AI Focus</strong><span>{activity.aiFocus}</span></div>
-                    <div><strong>Signals</strong><span>{activity.observationSignal}</span></div>
+                  {majorActivities.length ? (
+                    <div className="overviewTagList">
+                      {majorActivities.slice(0, 3).map((activityTitle) => (
+                        <span key={activityTitle} className="overviewTag">{activityTitle}</span>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+                <article className="overviewContextCard">
+                  <strong>관찰 포인트</strong>
+                  <p className="overviewLead">{scenario?.facilitatorBrief ?? "시뮬레이션 후 관찰 포인트가 표시됩니다."}</p>
+                  <div className="overviewMiniList overviewMiniListCompact">
+                    <div><strong>주요 관찰</strong><span>{analysis?.gaps[0] ?? "주요 관찰 포인트가 여기에 표시됩니다."}</span></div>
+                    <div><strong>강점</strong><span>{analysis?.strengths[0] ?? "긍정적 증거 포인트가 여기에 표시됩니다."}</span></div>
                   </div>
                 </article>
-              ))}
-            </div>
-            {design.activities.length > 2 ? (
-              <p className="overviewSecondaryText">More phases continue in the execution board below.</p>
-            ) : null}
-            <div className="snapshotBlock">
-              <strong>학습 목표</strong>
-              {learningGoalCards.length ? (
-                <div className="learningGoalGrid">
-                  {learningGoalCards.map((goalCard, index) => (
-                    <article key={goalCard.id} className="learningGoalCard">
-                      <div className="learningGoalHeader">
-                        <span>Goal {index + 1}</span>
-                        <strong>{goalCard.stageTitle}</strong>
+              </div>
+            </article>
+
+            <article className="detailSection detailSectionSoft">
+              <div className="detailSectionHeader">
+                <div><h3>위험 분석 요약</h3></div>
+                <span className="overviewSummaryBadge">총 {risks.length}건</span>
+              </div>
+              <p className="overviewLead">{analysis?.summary ?? "시뮬레이션 후 설계 분석 요약이 나타납니다."}</p>
+              <div className="riskSummaryGrid">
+                <article className="riskSummaryCard riskSummaryCard-high"><span>높음</span><strong>{highRiskCount}</strong></article>
+                <article className="riskSummaryCard riskSummaryCard-medium"><span>중간</span><strong>{mediumRiskCount}</strong></article>
+                <article className="riskSummaryCard riskSummaryCard-low"><span>낮음</span><strong>{lowRiskCount}</strong></article>
+              </div>
+              {prioritizedRisks.length ? (
+                <div className="riskHighlightList">
+                  {prioritizedRisks.map((risk, index) => (
+                    <article key={risk.id} className={`riskHighlightCard riskHighlightCard-${risk.severity}`}>
+                      <div className="riskHighlightHead">
+                        <span>우선순위 {index + 1}</span>
+                        <strong>{riskLabels[risk.riskType]}</strong>
                       </div>
-                      <p className="learningGoalText">{goalCard.goal}</p>
-                      <div className="overviewMiniList overviewMiniListCompact">
-                        <div><strong>Observe</strong><span>{goalCard.observation}</span></div>
-                        <div><strong>Assess</strong><span>{goalCard.evaluation}</span></div>
+                      <p className="riskHighlightMeta">{[risk.activityTitle, risk.focusArea].filter(Boolean).join(" / ") || "전체 수업"}</p>
+                      <p className="overviewLead">{risk.studentImpact}</p>
+                      {risk.watchSignals.length ? (
+                        <div className="riskWatchSignalList">
+                          {risk.watchSignals.slice(0, 2).map((signal) => (
+                            <span key={`${risk.id}-${signal}`} className="riskWatchSignal">{signal}</span>
+                          ))}
+                        </div>
+                      ) : null}
+                      <div className="riskHighlightAction">
+                        <strong>즉각 조치</strong>
+                        <span>{risk.recommendedIntervention}</span>
                       </div>
                     </article>
                   ))}
                 </div>
               ) : (
-                <span className="snapshotBlockValue">Add lesson goals to turn them into linked goal cards here.</span>
+                <p className="emptyPanelText">시뮬레이션 실행 후 상위 위험 및 즉각 조치가 표시됩니다.</p>
               )}
-            </div>
-          </article>
-          <article className="detailSection detailSectionSoft">
-            <div className="detailSectionHeader">
-              <div>
-                <h3>수업 배경과 관찰 포인트</h3>
-                <p>Split the lesson context from the observation brief so each is easier to scan.</p>
-              </div>
-            </div>
-            <div className="overviewContextGrid">
-              <article className="overviewContextCard">
-                <strong>Context</strong>
-                <p className="overviewLead">{scenario?.setting ?? "Run the simulation to populate the lesson context."}</p>
-                <div className="overviewMiniList overviewMiniListCompact">
-                  <div><strong>Flow</strong><span>{scenario?.learningArc ?? "The lesson arc will appear here after simulation."}</span></div>
-                </div>
-                {majorActivities.length ? (
-                  <div className="overviewTagList">
-                    {majorActivities.slice(0, 3).map((activityTitle) => (
-                      <span key={activityTitle} className="overviewTag">{activityTitle}</span>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-              <article className="overviewContextCard">
-                <strong>Observation Brief</strong>
-                <p className="overviewLead">{scenario?.facilitatorBrief ?? "Run the simulation to fill the observation brief."}</p>
-                <div className="overviewMiniList overviewMiniListCompact">
-                  <div><strong>Priority</strong><span>{analysis?.gaps[0] ?? "Key watch-outs will appear here."}</span></div>
-                  <div><strong>Strength</strong><span>{analysis?.strengths[0] ?? "Positive evidence to notice will appear here."}</span></div>
-                </div>
-              </article>
-            </div>
-          </article>
-          <article className="detailSection detailSectionSoft">
-            <div className="detailSectionHeader">
-              <div>
-                <h3>위험 분석 요약</h3>
-                <p>Keep the counts, but surface the top risks and immediate actions in the same card.</p>
-              </div>
-              <span className="overviewSummaryBadge">Total {risks.length}</span>
-            </div>
-            <p className="overviewLead">{analysis?.summary ?? "The design analysis summary appears after simulation."}</p>
-            <div className="riskSummaryGrid">
-              <article className="riskSummaryCard riskSummaryCard-high"><span>높음</span><strong>{highRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-medium"><span>중간</span><strong>{mediumRiskCount}</strong></article>
-              <article className="riskSummaryCard riskSummaryCard-low"><span>낮음</span><strong>{lowRiskCount}</strong></article>
-            </div>
-            {prioritizedRisks.length ? (
-              <div className="riskHighlightList">
-                {prioritizedRisks.map((risk, index) => (
-                  <article key={risk.id} className={`riskHighlightCard riskHighlightCard-${risk.severity}`}>
-                    <div className="riskHighlightHead">
-                      <span>Priority {index + 1}</span>
-                      <strong>{riskLabels[risk.riskType]}</strong>
-                    </div>
-                    <p className="riskHighlightMeta">{[risk.activityTitle, risk.focusArea].filter(Boolean).join(" / ") || "Whole lesson"}</p>
-                    <p className="overviewLead">{risk.studentImpact}</p>
-                    {risk.watchSignals.length ? (
-                      <div className="riskWatchSignalList">
-                        {risk.watchSignals.slice(0, 2).map((signal) => (
-                          <span key={`${risk.id}-${signal}`} className="riskWatchSignal">{signal}</span>
-                        ))}
-                      </div>
-                    ) : null}
-                    <div className="riskHighlightAction">
-                      <strong>Act Now</strong>
-                      <span>{risk.recommendedIntervention}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="emptyPanelText">Top risks and immediate actions will appear here after simulation.</p>
-            )}
-          </article>
+            </article>
+          </div>
         </div>
         {scenario?.studentPersonas.length ? (
           <div className="personaSection">
@@ -1137,6 +1174,14 @@ export function SimulationWorkspace() {
                     ) : (
                       <p className="emptyPanelText">이 활동과 직접 연결된 성찰 질문이 아직 없습니다.</p>
                     )}
+                    <button
+                      type="button"
+                      className="ghostButton reflectionSaveBtn"
+                      onClick={() => void persistReflectionToServer()}
+                      disabled={isSavingReflection}
+                    >
+                      {isSavingReflection ? "저장 중..." : "성찰 저장"}
+                    </button>
                   </div>
                 </section>
                 </article>
