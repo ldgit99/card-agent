@@ -7311,11 +7311,7 @@ body:has(.reportPage) {
 .reportPage .eyebrow,
 .reportPage .sectionTag,
 .reportPage .sectionMicroTag {
-  width: fit-content;
-  border: 1px solid rgba(79, 111, 245, 0.18);
-  background: #eef2ff;
-  color: #4263eb;
-  letter-spacing: 0.08em;
+  display: none;
 }
 
 .simulationPage .heroPanel h1,
